@@ -1,1 +1,1 @@
-##SSIS Git Integration
+##SSIS and Stored Procedure Git Integration
