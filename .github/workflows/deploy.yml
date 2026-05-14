@@ -17,12 +17,12 @@ jobs:
           python-version: '3.12'
 
       - name: Azure Login
-  	uses: azure/login@v1
-  	with:
-    		client-id: ${{ secrets.FABRIC_CLIENT_ID }}
-    		tenant-id: ${{ secrets.FABRIC_TENANT_ID }}
-    	client-secret: ${{ secrets.FABRIC_CLIENT_SECRET }}
-    	allow-no-subscriptions: true
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.FABRIC_CLIENT_ID }}
+          tenant-id: ${{ secrets.FABRIC_TENANT_ID }}
+          client-secret: ${{ secrets.FABRIC_CLIENT_SECRET }}
+          allow-no-subscriptions: true
 
       - name: Install fabric-cicd
         run: pip install fabric-cicd
@@ -31,6 +31,6 @@ jobs:
         id: changes
         run: echo "files=$(git diff --name-only HEAD~1)" >> $GITHUB_OUTPUT
 
-      - name: Deploy test workspace
-        if: contains(steps.changes.outputs.files, 'Git Integration Test/')
-        run: python deploy.py --workspace_name "Git Integration Test"
+      - name: Deploy WorkspaceB
+        if: contains(steps.changes.outputs.files, Git Integration Test
+        run: python deploy.py --workspace_name Git Integration Test
