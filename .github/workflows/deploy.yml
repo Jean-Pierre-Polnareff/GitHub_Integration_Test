@@ -33,4 +33,4 @@ jobs:
 
       - name: Deploy WorkspaceB
         if: contains(steps.changes.outputs.files, Git Integration Test
-        run: python deploy.py --workspace_name Git Integration Test
+        run: python deploy.py --workspace_name "Git Integration Test"
