@@ -8,7 +8,7 @@ credential = DefaultAzureCredential()
 
 workspace = FabricWorkspace(
     workspace_name=workspace_name,
-    repository_directory=workspace_name,
+    repository_directory=f"PowerBI/{workspace_name}",
     item_type_in_scope=["Report", "SemanticModel"],
     token_credential=credential
 )
