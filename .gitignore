@@ -1,0 +1,11 @@
+# Power BI local cache
+.pbi/
+*/.pbi/
+**/.pbi/
+*.abf
+**/*.abf
+
+# Optional
+*.log
+*.tmp
+*.bak

@@ -1,0 +1,120 @@
+table 'Definitions - Active Inventory Performance'
+	isHidden
+	lineageTag: 25bfffa7-ad9c-4d72-8ecb-1cf38bc7bbb8
+
+	column Table
+		dataType: string
+		isHidden
+		lineageTag: 9fbabd5b-0f37-4540-a2d0-b119248967fa
+		summarizeBy: none
+		sourceColumn: Table
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Field
+		dataType: string
+		isHidden
+		lineageTag: ef91a13c-3a42-4c9f-8618-1614c1895c3a
+		summarizeBy: none
+		sourceColumn: Field
+		sortByColumn: Order
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Definition
+		dataType: string
+		isHidden
+		lineageTag: b934a397-c679-4b52-b2d6-ff2c3589cf84
+		summarizeBy: none
+		sourceColumn: Definition
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Order
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c07d3718-6154-4f21-bf95-851dd5e8517b
+		summarizeBy: sum
+		sourceColumn: Order
+
+		changedProperty = DataType
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column1
+		dataType: string
+		isHidden
+		lineageTag: 26a9a691-3c31-402c-a17a-25d2d4fd380c
+		summarizeBy: none
+		sourceColumn: Column1
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column2
+		dataType: string
+		isHidden
+		lineageTag: cb34c713-cd5c-408d-889f-15ce39786dfa
+		summarizeBy: none
+		sourceColumn: Column2
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column3
+		dataType: string
+		isHidden
+		lineageTag: 135fa58a-8d79-45fa-8866-3fa2f601540c
+		summarizeBy: none
+		sourceColumn: Column3
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column4
+		dataType: string
+		isHidden
+		lineageTag: 8af764b3-7b75-40d8-ac38-c6e3d2d454e9
+		summarizeBy: none
+		sourceColumn: Column4
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column5
+		dataType: string
+		isHidden
+		lineageTag: 79563790-8039-4d5b-83b5-982c74968244
+		summarizeBy: none
+		sourceColumn: Column5
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Definitions - Active Inventory Performance-26149571-0ab4-40c2-ba73-1a4b276f93b9' = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("ldNNC4JAEAbgvzJ4Dsq+O5qHLgUSdIjosOgUC7Zb6yb07xtxpVxXWEEPvrLPzgzM5RIcZIY5JKhuUj2YSDEYBVF5hy3Lm69U8xKboIAxRGkq30IX9DOkt/VcR24zZnkVCdSKaS6FiSxu6sudxAsc5Enw1xvBIc985WMSu+Qmttj5kIJ7aFN0zw0L3xv2qDUqy65Di1wOKdrJmpKd+spXN2cglqIkpSUn7NOB174wHX4gnYEnFV6N9D8b10OmaOM9WSqJZ03vf5K1GtU+THzRnZJFAdSuhjPHPLPl34p571irbyPUcWeWYXfTrl8=", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Table = _t, Field = _t, Definition = _t, Order = _t, Column1 = _t, Column2 = _t, Column3 = _t, Column4 = _t, Column5 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Table", type text}, {"Field", type text}, {"Definition", type text}})
+				in
+				    #"Changed Type"
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
