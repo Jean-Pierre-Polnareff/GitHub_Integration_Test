@@ -17,12 +17,10 @@ jobs:
           python-version: '3.12'
 
       - name: Azure Login
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.FABRIC_CLIENT_ID }}
-          tenant-id: ${{ secrets.FABRIC_TENANT_ID }}
-          client-secret: ${{ secrets.FABRIC_CLIENT_SECRET }}
-          allow-no-subscriptions: true
+  	uses: azure/login@v1
+  	with:
+    	  creds: ${{ secrets.AZURE_CREDENTIALS }}
+    	  allow-no-subscriptions: true
 
       - name: Install fabric-cicd
         run: pip install fabric-cicd
