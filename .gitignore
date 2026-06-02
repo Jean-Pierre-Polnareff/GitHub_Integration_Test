@@ -9,3 +9,27 @@
 *.log
 *.tmp
 *.bak
+
+# SSDT / Visual Studio project files
+
+*.sln
+
+*.sqlproj
+
+*.vssscc
+
+*.vspscc
+
+*.scmp
+
+*.suo
+
+*.user
+
+.vs/
+
+
+
+# Security scripts
+
+**/Security/

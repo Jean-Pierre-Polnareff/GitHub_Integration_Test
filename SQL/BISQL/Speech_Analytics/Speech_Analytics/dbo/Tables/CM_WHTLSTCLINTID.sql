@@ -1,0 +1,138 @@
+﻿CREATE TABLE [dbo].[CM_WHTLSTCLINTID] (
+    [RECDP]  NVARCHAR (100) NOT NULL,
+    [CLINTD] NVARCHAR (100) NOT NULL
+);
+
+
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_CM_WHTLSTCLINTID_CALLID]
+    ON [dbo].[CM_WHTLSTCLINTID]([CLINTD] ASC, [RECDP] ASC) WITH (DATA_COMPRESSION = PAGE);
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\tkumar]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\pjain]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\musalunke]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\mhuang]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\dmukherji]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\aughodake]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\aramugade]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\tkumar]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\pjain]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\musalunke]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\mhuang]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\dmukherji]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\aughodake]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\aramugade]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\tkumar]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\pjain]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\musalunke]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\mhuang]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\dmukherji]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\aughodake]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[CM_WHTLSTCLINTID] TO [CORP\aramugade]
+    AS [dbo];
+
