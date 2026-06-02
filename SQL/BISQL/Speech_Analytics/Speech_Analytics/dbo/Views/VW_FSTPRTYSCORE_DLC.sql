@@ -1,0 +1,44 @@
+﻿CREATE VIEW [dbo].[VW_FSTPRTYSCORE_DLC]
+AS
+	SELECT * FROM [dbo].[CM_FSTPRTYSCORE_DLC]
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[VW_FSTPRTYSCORE_DLC] TO [CORP\musalunke]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[VW_FSTPRTYSCORE_DLC] TO [CORP\pjain]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[VW_FSTPRTYSCORE_DLC] TO [CORP\mhuang]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[VW_FSTPRTYSCORE_DLC] TO [CORP\tkumar]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[VW_FSTPRTYSCORE_DLC] TO [CORP\dmukherji]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[VW_FSTPRTYSCORE_DLC] TO [CORP\aughodake]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[VW_FSTPRTYSCORE_DLC] TO [CORP\aramugade]
+    AS [dbo];
+
