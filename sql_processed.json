@@ -1,0 +1,9 @@
+{
+  "BISQL/Speech_Analytics/dbo/Sp_UpdateStatsAndLoadDetails_Speech_Analytics": "completed",
+  "BISQL/Speech_Analytics/dbo/pGetNamespaceAttribute": "completed",
+  "BISQL/Speech_Analytics/dbo/pGetWFState": "completed",
+  "BISQL/Speech_Analytics/dbo/pInitWFActivity": "completed",
+  "BISQL/Speech_Analytics/dbo/pInitWorkflow": "completed",
+  "BISQL/Speech_Analytics/dbo/pUpdateConnParameter": "completed",
+  "BISQL/Speech_Analytics/dbo/pUpdateWFActivity": "completed"
+}
