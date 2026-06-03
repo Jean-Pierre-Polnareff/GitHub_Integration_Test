@@ -157,13 +157,7 @@ jobs:
           echo "changes_arg=$CHANGES_ARG" >> $GITHUB_OUTPUT
           echo "has_changes=true" >> $GITHUB_OUTPUT
 
-      - name: Commit changelog
-        if: steps.detect.outputs.has_changes == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add changelog.md
-          git diff --staged --quiet || (git commit -m "chore: update changelog $(date -u +%Y-%m-%d)" && git pull --rebase && git push)
+          # No commit here — docs job will commit changelog + PDF deletions together
 
   docs:
     needs: changelog
@@ -249,14 +243,15 @@ jobs:
             --powerbi-root "PowerBI" \
             --changes "${{ steps.get_changes.outputs.changes_arg }}"
 
-      - name: Commit PDF deletions to main repo
+      - name: Commit changelog and PDF deletions
         if: steps.get_changes.outputs.has_changes == 'true'
         run: |
           cd main
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add changelog.md
           git add -A
-          git diff --staged --quiet || (git commit -m "chore: remove processed PDFs $(date -u +%Y-%m-%d)" && git pull --rebase && git push)
+          git diff --staged --quiet || (git commit -m "chore: update changelog and remove PDFs $(date -u +%Y-%m-%d)" && git pull --rebase && git push)
 
       - name: Push wiki repo
         if: steps.get_changes.outputs.has_changes == 'true'
