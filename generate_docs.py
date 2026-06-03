@@ -5,6 +5,9 @@ Processes Power BI report changes passed directly from the workflow.
   - CREATED / MODIFIED : generate .md doc + convert PDF to PNGs -> wiki
   - DELETED            : remove .md + PNGs from wiki
 
+Wiki files are named: {workspace}__{report_name}.md
+PNGs are named: {workspace}_{report_name}_pageN.png
+
 Run from the root of the main repo:
     python generate_docs.py \
         --main-repo "." \
@@ -427,7 +430,8 @@ def generate_doc(
     lines.append(POINT_OF_CONTACT)
     lines.append("")
 
-    output_path = wiki_dir / f"{report_name}.md"
+    # workspace__report_name.md format
+    output_path = wiki_dir / f"{workspace}__{report_name}.md"
     output_path.write_text("\n".join(lines), encoding="utf-8")
     print(f"  Saved doc: {output_path}")
 
@@ -437,7 +441,7 @@ def generate_doc(
 # ---------------------------------------------------------------------------
 
 def delete_report_from_wiki(workspace: str, report_name: str, wiki_dir: Path):
-    md_path = wiki_dir / f"{report_name}.md"
+    md_path = wiki_dir / f"{workspace}__{report_name}.md"
     if md_path.exists():
         md_path.unlink()
         print(f"  Deleted: {md_path}")
@@ -455,33 +459,36 @@ def delete_report_from_wiki(workspace: str, report_name: str, wiki_dir: Path):
 # ---------------------------------------------------------------------------
 
 def update_home_md(wiki_dir: Path):
-    """Rebuild Power BI section from existing .md files in wiki."""
-    # Collect all report .md files excluding known non-report pages
-    exclude = {"Home", "SQL-Stored-Procedures", "SQL Stored Procedures", "SSIS Packages"}
-    report_files = sorted([
-        f.stem for f in wiki_dir.glob("*.md")
-        if f.stem not in exclude
-        and not f.stem.startswith("SP_")
-        and not f.stem.startswith("SSIS_")
-    ])
+    """Rebuild Power BI section grouped by workspace using workspace__report.md naming."""
+    exclude = {"Home", "SQL-Stored-Procedures"}
+
+    workspaces = {}
+    for f in wiki_dir.glob("*.md"):
+        if f.stem in exclude or f.stem.startswith("SP_") or f.stem.startswith("SSIS_"):
+            continue
+        if "__" not in f.stem:
+            continue
+        workspace, report = f.stem.split("__", 1)
+        if workspace not in workspaces:
+            workspaces[workspace] = []
+        workspaces[workspace].append(report)
 
     lines = []
     lines.append("## Power BI Reports\n")
-    if report_files:
-        for name in report_files:
-            encoded = name.replace(" ", "%20")
-            lines.append(f"- [{name}]({encoded})")
-        lines.append("")
+    if workspaces:
+        for workspace in sorted(workspaces):
+            lines.append(f"### {workspace}\n")
+            for report in sorted(workspaces[workspace]):
+                encoded = f"{workspace}__{report}".replace(" ", "%20")
+                lines.append(f"- [{report}]({encoded})")
+            lines.append("")
     else:
         lines.append("_No reports documented yet._\n")
 
     new_section = "\n".join(lines)
 
     home_path = wiki_dir / "Home.md"
-    if home_path.exists():
-        content = home_path.read_text(encoding="utf-8")
-    else:
-        content = "# Home\n\n---\n"
+    content = home_path.read_text(encoding="utf-8") if home_path.exists() else "# Home\n\n---\n"
 
     content = re.sub(
         r"## Power BI Reports.*?(?=\n---|\n## |\Z)",
@@ -506,15 +513,14 @@ def main():
     parser.add_argument("--main-repo",    required=True)
     parser.add_argument("--wiki-repo",    required=True)
     parser.add_argument("--powerbi-root", required=True)
-    parser.add_argument("--changes",      required=True, help="Pipe-separated changes: STATUS|workspace/report,...")
+    parser.add_argument("--changes",      required=True)
     args = parser.parse_args()
 
     main_repo    = Path(args.main_repo).resolve()
     wiki_dir     = Path(args.wiki_repo).resolve()
     powerbi_root = main_repo / args.powerbi_root
 
-    # Parse changes from argument
-    # Format: "CREATED|workspace/report,MODIFIED|workspace/report2"
+    # Parse changes: "CREATED|workspace/report,MODIFIED|workspace/report2"
     changes = {}
     for item in args.changes.split(","):
         item = item.strip()
@@ -546,24 +552,29 @@ def main():
                 tables_folder = pbip_folder / f"{report_name}.SemanticModel" / "definition" / "tables"
                 pdf_path      = pbip_folder / f"{report_name}.pdf"
 
-                existing_md = wiki_dir / f"{report_name}.md"
+                # Use workspace__report_name.md for existing descriptions
+                existing_md = wiki_dir / f"{workspace}__{report_name}.md"
                 if status == "MODIFIED":
                     existing_report_desc, existing_page_descs, existing_users = \
                         extract_existing_descriptions(existing_md)
                 else:
                     existing_report_desc, existing_page_descs, existing_users = None, {}, None
 
+                # Remove old PNGs before regenerating
                 prefix = f"{workspace}_{report_name}_page"
                 for old_png in wiki_dir.glob(f"{prefix}*.png"):
                     old_png.unlink()
                     print(f"  Removed old PNG: {old_png}")
 
+                # Convert PDF to PNGs
                 png_list = pdf_to_pngs(pdf_path, workspace, report_name, wiki_dir)
 
+                # Delete PDF from main repo after conversion
                 if pdf_path.exists():
                     pdf_path.unlink()
                     print(f"  Deleted PDF: {pdf_path}")
 
+                # Parse report data
                 pages = get_pages(report_folder) if report_folder.exists() else []
                 if tables_folder.exists():
                     all_columns, all_measures, sources, dax_tables = get_tables_data(tables_folder)
