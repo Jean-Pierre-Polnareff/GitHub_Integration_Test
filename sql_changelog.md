@@ -8,7 +8,7 @@ DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_0
 DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_04_SQL_Events_Unique_ID_2.sql
 DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_07_SQL_Transcripts_Unique_ID_2.sql
 DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_63_Rpt_SMS_IDL_Click_2.sql
-DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_67_SQL_ATT_SCVoice_Rep.sql
+CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_67_SQL_ATT_SCVoice_Rep.sql
 DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_67_SQL_ATT_SCVoice_Rep_1.sql
 DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_68_SQL_AXPLEGAL_LTO.sql
 DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_78_SQL_USAALVSA_RAW.sql
@@ -20,6 +20,9 @@ DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/pGetW
 DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/pInitWFActivity.sql
 DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/pInitWorkflow.sql
 DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/pUpdateConnParameter.sql
+CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_17_SQL_Payment_Data_Veldos_2.sql
+CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_18_SQL_Collection_Effectiveness_Veldos_2.sql
+CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_21_SQL_AXPINCENTIVE_Update_2.sql
 
 ---
 
