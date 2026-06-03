@@ -302,17 +302,33 @@ def parse_dtsx(dtsx_path: Path):
 
             # Execute SQL Task
             if is_execute_sql(etype):
-                sql_matches = re.findall(r'SqlStatementSource="([^"]{5,})"', raw_content)
-                # We can't easily associate SQL to specific task in old format
-                # so we collect all SQL and associate by name
+                sql_found = ""
+                # New format — SqlStatementSource as attribute on SqlTaskData
                 for elem in exe.iter():
-                    sql_attr = elem.get("SqlStatementSource", "")
+                    # Try both namespace prefixes: new format and old SQLTask: namespace
+                    sql_attr = (elem.get("SqlStatementSource", "") or
+                                elem.get("{www.microsoft.com/sqlserver/dts/tasks/sqltask}SqlStatementSource", ""))
                     if sql_attr:
-                        decoded = html.unescape(sql_attr)
-                        result["sql_tasks"].append({"name": name, "ref": ref, "sql": decoded})
-                        for proc in re.findall(r"EXEC(?:UTE)?\s+(\w[\w\.]+)", decoded, re.IGNORECASE):
-                            result["procedures"].add(proc)
-                        _extract_tables_from_sql(decoded, result["tables"])
+                        sql_found = html.unescape(sql_attr)
+                        break
+                    # Also try any attribute containing SqlStatementSource
+                    for attr_key, attr_val in elem.attrib.items():
+                        if "SqlStatementSource" in attr_key and attr_val:
+                            sql_found = html.unescape(attr_val)
+                            break
+                    if sql_found:
+                        break
+                # Old format — SqlStatementSource as DTS:Property element
+                if not sql_found:
+                    for prop in exe.iter(f"{DTS}Property"):
+                        if prop.get(f"{DTS}Name") == "SqlStatementSource" and prop.text:
+                            sql_found = prop.text
+                            break
+                if sql_found:
+                    result["sql_tasks"].append({"name": name, "ref": ref, "sql": sql_found})
+                    for proc in re.findall(r"EXEC(?:UTE)?\s+(\w[\w\.]+)", sql_found, re.IGNORECASE):
+                        result["procedures"].add(proc)
+                    _extract_tables_from_sql(sql_found, result["tables"])
 
             # Script Task — new format CDATA
             if is_script_task(etype):
@@ -413,19 +429,6 @@ def parse_dtsx(dtsx_path: Path):
             result["precedence_constraints"].append({
                 "from": from_ref, "to": to_ref, "label": label
             })
-
-    # -- SQL from raw content (catches old format Execute SQL tasks) --
-    # De-duplicate against already found SQL
-    existing_sqls = {t["sql"] for t in result["sql_tasks"]}
-    all_sql = re.findall(r'SqlStatementSource="([^"]{10,})"', raw_content)
-    for sql in all_sql:
-        decoded = html.unescape(sql)
-        if decoded not in existing_sqls:
-            existing_sqls.add(decoded)
-            result["sql_tasks"].append({"name": "Execute SQL Task", "ref": "", "sql": decoded})
-            for proc in re.findall(r"EXEC(?:UTE)?\s+(\w[\w\.]+)", decoded, re.IGNORECASE):
-                result["procedures"].add(proc)
-            _extract_tables_from_sql(decoded, result["tables"])
 
     # -- Event handlers --
     for eh in root.iter(f"{DTS}EventHandler"):

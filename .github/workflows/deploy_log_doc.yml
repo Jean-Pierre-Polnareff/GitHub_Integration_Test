@@ -157,8 +157,6 @@ jobs:
           echo "changes_arg=$CHANGES_ARG" >> $GITHUB_OUTPUT
           echo "has_changes=true" >> $GITHUB_OUTPUT
 
-          # No commit here — docs job will commit changelog + PDF deletions together
-
   docs:
     needs: changelog
     if: success()
@@ -260,5 +258,4 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff --staged --quiet || git commit -m "chore: update Power BI docs $(date -u +%Y-%m-%d)"
-          git push
+          git diff --staged --quiet || (git commit -m "chore: update Power BI docs $(date -u +%Y-%m-%d)" && git pull --rebase && git push)
