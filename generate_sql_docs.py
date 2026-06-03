@@ -113,7 +113,7 @@ def extract_tables(sql_text: str):
 
     for tbl in re.findall(r"(?:FROM|JOIN)\s+([^\s\(\);,]+)", text, re.IGNORECASE):
         tbl = clean_table_name(tbl)
-        if not tbl.startswith(("#", "##", "@")) and "." in tbl:
+        if "#" not in tbl and not tbl.startswith("@") and "." in tbl:
             read_tables.add(tbl)
 
     for pattern, op in [
@@ -126,7 +126,7 @@ def extract_tables(sql_text: str):
     ]:
         for tbl in re.findall(pattern, text, re.IGNORECASE):
             tbl = clean_table_name(tbl)
-            if not tbl.startswith(("#", "##", "@")) and "." in tbl:
+            if "#" not in tbl and not tbl.startswith("@") and "." in tbl:
                 add_write(tbl, op)
 
     pure_read = read_tables - set(write_tables.keys())
