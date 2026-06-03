@@ -378,7 +378,12 @@ def parse_dtsx(dtsx_path: Path):
                         "sql":   sql_cmd,
                     })
 
-                    if "Destination" in short_class and table:
+                    # Detect destination:
+                    # - Named class contains Destination (new format)
+                    # - OR has a table but no SQL (old format with GUID class IDs)
+                    is_destination = ("Destination" in short_class or
+                                      (table and not sql_cmd))
+                    if is_destination and table:
                         clean = table.replace("[", "").replace("]", "")
                         result["tables"][clean] = result["tables"].get(clean, set())
                         result["tables"][clean].add("INSERT")
@@ -389,10 +394,15 @@ def parse_dtsx(dtsx_path: Path):
                     "components": components,
                 })
 
-            # Recurse
+            # Recurse into containers
+            # New format: has DTS:Executables wrapper
+            # Old format: direct DTS:Executable children with no wrapper
             inner = exe.find(f"{DTS}Executables")
             if inner is not None:
                 parse_executables(inner, depth + 1)
+            elif exe.findall(f"{DTS}Executable"):
+                # Old format — recurse directly into the container element
+                parse_executables(exe, depth + 1)
 
     execs_node = root.find(f"{DTS}Executables")
     if execs_node is not None:
