@@ -432,23 +432,65 @@ def read_changelog(changelog_path: Path):
 # Wiki SQL index page updater
 # ---------------------------------------------------------------------------
 
-def update_sql_home(wiki_dir: Path):
-    md_files = sorted([f.stem for f in wiki_dir.glob("SP_*.md")])
+def update_sql_home(wiki_dir: Path, processed_path: Path):
+    """Update SQL Stored Procedures section of Home.md grouped by server/database/schema."""
+    processed = read_processed(processed_path)
 
+    # Group procedures by server -> database -> schema
+    groups = {}
+    for key in processed:
+        if processed[key] != "completed":
+            continue
+        parts = key.split("/")
+        if len(parts) != 4:
+            continue
+        server, database, schema, procedure = parts
+        if server not in groups:
+            groups[server] = {}
+        if database not in groups[server]:
+            groups[server][database] = {}
+        if schema not in groups[server][database]:
+            groups[server][database][schema] = []
+        groups[server][database][schema].append(procedure)
+
+    # Build SQL section
     lines = []
-    lines.append("# SQL Stored Procedures\n")
-    lines.append("---\n")
-    if md_files:
-        for name in md_files:
-            encoded = name.replace(" ", "%20")
-            lines.append(f"- [{name}]({encoded})")
+    lines.append("## SQL Stored Procedures\n")
+    if groups:
+        for server in sorted(groups):
+            lines.append(f"### {server}\n")
+            for database in sorted(groups[server]):
+                lines.append(f"#### {database}\n")
+                for schema in sorted(groups[server][database]):
+                    lines.append(f"##### {schema}\n")
+                    for procedure in sorted(groups[server][database][schema]):
+                        encoded = f"SP_{procedure}".replace(" ", "%20")
+                        lines.append(f"- [{procedure}](SP_{procedure})")
+                    lines.append("")
     else:
-        lines.append("_No stored procedures documented yet._")
-    lines.append("")
+        lines.append("_No stored procedures documented yet._\n")
 
-    home_path = wiki_dir / "SQL-Stored-Procedures.md"
-    home_path.write_text("\n".join(lines), encoding="utf-8")
-    print(f"  Updated SQL-Stored-Procedures.md")
+    new_section = "\n".join(lines)
+
+    # Merge into Home.md
+    home_path = wiki_dir / "Home.md"
+    if home_path.exists():
+        content = home_path.read_text(encoding="utf-8")
+    else:
+        content = "# Home\n\n---\n"
+
+    if "## SQL Stored Procedures" in content:
+        content = re.sub(
+            r"## SQL Stored Procedures.*?(?=\n---|\n## |\Z)",
+            new_section,
+            content,
+            flags=re.DOTALL
+        )
+    else:
+        content = content.rstrip() + f"\n\n{new_section}\n\n---\n"
+
+    home_path.write_text(content, encoding="utf-8")
+    print(f"  Updated Home.md — SQL section")
 
 
 # ---------------------------------------------------------------------------
@@ -558,7 +600,7 @@ def main():
                 continue
 
     if any_processed:
-        update_sql_home(wiki_dir)
+        update_sql_home(wiki_dir, processed_path)
         print("\nSQL-Stored-Procedures.md updated.")
     else:
         print("\nNothing new to process.")
