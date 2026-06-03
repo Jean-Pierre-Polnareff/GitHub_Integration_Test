@@ -367,13 +367,42 @@ def parse_dtsx(dtsx_path: Path):
                     if re.match(r'^\{[0-9A-F-]+\}$', comp_class, re.IGNORECASE):
                         short_class = "Component"
 
-                    table = sql_cmd = ""
+                    table = sql_cmd = extra = ""
                     for prop in elem.iter("property"):
                         pname = prop.get("name", "")
                         if pname == "OpenRowset" and prop.text:
                             table = prop.text
                         if pname in ("SqlCommand", "SqlCommandParam") and prop.text:
-                            sql_cmd = prop.text[:200]
+                            sql_cmd = prop.text
+                        if pname == "VariableName" and prop.text:
+                            extra = f"Row count → {prop.text}"
+
+                    # Data Conversion — list output column names
+                    if short_class in ("DataConvert", "DataConversionTransformation") and not extra:
+                        out_cols = []
+                        for out in elem.findall(".//outputs/output"):
+                            if "Error" not in out.get("name", ""):
+                                for col in out.findall(".//outputColumn"):
+                                    col_name = col.get("name", "")
+                                    col_type = col.get("dataType", "")
+                                    if col_name and "ErrorCode" not in col_name:
+                                        out_cols.append(f"{col_name} ({col_type})")
+                        if out_cols:
+                            extra = "Converts: " + ", ".join(out_cols[:5])
+                            if len(out_cols) > 5:
+                                extra += f" +{len(out_cols)-5} more"
+
+                    # Derived Column — list new column names
+                    if short_class in ("DerivedColumn", "DerivedColumnTransformation") and not extra:
+                        new_cols = []
+                        for out in elem.findall(".//outputs/output"):
+                            if "Error" not in out.get("name", ""):
+                                for col in out.findall(".//outputColumn"):
+                                    col_name = col.get("name", "")
+                                    if col_name:
+                                        new_cols.append(col_name)
+                        if new_cols:
+                            extra = "Adds columns: " + ", ".join(new_cols[:5])
 
                     # For Flat File Destination — get path from connection manager by GUID
                     if not table and ("FlatFile" in short_class or "Flat File" in comp_name or
@@ -395,6 +424,7 @@ def parse_dtsx(dtsx_path: Path):
                         "type":  short_class,
                         "table": table,
                         "sql":   sql_cmd,
+                        "extra": extra,
                     })
 
                     # Detect destination:
@@ -591,10 +621,10 @@ def build_markdown(parsed: dict, project: str, package_name: str, ai_summary: st
                 md.append("| Component | Type | Detail |")
                 md.append("|-----------|------|--------|")
                 for comp in df["components"]:
-                    detail = comp["table"] or comp["sql"] or ""
+                    detail = comp["table"] or comp["sql"] or comp["extra"] or ""
                     # Sanitize newlines so they don't break markdown table rows
                     detail = detail.replace("\r\n", " ").replace("\n", " ").replace("\r", " ")
-                    md.append(f"| {comp['name']} | {comp['type']} | {detail[:100]} |")
+                    md.append(f"| {comp['name']} | {comp['type']} | {detail} |")
             md.append("")
     else:
         md.append("_No data flow tasks._")
