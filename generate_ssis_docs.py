@@ -404,20 +404,30 @@ def parse_dtsx(dtsx_path: Path):
                         if new_cols:
                             extra = "Adds columns: " + ", ".join(new_cols[:5])
 
-                    # For Flat File Destination — get path from connection manager by GUID
+                    # For Flat File Source/Destination — get path from connection manager
                     if not table and ("FlatFile" in short_class or "Flat File" in comp_name or
-                                      "Destination" in comp_name):
+                                      "Source" in comp_name or "Destination" in comp_name):
                         for conn_ref in elem.iter("connection"):
-                            cm_guid = conn_ref.get("connectionManagerID", "")
-                            if cm_guid:
-                                # Match GUID against connection manager DTSIDs
-                                for cm in root.iter(f"{DTS}ConnectionManager"):
-                                    cm_dtsid = get_prop(cm, "DTSID")
-                                    if cm_dtsid == cm_guid:
-                                        conn_str = get_connection_string(cm)
-                                        if conn_str:
-                                            table = conn_str
-                                        break
+                            cm_ref = conn_ref.get("connectionManagerID", "")
+                            if cm_ref:
+                                # New format: Package.ConnectionManagers[Name]
+                                import re as _re
+                                name_match = _re.search(r'\[([^\]]+)\]', cm_ref)
+                                if name_match:
+                                    cm_name = name_match.group(1)
+                                    for c in result["connections"]:
+                                        if c["name"] == cm_name:
+                                            table = c["conn_string"]
+                                            break
+                                # Old format: GUID — match against DTSID
+                                if not table:
+                                    for cm in root.iter(f"{DTS}ConnectionManager"):
+                                        cm_dtsid = get_prop(cm, "DTSID")
+                                        if cm_dtsid == cm_ref:
+                                            conn_str = get_connection_string(cm)
+                                            if conn_str:
+                                                table = conn_str
+                                            break
 
                     components.append({
                         "name":  comp_name,
@@ -535,19 +545,29 @@ def _extract_tables_from_sql(sql: str, tables: dict):
 
 def build_control_flow_mermaid(parsed: dict):
     lines = ["```mermaid", "flowchart TD"]
-    top_level = [t for t in parsed["control_flow"] if t["depth"] == 0]
+
+    # Include all tasks at all depths
+    all_tasks = parsed["control_flow"]
     node_map  = {}
-    for i, task in enumerate(top_level):
+
+    for i, task in enumerate(all_tasks):
         node_id = f"N{i}"
         node_map[task["ref"]] = node_id
-        node_map[task["name"]] = node_id  # also map by name for old format
+        node_map[task["name"]] = node_id
         label = f"{task['name']}\n{task['type']}"
-        lines.append(f'    {node_id}["{label}"]')
+
+        # Indent containers to show nesting visually
+        if task["type"] == "Sequence Container":
+            lines.append(f'    {node_id}[/"{label}"\\]')
+        elif task["type"] == "Data Flow Task":
+            lines.append(f'    {node_id}[("{label}")]')
+        else:
+            lines.append(f'    {node_id}["{label}"]')
 
     for pc in parsed["precedence_constraints"]:
         from_id = node_map.get(pc["from"])
         to_id   = node_map.get(pc["to"])
-        if from_id and to_id:
+        if from_id and to_id and from_id != to_id:
             lines.append(f'    {from_id} -->|"{pc["label"]}"| {to_id}')
 
     lines.append("```")
