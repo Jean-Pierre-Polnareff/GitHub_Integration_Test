@@ -9,6 +9,6 @@ DELETED: SSIS/CallMiner/GetTextData_CALMNR/DW_Daily_Stage_Customer.dtsx
 DELETED: SSIS/CallMiner/GetTextData_CALMNR/DW_Daily_Stage_Validation.dtsx
 DELETED: SSIS/CallMiner/GetTextData_CALMNR/DW_Daily_Load_Dim_Fact.dtsx
 DELETED: SSIS/CallMiner/GetTextData_CALMNR/DW_Daily_Load_Pymt_Facts.dtsx
-DELETED: SSIS/DWDailyUpdate/DWDailyUpdate/DW_Daily_Extraction.dtsx
+CREATED: SSIS/DWDailyUpdate/DWDailyUpdate/DW_Daily_Extraction.dtsx
 
 ---
