@@ -14,6 +14,7 @@ CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_6
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_78_SQL_USAALVSA_RAW.sql
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_79_SQL_PAYINFO_RAW_AXP.sql
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_81_SQL_RPT_AXPLEGAL_WLP.sql
+CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_12_SQL_FLD_Report_Update_2.sql
 
 ---
 
