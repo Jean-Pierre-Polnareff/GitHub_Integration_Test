@@ -465,7 +465,6 @@ def delete_report_from_wiki(workspace: str, report_name: str, wiki_dir: Path):
 # ---------------------------------------------------------------------------
 
 def update_home_md(wiki_dir: Path, processed_path: Path):
-    """Update Power BI Reports section of Home.md grouped by workspace."""
     processed = read_processed(processed_path)
 
     # Group reports by workspace
@@ -496,22 +495,25 @@ def update_home_md(wiki_dir: Path, processed_path: Path):
 
     new_section = "\n".join(lines)
 
-    # Merge into Home.md
     home_path = wiki_dir / "Home.md"
     if home_path.exists():
         content = home_path.read_text(encoding="utf-8")
     else:
         content = "# Home\n\n---\n"
 
-    if "## Power BI Reports" in content:
-        content = re.sub(
-            r"## Power BI Reports.*?(?=\n---|\n## |\Z)",
-            new_section,
-            content,
-            flags=re.DOTALL
-        )
-    else:
-        content = content.rstrip() + f"\n\n{new_section}\n\n---\n"
+    # Remove ALL existing Power BI sections first
+    content = re.sub(
+        r"## Power BI Reports.*?(?=\n---|\n## |\Z)",
+        "",
+        content,
+        flags=re.DOTALL
+    )
+    # Clean up any double --- left behind
+    content = re.sub(r"\n---\s*\n---", "\n---", content)
+    content = content.rstrip()
+
+    # Append fresh section
+    content += f"\n\n{new_section}\n\n---\n"
 
     home_path.write_text(content, encoding="utf-8")
     print(f"  Updated Home.md — Power BI section")
