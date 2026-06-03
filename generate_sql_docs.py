@@ -1,4 +1,4 @@
-1"""
+"""
 generate_sql_docs.py
 
 Reads sql_changelog.md and sql_processed.json, then for each unprocessed SQL stored procedure:
