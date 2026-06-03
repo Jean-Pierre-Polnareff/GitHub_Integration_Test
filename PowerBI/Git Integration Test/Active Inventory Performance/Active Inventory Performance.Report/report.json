@@ -802,7 +802,7 @@
           "z": 2000.00
         },
         {
-          "config": "{\"name\":\"0c850b6828391513c01b\",\"layouts\":[{\"id\":0,\"position\":{\"x\":72.23097112860893,\"y\":0,\"z\":6000,\"width\":1135.538057742782,\"height\":47.034120734908136,\"tabOrder\":5000}}],\"singleVisual\":{\"visualType\":\"textbox\",\"drillFilterOtherVisuals\":true,\"objects\":{\"general\":[{\"properties\":{\"paragraphs\":[{\"textRuns\":[{\"value\":\"Active Inventory Performance Dashboard\",\"textStyle\":{\"fontWeight\":\"bold\",\"fontFamily\":\"Verdana\",\"fontStyle\":\"italic\",\"fontSize\":\"18pt\",\"textDecoration\":\"underline\"}}],\"horizontalTextAlignment\":\"center\"}]}}]},\"vcObjects\":{\"background\":[{\"properties\":{\"color\":{\"solid\":{\"color\":{\"expr\":{\"Literal\":{\"Value\":\"'#cccccc'\"}}}}},\"transparency\":{\"expr\":{\"Literal\":{\"Value\":\"50D\"}}}}}]}}}",
+          "config": "{\"name\":\"0c850b6828391513c01b\",\"layouts\":[{\"id\":0,\"position\":{\"x\":72.23097112860893,\"y\":0,\"z\":6000,\"width\":1135.538057742782,\"height\":47.034120734908136,\"tabOrder\":5000}}],\"singleVisual\":{\"visualType\":\"textbox\",\"drillFilterOtherVisuals\":true,\"objects\":{\"general\":[{\"properties\":{\"paragraphs\":[{\"textRuns\":[{\"value\":\"Active Inventory Performance Dashboard\",\"textStyle\":{\"fontFamily\":\"Verdana\",\"fontSize\":\"18pt\",\"textDecoration\":\"underline\"}}],\"horizontalTextAlignment\":\"center\"}]}}]},\"vcObjects\":{\"background\":[{\"properties\":{\"color\":{\"solid\":{\"color\":{\"expr\":{\"Literal\":{\"Value\":\"'#cccccc'\"}}}}},\"transparency\":{\"expr\":{\"Literal\":{\"Value\":\"50D\"}}}}}]}}}",
           "filters": "[]",
           "height": 47.03,
           "width": 1135.54,
