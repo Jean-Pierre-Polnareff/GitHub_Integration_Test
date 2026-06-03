@@ -33,3 +33,34 @@
 # Security scripts
 
 **/Security/
+
+# SSIS / Visual Studio
+
+
+*.sln
+
+*.dtproj
+
+*.dtproj.user
+
+*.dtproj.vspscc
+
+*.vssscc
+
+*.database
+
+*.params
+UpgradeLog.htm
+
+
+
+# Folders to exclude
+
+
+**/Backup/
+
+**/Tests/
+
+**/.vs/
+
+**/_Archive/
