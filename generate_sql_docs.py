@@ -1,4 +1,4 @@
-"""
+1"""
 generate_sql_docs.py
 
 Reads sql_changelog.md and sql_processed.json, then for each unprocessed SQL stored procedure:
@@ -222,7 +222,7 @@ def build_mermaid(procedure: str, read_tables: list, write_tables: dict, called_
 # Markdown builder
 # ---------------------------------------------------------------------------
 
-def build_markdown(meta, ai_description, parameters, variables, read_tables, write_tables, called_procs):
+def build_markdown(meta, ai_description, parameters, variables, read_tables, write_tables, called_procs, wiki_dir):
     procedure = meta["procedure"]
     md = []
 
@@ -288,7 +288,13 @@ def build_markdown(meta, ai_description, parameters, variables, read_tables, wri
         md.append("| Procedure |")
         md.append("|-----------|")
         for p in called_procs:
-            md.append(f"| {p} |")
+            # Extract just the procedure name from three-part name
+            proc_name = p.split(".")[-1]
+            wiki_page = wiki_dir / f"SP_{proc_name}.md"
+            if wiki_page.exists():
+                md.append(f"| [{p}](SP_{proc_name}) |")
+            else:
+                md.append(f"| {p} |")
     else:
         md.append("_No external procedures called._")
     md.append("\n---\n")
@@ -576,6 +582,7 @@ def main():
                         read_tables=read_tables,
                         write_tables=write_tables,
                         called_procs=called_procs,
+                         wiki_dir=wiki_dir,
                     )
 
                     output_path = wiki_dir / f"SP_{procedure}.md"
