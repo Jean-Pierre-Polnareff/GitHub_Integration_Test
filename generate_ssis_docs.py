@@ -544,32 +544,89 @@ def _extract_tables_from_sql(sql: str, tables: dict):
 # ---------------------------------------------------------------------------
 
 def build_control_flow_mermaid(parsed: dict):
-    lines = ["```mermaid", "flowchart TD"]
-
-    # Include all tasks at all depths
+    """
+    Build a Mermaid flowchart using subgraphs for sequence containers,
+    matching the Visual Studio control flow view.
+    """
     all_tasks = parsed["control_flow"]
-    node_map  = {}
 
+    # Build ref -> node_id map and ref -> task map
+    node_map  = {}  # ref -> node_id
+    task_map  = {}  # ref -> task
     for i, task in enumerate(all_tasks):
         node_id = f"N{i}"
         node_map[task["ref"]] = node_id
-        node_map[task["name"]] = node_id
-        label = f"{task['name']}\n{task['type']}"
+        node_map[task["name"]] = node_id  # old format fallback
+        task_map[task["ref"]]  = task
 
-        # Indent containers to show nesting visually
-        if task["type"] == "Sequence Container":
-            lines.append(f'    {node_id}[/"{label}"\\]')
-        elif task["type"] == "Data Flow Task":
-            lines.append(f'    {node_id}[("{label}")]')
+    # Container types that should render as subgraphs
+    CONTAINER_TYPES = {"Sequence Container", "For Each Loop", "For Loop"}
+
+    # Build parent -> children map
+    import re as _re
+    GUID_PATTERN = _re.compile(r'^\{[0-9A-Fa-f\-]+\}$')
+    children_map = {}  # parent_ref -> [child_refs]
+
+    for task in all_tasks:
+        ref      = task["ref"]
+        my_depth = task["depth"]
+
+        if my_depth == 0:
+            continue  # top level — no parent
+
+        # New format — ref is a path like Package\Container\Task
+        parts  = ref.rsplit("\\", 1)
+        parent = parts[0] if len(parts) > 1 else None
+        if parent and parent in task_map:
+            children_map.setdefault(parent, []).append(ref)
+            continue
+
+        # Old format — ref is a GUID, use depth-based parent detection
+        idx = all_tasks.index(task)
+        for prev in reversed(all_tasks[:idx]):
+            if prev["depth"] == my_depth - 1 and prev["type"] in CONTAINER_TYPES:
+                children_map.setdefault(prev["ref"], []).append(ref)
+                break
+
+    # Identify top-level refs (depth == 0)
+    top_level_refs = [t["ref"] for t in all_tasks if t["depth"] == 0]
+
+    lines = ["```mermaid", "flowchart TD"]
+    edge_lines = []
+
+    def safe_label(name, ttype):
+        return name.replace('"', "'")
+
+    def render_task(ref, indent="    "):
+        task   = task_map[ref]
+        nid    = node_map[ref]
+        name   = safe_label(task["name"], task["type"])
+        ttype  = task["type"]
+        children = children_map.get(ref, [])
+
+        if ttype in CONTAINER_TYPES and children:
+            # Render as subgraph
+            lines.append(f'{indent}subgraph {nid}["{name}"]')
+            for child_ref in children:
+                render_task(child_ref, indent + "    ")
+            lines.append(f'{indent}end')
+        elif ttype == "Data Flow Task":
+            lines.append(f'{indent}{nid}("{name}")')
         else:
-            lines.append(f'    {node_id}["{label}"]')
+            lines.append(f'{indent}{nid}["{name}"]')
 
+    # Render all top-level tasks
+    for ref in top_level_refs:
+        render_task(ref)
+
+    # Render edges from precedence constraints
     for pc in parsed["precedence_constraints"]:
         from_id = node_map.get(pc["from"])
         to_id   = node_map.get(pc["to"])
         if from_id and to_id and from_id != to_id:
-            lines.append(f'    {from_id} -->|"{pc["label"]}"| {to_id}')
+            edge_lines.append(f'    {from_id} -->|"{pc["label"]}"| {to_id}')
 
+    lines.extend(edge_lines)
     lines.append("```")
     return "\n".join(lines)
 
