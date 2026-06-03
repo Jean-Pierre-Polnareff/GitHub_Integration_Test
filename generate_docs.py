@@ -681,7 +681,7 @@ def main():
 
     if any_processed:
         update_home_md(wiki_dir, processed_path)
-        print("\nHome.md updated."
+        print("\nHome.md updated.")
     else:
         print("\nNothing new to process.")
 
