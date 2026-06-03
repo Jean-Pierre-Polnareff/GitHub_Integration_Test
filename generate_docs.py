@@ -605,7 +605,7 @@ def main():
 
     for date, entries in sorted(changelog.items()):
         for report_key, status in entries.items():
-            if is_processed(processed, date, report_key):
+            if is_processed(processed, date, report_key) and status != "MODIFIED":
                 print(f"  Already processed [{date}] {report_key} — skipping.")
                 continue
 
