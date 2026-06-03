@@ -153,8 +153,8 @@ jobs:
               f.write("\n".join(trimmed).strip() + "\n")
           EOF
 
-          # Store changes for docs job
-          echo "changes=$(echo "$CHANGES" | tr '\n' ',')" >> $GITHUB_OUTPUT
+          CHANGES_ARG=$(echo "$CHANGES" | tr '\n' ',' | sed 's/,$//')
+          echo "changes_arg=$CHANGES_ARG" >> $GITHUB_OUTPUT
           echo "has_changes=true" >> $GITHUB_OUTPUT
 
       - name: Commit changelog
@@ -163,8 +163,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add changelog.md
-          git diff --staged --quiet || git commit -m "chore: update changelog $(date -u +%Y-%m-%d)"
-          git push
+          git diff --staged --quiet || (git commit -m "chore: update changelog $(date -u +%Y-%m-%d)" && git pull --rebase && git push)
 
   docs:
     needs: changelog
@@ -192,10 +191,9 @@ jobs:
       - name: Install dependencies
         run: pip install pymupdf
 
-      - name: Get changes from changelog job
+      - name: Detect changes for docs
         id: get_changes
         run: |
-          # Re-detect changes since we can't pass outputs across jobs easily
           cd main
           SINCE="${{ github.event.before }}"
           NOW="${{ github.event.after }}"
@@ -237,7 +235,6 @@ jobs:
             exit 0
           fi
 
-          # Convert newlines to comma for passing as argument
           CHANGES_ARG=$(echo "$CHANGES" | tr '\n' ',' | sed 's/,$//')
           echo "changes_arg=$CHANGES_ARG" >> $GITHUB_OUTPUT
           echo "has_changes=true" >> $GITHUB_OUTPUT
@@ -259,8 +256,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff --staged --quiet || git commit -m "chore: remove processed PDFs $(date -u +%Y-%m-%d)"
-          git push
+          git diff --staged --quiet || (git commit -m "chore: remove processed PDFs $(date -u +%Y-%m-%d)" && git pull --rebase && git push)
 
       - name: Push wiki repo
         if: steps.get_changes.outputs.has_changes == 'true'

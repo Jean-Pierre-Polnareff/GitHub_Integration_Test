@@ -66,7 +66,6 @@ jobs:
             exit 0
           fi
 
-          # Update ssis_changelog.md
           touch ssis_changelog.md
 
           python3 - <<EOF
@@ -149,8 +148,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add ssis_changelog.md
           [ -f ssis_backlog.json ] && git add ssis_backlog.json || true
-          git diff --staged --quiet || git commit -m "chore: update SSIS docs tracking $(date -u +%Y-%m-%d)"
-          git push
+          git diff --staged --quiet || (git commit -m "chore: update SSIS docs tracking $(date -u +%Y-%m-%d)" && git pull --rebase && git push)
 
       - name: Push wiki repo
         if: steps.detect.outputs.has_changes == 'true'
