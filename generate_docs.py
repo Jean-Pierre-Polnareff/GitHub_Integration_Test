@@ -1,7 +1,7 @@
 """
 generate_docs.py
 
-Reads changelog.md and processed.json, then for each unprocessed entry:
+Processes Power BI report changes passed directly from the workflow.
   - CREATED / MODIFIED : generate .md doc + convert PDF to PNGs -> wiki
   - DELETED            : remove .md + PNGs from wiki
 
@@ -9,7 +9,8 @@ Run from the root of the main repo:
     python generate_docs.py \
         --main-repo "." \
         --wiki-repo "../wiki" \
-        --powerbi-root "PowerBI"
+        --powerbi-root "PowerBI" \
+        --changes "CREATED|workspace/report,MODIFIED|workspace/report2"
 """
 
 import argparse
@@ -18,7 +19,7 @@ import re
 from pathlib import Path
 
 try:
-    import fitz  # pymupdf
+    import fitz
     FITZ_AVAILABLE = True
 except ImportError:
     FITZ_AVAILABLE = False
@@ -274,7 +275,7 @@ def get_pages(report_folder: Path):
 # ---------------------------------------------------------------------------
 
 def sanitize_cell(value):
-    return str(value).replace("\r\n", "<br>").replace("\n", "<br>")
+    return str(value).replace("\r\n", " ").replace("\n", " ")
 
 
 def rows_to_markdown(headers, rows):
@@ -327,7 +328,6 @@ def extract_existing_descriptions(md_path: Path):
 
     content = md_path.read_text(encoding="utf-8")
 
-    # Report description
     report_desc = None
     desc_match = re.search(
         r"## Description\s*\n+(.*?)(?=\n---|\n## )",
@@ -338,7 +338,6 @@ def extract_existing_descriptions(md_path: Path):
         if text and text != "_Add report description here._":
             report_desc = text
 
-    # Users
     users = None
     users_match = re.search(
         r"## Users\s*\n+(.*?)(?=\n---|\n## )",
@@ -349,7 +348,6 @@ def extract_existing_descriptions(md_path: Path):
         if text and text != "_Add users here._":
             users = text
 
-    # Per-page descriptions — match ### heading, image, then description
     page_descriptions = {}
     page_blocks = re.findall(
         r"###\s+(.+?)\n!\[.*?\]\(.*?\)\n\n(.*?)(?=\n###|\n##|\Z)",
@@ -385,12 +383,10 @@ def generate_doc(
     lines.append(f"# {report_name}\n")
     lines.append("---\n")
 
-    # Description
     lines.append("## Description\n")
     lines.append(existing_report_desc if existing_report_desc else "_Add report description here._")
     lines.append("\n---\n")
 
-    # Pages
     lines.append("## Pages\n")
     if pages:
         for idx, page_name in enumerate(pages):
@@ -407,32 +403,26 @@ def generate_doc(
         lines.append("_No pages found._\n")
     lines.append("---\n")
 
-    # Sources
     lines.append("## Sources\n")
     lines.append(build_sources_md(sources))
     lines.append("\n---\n")
 
-    # DAX Tables
     lines.append("## DAX Tables\n")
     lines.append(build_dax_tables_md(dax_tables))
     lines.append("\n---\n")
 
-    # Schema
     lines.append("## Schema\n")
     lines.append(build_schema_md(all_columns))
     lines.append("\n---\n")
 
-    # Measures
     lines.append("## Measures\n")
     lines.append(build_measures_md(all_measures))
     lines.append("\n---\n")
 
-    # Users
     lines.append("## Users\n")
     lines.append(existing_users if existing_users else "_Add users here._")
     lines.append("\n---\n")
 
-    # Point of Contact
     lines.append("## Point of Contact\n")
     lines.append(POINT_OF_CONTACT)
     lines.append("")
@@ -464,32 +454,24 @@ def delete_report_from_wiki(workspace: str, report_name: str, wiki_dir: Path):
 # Home.md updater
 # ---------------------------------------------------------------------------
 
-def update_home_md(wiki_dir: Path, processed_path: Path):
-    processed = read_processed(processed_path)
+def update_home_md(wiki_dir: Path):
+    """Rebuild Power BI section from existing .md files in wiki."""
+    # Collect all report .md files excluding known non-report pages
+    exclude = {"Home", "SQL-Stored-Procedures", "SQL Stored Procedures", "SSIS Packages"}
+    report_files = sorted([
+        f.stem for f in wiki_dir.glob("*.md")
+        if f.stem not in exclude
+        and not f.stem.startswith("SP_")
+        and not f.stem.startswith("SSIS_")
+    ])
 
-    # Group reports by workspace
-    workspaces = {}
-    for key in processed:
-        if processed[key] != "completed":
-            continue
-        parts = key.split("/", 1)
-        if len(parts) != 2:
-            continue
-        workspace, report = parts
-        if workspace not in workspaces:
-            workspaces[workspace] = []
-        workspaces[workspace].append(report)
-
-    # Build Power BI section
     lines = []
     lines.append("## Power BI Reports\n")
-    if workspaces:
-        for workspace in sorted(workspaces):
-            lines.append(f"### {workspace}\n")
-            for report in sorted(workspaces[workspace]):
-                encoded = report.replace(" ", "%20")
-                lines.append(f"- [{report}]({encoded})")
-            lines.append("")
+    if report_files:
+        for name in report_files:
+            encoded = name.replace(" ", "%20")
+            lines.append(f"- [{name}]({encoded})")
+        lines.append("")
     else:
         lines.append("_No reports documented yet._\n")
 
@@ -501,79 +483,18 @@ def update_home_md(wiki_dir: Path, processed_path: Path):
     else:
         content = "# Home\n\n---\n"
 
-    # Remove ALL existing Power BI sections first
     content = re.sub(
         r"## Power BI Reports.*?(?=\n---|\n## |\Z)",
         "",
         content,
         flags=re.DOTALL
     )
-    # Clean up any double --- left behind
     content = re.sub(r"\n---\s*\n---", "\n---", content)
     content = content.rstrip()
-
-    # Append fresh section
     content += f"\n\n{new_section}\n\n---\n"
 
     home_path.write_text(content, encoding="utf-8")
     print(f"  Updated Home.md — Power BI section")
-
-
-# ---------------------------------------------------------------------------
-# Changelog reader
-# ---------------------------------------------------------------------------
-
-def read_changelog(changelog_path: Path):
-    if not changelog_path.exists():
-        return {}
-
-    content = changelog_path.read_text(encoding="utf-8")
-    sections = re.split(r'(?=^## \d{4}-\d{2}-\d{2})', content, flags=re.MULTILINE)
-
-    result = {}
-    for section in sections:
-        date_match = re.match(r"## (\d{4}-\d{2}-\d{2})", section)
-        if not date_match:
-            continue
-        date = date_match.group(1)
-        entries = {}
-        for line in section.split("\n"):
-            line = line.strip()
-            if ":" in line and not line.startswith("#") and not line.startswith("-"):
-                status, report = line.split(":", 1)
-                status = status.strip()
-                report = report.strip()
-                if status in ("CREATED", "MODIFIED", "DELETED"):
-                    entries[report] = status
-        if entries:
-            result[date] = entries
-
-    return result
-
-
-# ---------------------------------------------------------------------------
-# Processed tracker
-# ---------------------------------------------------------------------------
-
-def read_processed(processed_path: Path):
-    if not processed_path.exists():
-        return {}
-    try:
-        return json.loads(processed_path.read_text(encoding="utf-8"))
-    except Exception:
-        return {}
-
-
-def mark_processed(processed_path: Path, date: str, report: str):
-    data = read_processed(processed_path)
-    if date not in data:
-        data[date] = {}
-    data[date][report] = "completed"
-    processed_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
-
-
-def is_processed(processed: dict, date: str, report: str):
-    return processed.get(date, {}).get(report) == "completed"
 
 
 # ---------------------------------------------------------------------------
@@ -582,107 +503,99 @@ def is_processed(processed: dict, date: str, report: str):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--main-repo",    required=True, help="Path to main repo root")
-    parser.add_argument("--wiki-repo",    required=True, help="Path to wiki repo root")
-    parser.add_argument("--powerbi-root", required=True, help="PowerBI folder name inside main repo")
+    parser.add_argument("--main-repo",    required=True)
+    parser.add_argument("--wiki-repo",    required=True)
+    parser.add_argument("--powerbi-root", required=True)
+    parser.add_argument("--changes",      required=True, help="Pipe-separated changes: STATUS|workspace/report,...")
     args = parser.parse_args()
 
     main_repo    = Path(args.main_repo).resolve()
     wiki_dir     = Path(args.wiki_repo).resolve()
     powerbi_root = main_repo / args.powerbi_root
 
-    changelog_path = main_repo / "changelog.md"
-    processed_path = main_repo / "processed.json"
+    # Parse changes from argument
+    # Format: "CREATED|workspace/report,MODIFIED|workspace/report2"
+    changes = {}
+    for item in args.changes.split(","):
+        item = item.strip()
+        if "|" not in item:
+            continue
+        status, report_key = item.split("|", 1)
+        changes[report_key.strip()] = status.strip()
 
-    changelog = read_changelog(changelog_path)
-    processed = read_processed(processed_path)
-
-    if not changelog:
-        print("No changelog entries found.")
+    if not changes:
+        print("No changes to process.")
         return
 
     any_processed = False
 
-    for date, entries in sorted(changelog.items()):
-        for report_key, status in entries.items():
-            if is_processed(processed, date, report_key) and status != "MODIFIED":
-                print(f"  Already processed [{date}] {report_key} — skipping.")
-                continue
+    for report_key, status in changes.items():
+        parts = report_key.split("/", 1)
+        if len(parts) != 2:
+            print(f"  Skipping malformed entry: {report_key}")
+            continue
 
-            parts = report_key.split("/", 1)
-            if len(parts) != 2:
-                print(f"  Skipping malformed entry: {report_key}")
-                continue
+        workspace, report_name = parts[0].strip(), parts[1].strip()
+        pbip_folder = powerbi_root / workspace / report_name
 
-            workspace, report_name = parts[0].strip(), parts[1].strip()
-            pbip_folder = powerbi_root / workspace / report_name
+        print(f"\n{status}: {workspace} / {report_name}")
 
-            print(f"\n[{date}] {status}: {workspace} / {report_name}")
+        try:
+            if status in ("CREATED", "MODIFIED"):
+                report_folder = pbip_folder / f"{report_name}.Report"
+                tables_folder = pbip_folder / f"{report_name}.SemanticModel" / "definition" / "tables"
+                pdf_path      = pbip_folder / f"{report_name}.pdf"
 
-            try:
-                if status in ("CREATED", "MODIFIED"):
-                    report_folder = pbip_folder / f"{report_name}.Report"
-                    tables_folder = pbip_folder / f"{report_name}.SemanticModel" / "definition" / "tables"
-                    pdf_path      = pbip_folder / f"{report_name}.pdf"
+                existing_md = wiki_dir / f"{report_name}.md"
+                if status == "MODIFIED":
+                    existing_report_desc, existing_page_descs, existing_users = \
+                        extract_existing_descriptions(existing_md)
+                else:
+                    existing_report_desc, existing_page_descs, existing_users = None, {}, None
 
-                    # Retain descriptions if MODIFIED
-                    existing_md = wiki_dir / f"{report_name}.md"
-                    if status == "MODIFIED":
-                        existing_report_desc, existing_page_descs, existing_users = \
-                            extract_existing_descriptions(existing_md)
-                    else:
-                        existing_report_desc, existing_page_descs, existing_users = None, {}, None
+                prefix = f"{workspace}_{report_name}_page"
+                for old_png in wiki_dir.glob(f"{prefix}*.png"):
+                    old_png.unlink()
+                    print(f"  Removed old PNG: {old_png}")
 
-                    # Remove old PNGs before regenerating
-                    prefix = f"{workspace}_{report_name}_page"
-                    for old_png in wiki_dir.glob(f"{prefix}*.png"):
-                        old_png.unlink()
-                        print(f"  Removed old PNG: {old_png}")
+                png_list = pdf_to_pngs(pdf_path, workspace, report_name, wiki_dir)
 
-                    # Convert PDF to PNGs
-                    png_list = pdf_to_pngs(pdf_path, workspace, report_name, wiki_dir)
+                if pdf_path.exists():
+                    pdf_path.unlink()
+                    print(f"  Deleted PDF: {pdf_path}")
 
-                    # Delete PDF from main repo after conversion
-                    if pdf_path.exists():
-                        pdf_path.unlink()
-                        print(f"  Deleted PDF: {pdf_path}")
+                pages = get_pages(report_folder) if report_folder.exists() else []
+                if tables_folder.exists():
+                    all_columns, all_measures, sources, dax_tables = get_tables_data(tables_folder)
+                else:
+                    all_columns, all_measures, sources, dax_tables = [], [], [], []
 
-                    # Parse report data
-                    pages = get_pages(report_folder) if report_folder.exists() else []
-                    if tables_folder.exists():
-                        all_columns, all_measures, sources, dax_tables = get_tables_data(tables_folder)
-                    else:
-                        all_columns, all_measures, sources, dax_tables = [], [], [], []
+                generate_doc(
+                    workspace=workspace,
+                    report_name=report_name,
+                    wiki_dir=wiki_dir,
+                    png_list=png_list,
+                    pages=pages,
+                    all_columns=all_columns,
+                    all_measures=all_measures,
+                    sources=sources,
+                    dax_tables=dax_tables,
+                    existing_report_desc=existing_report_desc,
+                    existing_page_descs=existing_page_descs,
+                    existing_users=existing_users,
+                )
 
-                    # Generate .md
-                    generate_doc(
-                        workspace=workspace,
-                        report_name=report_name,
-                        wiki_dir=wiki_dir,
-                        png_list=png_list,
-                        pages=pages,
-                        all_columns=all_columns,
-                        all_measures=all_measures,
-                        sources=sources,
-                        dax_tables=dax_tables,
-                        existing_report_desc=existing_report_desc,
-                        existing_page_descs=existing_page_descs,
-                        existing_users=existing_users,
-                    )
+            elif status == "DELETED":
+                delete_report_from_wiki(workspace, report_name, wiki_dir)
 
-                elif status == "DELETED":
-                    delete_report_from_wiki(workspace, report_name, wiki_dir)
+            any_processed = True
 
-                mark_processed(processed_path, date, report_key)
-                processed = read_processed(processed_path)
-                any_processed = True
-
-            except Exception as e:
-                print(f"  ERROR processing {report_key}: {e}")
-                continue
+        except Exception as e:
+            print(f"  ERROR processing {report_key}: {e}")
+            continue
 
     if any_processed:
-        update_home_md(wiki_dir, processed_path)
+        update_home_md(wiki_dir)
         print("\nHome.md updated.")
     else:
         print("\nNothing new to process.")

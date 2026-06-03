@@ -1,20 +1,18 @@
 """
 generate_sql_docs.py
 
-Reads sql_changelog.md and sql_processed.json, then for each unprocessed SQL stored procedure:
-  - Extracts metadata from folder structure
-  - Extracts parameters, variables, read/write tables, called procedures
-  - Generates Mermaid data lineage diagram
-  - Uses OpenRouter AI for natural language description
-  - Outputs .md to wiki repo
-  - Tracks failures in backlog.json
+Processes SQL stored procedure changes passed directly from the workflow.
+Also retries any entries in backlog.json.
+  - CREATED / MODIFIED : generate .md doc
+  - DELETED            : remove .md from wiki
 
 Run from the root of the main repo:
     python generate_sql_docs.py \
         --main-repo "." \
         --wiki-repo "../wiki" \
         --sql-root "SQL" \
-        --openrouter-key "your_key_here"
+        --openrouter-key "your_key_here" \
+        --changes "CREATED|SQL/BISQL/DB/DB/dbo/Stored Procedures/usp.sql,..."
 """
 
 import argparse
@@ -56,17 +54,13 @@ AI_RULES = """
 def extract_parameters(sql_text: str):
     proc_match = re.search(
         r"CREATE\s+PROCEDURE\s+[^\(]+\((.+?)\)\s*AS",
-        sql_text,
-        re.IGNORECASE | re.DOTALL
+        sql_text, re.IGNORECASE | re.DOTALL
     )
     if not proc_match:
         return []
 
-    params_block = proc_match.group(1)
     params = []
-
-    parts = re.split(r",(?![^\(]*\))", params_block)
-    for part in parts:
+    for part in re.split(r",(?![^\(]*\))", proc_match.group(1)):
         part = part.strip()
         if not part:
             continue
@@ -78,7 +72,6 @@ def extract_parameters(sql_text: str):
                 "data_type": m.group(2).upper(),
                 "direction": direction,
             })
-
     return params
 
 
@@ -89,19 +82,14 @@ def extract_parameters(sql_text: str):
 def extract_variables(sql_text: str):
     declare_blocks = re.findall(
         r"DECLARE\s+(.*?)(?=\n\s*(BEGIN|SET|SELECT|WITH|INSERT|UPDATE|DELETE|TRUNCATE|;|--))",
-        sql_text,
-        re.IGNORECASE | re.DOTALL
+        sql_text, re.IGNORECASE | re.DOTALL
     )
-
     result = {}
     for block, _ in declare_blocks:
-        block = block.replace("\n", " ")
-        parts = re.split(r",(?![^\(]*\))", block)
-        for part in parts:
+        for part in re.split(r",(?![^\(]*\))", block.replace("\n", " ")):
             m = re.search(r"(@[\w]+)\s+([A-Z]+(?:\([^\)]*\))?)", part, re.IGNORECASE)
             if m:
                 result[m.group(1)] = m.group(2).upper()
-
     return result
 
 
@@ -110,14 +98,11 @@ def extract_variables(sql_text: str):
 # ---------------------------------------------------------------------------
 
 def clean_table_name(tbl: str):
-    tbl = tbl.strip().rstrip(",").split()[0]
-    tbl = tbl.replace("[", "").replace("]", "")
-    return tbl
+    return tbl.strip().rstrip(",").split()[0].replace("[", "").replace("]", "")
 
 
 def extract_tables(sql_text: str):
     text = re.sub(r"\s+", " ", sql_text)
-
     read_tables  = set()
     write_tables = {}
 
@@ -128,52 +113,21 @@ def extract_tables(sql_text: str):
 
     for tbl in re.findall(r"(?:FROM|JOIN)\s+([^\s\(\);,]+)", text, re.IGNORECASE):
         tbl = clean_table_name(tbl)
-        if tbl.startswith(("#", "##", "@")) or not tbl:
-            continue
-        if "." in tbl:
+        if not tbl.startswith(("#", "##", "@")) and "." in tbl:
             read_tables.add(tbl)
 
-    for tbl in re.findall(r"INSERT\s+(?:INTO\s+)?([^\s\(\);,]+)", text, re.IGNORECASE):
-        tbl = clean_table_name(tbl)
-        if tbl.startswith(("#", "##", "@")) or not tbl:
-            continue
-        if "." in tbl:
-            add_write(tbl, "INSERT")
-
-    for tbl in re.findall(r"UPDATE\s+([^\s\(\);,]+)", text, re.IGNORECASE):
-        tbl = clean_table_name(tbl)
-        if tbl.startswith(("#", "##", "@")) or not tbl:
-            continue
-        if "." in tbl:
-            add_write(tbl, "UPDATE")
-
-    for tbl in re.findall(r"DELETE\s+(?:FROM\s+)?([^\s\(\);,]+)", text, re.IGNORECASE):
-        tbl = clean_table_name(tbl)
-        if tbl.startswith(("#", "##", "@")) or not tbl:
-            continue
-        if "." in tbl:
-            add_write(tbl, "DELETE")
-
-    for tbl in re.findall(r"TRUNCATE\s+TABLE\s+([^\s\(\);,]+)", text, re.IGNORECASE):
-        tbl = clean_table_name(tbl)
-        if tbl.startswith(("#", "##", "@")) or not tbl:
-            continue
-        if "." in tbl:
-            add_write(tbl, "TRUNCATE")
-
-    for tbl in re.findall(r"MERGE\s+(?:INTO\s+)?([^\s\(\);,]+)", text, re.IGNORECASE):
-        tbl = clean_table_name(tbl)
-        if tbl.startswith(("#", "##", "@")) or not tbl:
-            continue
-        if "." in tbl:
-            add_write(tbl, "MERGE")
-
-    for tbl in re.findall(r"BULK\s+INSERT\s+([^\s\(\);,]+)", text, re.IGNORECASE):
-        tbl = clean_table_name(tbl)
-        if tbl.startswith(("#", "##", "@")) or not tbl:
-            continue
-        if "." in tbl:
-            add_write(tbl, "BULK INSERT")
+    for pattern, op in [
+        (r"INSERT\s+(?:INTO\s+)?([^\s\(\);,]+)", "INSERT"),
+        (r"UPDATE\s+([^\s\(\);,]+)", "UPDATE"),
+        (r"DELETE\s+(?:FROM\s+)?([^\s\(\);,]+)", "DELETE"),
+        (r"TRUNCATE\s+TABLE\s+([^\s\(\);,]+)", "TRUNCATE"),
+        (r"MERGE\s+(?:INTO\s+)?([^\s\(\);,]+)", "MERGE"),
+        (r"BULK\s+INSERT\s+([^\s\(\);,]+)", "BULK INSERT"),
+    ]:
+        for tbl in re.findall(pattern, text, re.IGNORECASE):
+            tbl = clean_table_name(tbl)
+            if not tbl.startswith(("#", "##", "@")) and "." in tbl:
+                add_write(tbl, op)
 
     pure_read = read_tables - set(write_tables.keys())
     return sorted(pure_read), {k: sorted(v) for k, v in write_tables.items()}
@@ -183,16 +137,24 @@ def extract_tables(sql_text: str):
 # Called procedures extractor
 # ---------------------------------------------------------------------------
 
-def extract_called_procedures(sql_text: str):
+def extract_called_procedures(sql_text: str, wiki_dir: Path):
     text   = re.sub(r"\s+", " ", sql_text)
     called = set()
-
     for match in re.findall(r"EXEC\s+([^\s\(\);@][^\s\(\);]*)", text, re.IGNORECASE):
         match = match.strip().rstrip(",").replace("[", "").replace("]", "")
         if match and "." in match:
             called.add(match)
 
-    return sorted(called)
+    # Build with hyperlinks where wiki page exists
+    result = []
+    for p in sorted(called):
+        proc_name = p.split(".")[-1]
+        wiki_page = wiki_dir / f"SP_{proc_name}.md"
+        if wiki_page.exists():
+            result.append(f"[{p}](SP_{proc_name})")
+        else:
+            result.append(p)
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -200,20 +162,15 @@ def extract_called_procedures(sql_text: str):
 # ---------------------------------------------------------------------------
 
 def build_mermaid(procedure: str, read_tables: list, write_tables: dict, called_procs: list):
-    lines = []
-    lines.append("```mermaid")
-    lines.append("flowchart LR")
-    lines.append(f'    PROC["{procedure}"]')
-
+    lines = ["```mermaid", "flowchart LR", f'    PROC["{procedure}"]']
     for idx, tbl in enumerate(read_tables):
-        lines.append(f'    SRC{idx + 1}[("{tbl}")] --> PROC')
-
+        lines.append(f'    SRC{idx+1}[("{tbl}")] --> PROC')
     for idx, tbl in enumerate(write_tables.keys()):
-        lines.append(f'    PROC --> TGT{idx + 1}[("{tbl}")]')
-
+        lines.append(f'    PROC --> TGT{idx+1}[("{tbl}")]')
     for idx, proc in enumerate(called_procs):
-        lines.append(f'    PROC --> EXT{idx + 1}[["{proc}"]]')
-
+        # Strip markdown link for node label
+        label = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', proc)
+        lines.append(f'    PROC --> EXT{idx+1}[["{label}"]]')
     lines.append("```")
     return "\n".join(lines)
 
@@ -222,7 +179,7 @@ def build_mermaid(procedure: str, read_tables: list, write_tables: dict, called_
 # Markdown builder
 # ---------------------------------------------------------------------------
 
-def build_markdown(meta, ai_description, parameters, variables, read_tables, write_tables, called_procs, wiki_dir):
+def build_markdown(meta, ai_description, parameters, variables, read_tables, write_tables, called_procs):
     procedure = meta["procedure"]
     md = []
 
@@ -288,13 +245,7 @@ def build_markdown(meta, ai_description, parameters, variables, read_tables, wri
         md.append("| Procedure |")
         md.append("|-----------|")
         for p in called_procs:
-            # Extract just the procedure name from three-part name
-            proc_name = p.split(".")[-1]
-            wiki_page = wiki_dir / f"SP_{proc_name}.md"
-            if wiki_page.exists():
-                md.append(f"| [{p}](SP_{proc_name}) |")
-            else:
-                md.append(f"| {p} |")
+            md.append(f"| {p} |")
     else:
         md.append("_No external procedures called._")
     md.append("\n---\n")
@@ -314,30 +265,19 @@ def get_ai_description(sql_text: str, api_key: str):
     if not OPENAI_AVAILABLE:
         return None
 
-    client = OpenAI(
-        base_url="https://openrouter.ai/api/v1",
-        api_key=api_key,
-    )
+    client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key)
 
-    models = [PRIMARY_MODEL] + FALLBACK_MODELS
-
-    for model in models:
+    for model in [PRIMARY_MODEL] + FALLBACK_MODELS:
         try:
             print(f"  Trying model: {model}")
             completion = client.chat.completions.create(
                 model=model,
                 messages=[
-                    {
-                        "role": "system",
-                        "content": f"You are a SQL documentation assistant.\nFormatting Rules:\n{AI_RULES}"
-                    },
-                    {
-                        "role": "user",
-                        "content": sql_text
-                    }
+                    {"role": "system", "content": f"You are a SQL documentation assistant.\nFormatting Rules:\n{AI_RULES}"},
+                    {"role": "user", "content": sql_text}
                 ]
             )
-            raw     = completion.choices[0].message.content
+            raw = completion.choices[0].message.content
             cleaned = re.sub(r"^Code Analysis:\s*", "", raw.strip(), flags=re.IGNORECASE)
             print(f"  AI description generated using {model}")
             return cleaned
@@ -362,11 +302,8 @@ def read_backlog(backlog_path: Path):
 
 
 def add_to_backlog(backlog_path: Path, key: str, reason: str):
-    data      = read_backlog(backlog_path)
-    data[key] = {
-        "reason":    reason,
-        "failed_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
-    }
+    data = read_backlog(backlog_path)
+    data[key] = {"reason": reason, "failed_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")}
     backlog_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
@@ -378,125 +315,120 @@ def remove_from_backlog(backlog_path: Path, key: str):
 
 
 # ---------------------------------------------------------------------------
-# Processed tracker
-# ---------------------------------------------------------------------------
-
-def read_processed(processed_path: Path):
-    if not processed_path.exists():
-        return {}
-    try:
-        return json.loads(processed_path.read_text(encoding="utf-8"))
-    except Exception:
-        return {}
-
-
-def mark_processed(processed_path: Path, key: str):
-    data      = read_processed(processed_path)
-    data[key] = "completed"
-    processed_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
-
-
-def is_processed(processed_path: Path, key: str):
-    return read_processed(processed_path).get(key) == "completed"
-
-
-# ---------------------------------------------------------------------------
-# sql_changelog.md reader
-# ---------------------------------------------------------------------------
-
-def read_changelog(changelog_path: Path):
-    if not changelog_path.exists():
-        return {}
-
-    content  = changelog_path.read_text(encoding="utf-8")
-    sections = re.split(r'(?=^## \d{4}-\d{2}-\d{2})', content, flags=re.MULTILINE)
-
-    result = {}
-    for section in sections:
-        date_match = re.match(r"## (\d{4}-\d{2}-\d{2})", section)
-        if not date_match:
-            continue
-        date    = date_match.group(1)
-        entries = {}
-        for line in section.split("\n"):
-            line = line.strip()
-            if ":" in line and not line.startswith("#") and not line.startswith("-"):
-                parts = line.split(":", 1)
-                if len(parts) != 2:
-                    continue
-                status = parts[0].strip()
-                path   = parts[1].strip()
-                if status in ("CREATED", "MODIFIED", "DELETED") and "Stored Procedures" in path:
-                    entries[path] = status
-        if entries:
-            result[date] = entries
-
-    return result
-
-
-# ---------------------------------------------------------------------------
 # Wiki SQL index page updater
 # ---------------------------------------------------------------------------
 
-def update_sql_home(wiki_dir: Path, processed_path: Path):
-    """Update SQL Stored Procedures section of Home.md grouped by server/database/schema."""
-    processed = read_processed(processed_path)
+def update_home_md(wiki_dir: Path):
+    """Rebuild SQL Stored Procedures section of Home.md grouped by server/database/schema."""
+    sp_files = sorted([f.stem for f in wiki_dir.glob("SP_*.md")])
 
-    # Group procedures by server -> database -> schema
+    # Parse server/database/schema from each SP file's metadata
     groups = {}
-    for key in processed:
-        if processed[key] != "completed":
-            continue
-        parts = key.split("/")
-        if len(parts) != 4:
-            continue
-        server, database, schema, procedure = parts
-        if server not in groups:
-            groups[server] = {}
-        if database not in groups[server]:
-            groups[server][database] = {}
-        if schema not in groups[server][database]:
-            groups[server][database][schema] = []
-        groups[server][database][schema].append(procedure)
+    for stem in sp_files:
+        proc_name = stem[3:]  # strip SP_
+        md_path = wiki_dir / f"{stem}.md"
+        server = database = schema = "Unknown"
+        if md_path.exists():
+            content = md_path.read_text(encoding="utf-8")
+            m = re.search(r"\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*" + re.escape(proc_name), content)
+            if m:
+                server   = m.group(1).strip()
+                database = m.group(2).strip()
+                schema   = m.group(3).strip()
 
-    # Build SQL section
+        key = (server, database, schema)
+        if key not in groups:
+            groups[key] = []
+        groups[key].append(proc_name)
+
     lines = []
     lines.append("## SQL Stored Procedures\n")
     if groups:
-        for server in sorted(groups):
+        for (server, database, schema) in sorted(groups):
             lines.append(f"### {server}\n")
-            for database in sorted(groups[server]):
-                lines.append(f"#### {database}\n")
-                for schema in sorted(groups[server][database]):
-                    lines.append(f"##### {schema}\n")
-                    for procedure in sorted(groups[server][database][schema]):
-                        encoded = f"SP_{procedure}".replace(" ", "%20")
-                        lines.append(f"- [{procedure}](SP_{procedure})")
-                    lines.append("")
+            lines.append(f"#### {database}\n")
+            lines.append(f"##### {schema}\n")
+            for proc in sorted(groups[(server, database, schema)]):
+                encoded = f"SP_{proc}".replace(" ", "%20")
+                lines.append(f"- [{proc}]({encoded})")
+            lines.append("")
     else:
         lines.append("_No stored procedures documented yet._\n")
 
     new_section = "\n".join(lines)
 
-    # Merge into Home.md
     home_path = wiki_dir / "Home.md"
-    if home_path.exists():
-        content = home_path.read_text(encoding="utf-8")
-    else:
-        content = "# Home\n\n---\n"
+    content = home_path.read_text(encoding="utf-8") if home_path.exists() else "# Home\n\n---\n"
 
     if "## SQL Stored Procedures" in content:
-        content = re.sub(
-            r"## SQL Stored Procedures.*?(?=\n---|\n## |\Z)",
-            new_section,
-            content,
-            flags=re.DOTALL
-        )
-    else:
-        content = content.rstrip() + f"\n\n{new_section}\n\n---\n"
+        content = re.sub(r"## SQL Stored Procedures.*?(?=\n---|\n## |\Z)", "", content, flags=re.DOTALL)
+    content = re.sub(r"\n---\s*\n---", "\n---", content)
+    content = content.rstrip() + f"\n\n{new_section}\n\n---\n"
 
     home_path.write_text(content, encoding="utf-8")
     print(f"  Updated Home.md — SQL section")
+
+
+# ---------------------------------------------------------------------------
+# Process a single procedure
+# ---------------------------------------------------------------------------
+
+def process_procedure(path_key: str, status: str, main_repo: Path, wiki_dir: Path, api_key: str, backlog_path: Path):
+    sql_file = main_repo / path_key
+    parts    = Path(path_key).parts
+
+    if len(parts) < 7:
+        print(f"  Skipping malformed path: {path_key}")
+        return False
+
+    server    = parts[1]
+    database  = parts[2]
+    schema    = parts[4]
+    procedure = Path(parts[6]).stem
+    doc_key   = f"{server}/{database}/{schema}/{procedure}"
+
+    print(f"\n{status}: {doc_key}")
+
+    try:
+        if status in ("CREATED", "MODIFIED"):
+            if not sql_file.exists():
+                print(f"  File not found: {sql_file}")
+                add_to_backlog(backlog_path, doc_key, "File not found")
+                return False
+
+            sql_text     = sql_file.read_text(encoding="utf-8-sig")
+            meta         = {"server": server, "database": database, "schema": schema, "procedure": procedure}
+            parameters   = extract_parameters(sql_text)
+            variables    = extract_variables(sql_text)
+            read_tables, write_tables = extract_tables(sql_text)
+            called_procs = extract_called_procedures(sql_text, wiki_dir)
+
+            ai_description = get_ai_description(sql_text, api_key)
+            if ai_description is None:
+                print(f"  AI failed for {doc_key} — adding to backlog.")
+                add_to_backlog(backlog_path, doc_key, "AI call failed — all models exhausted")
+                return False
+
+            markdown = build_markdown(meta, ai_description, parameters, variables, read_tables, write_tables, called_procs)
+            output_path = wiki_dir / f"SP_{procedure}.md"
+            output_path.write_text(markdown, encoding="utf-8")
+            print(f"  Saved: {output_path}")
+
+        elif status == "DELETED":
+            md_path = wiki_dir / f"SP_{procedure}.md"
+            if md_path.exists():
+                md_path.unlink()
+                print(f"  Deleted: {md_path}")
+            else:
+                print(f"  Skipping delete (not found): {md_path}")
+
+        remove_from_backlog(backlog_path, doc_key)
+        return True
+
+    except Exception as e:
+        print(f"  ERROR processing {doc_key}: {e}")
+        add_to_backlog(backlog_path, doc_key, str(e))
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -509,106 +441,47 @@ def main():
     parser.add_argument("--wiki-repo",      required=True)
     parser.add_argument("--sql-root",       required=True)
     parser.add_argument("--openrouter-key", required=True)
+    parser.add_argument("--changes",        required=True, help="Pipe-separated: STATUS|path,...")
     args = parser.parse_args()
 
     main_repo = Path(args.main_repo).resolve()
     wiki_dir  = Path(args.wiki_repo).resolve()
+    backlog_path = main_repo / "backlog.json"
 
-    # SQL specific files
-    changelog_path = main_repo / "sql_changelog.md"
-    processed_path = main_repo / "sql_processed.json"
-    backlog_path   = main_repo / "backlog.json"
+    # Parse current push changes
+    changes = {}
+    for item in args.changes.split(","):
+        item = item.strip()
+        if "|" not in item:
+            continue
+        status, path = item.split("|", 1)
+        changes[path.strip()] = status.strip()
 
-    changelog = read_changelog(changelog_path)
+    # Also load backlog entries for retry
+    backlog = read_backlog(backlog_path)
+    for doc_key, info in backlog.items():
+        # Convert doc_key back to path: server/database/schema/procedure
+        parts = doc_key.split("/")
+        if len(parts) == 4:
+            server, database, schema, procedure = parts
+            path = f"SQL/{server}/{database}/{database}/{schema}/Stored Procedures/{procedure}.sql"
+            if path not in changes:
+                print(f"  Retrying from backlog: {doc_key}")
+                changes[path] = "MODIFIED"
 
-    if not changelog:
-        print("No SQL stored procedure changelog entries found.")
+    if not changes:
+        print("No changes to process.")
         return
 
     any_processed = False
-
-    for date, entries in sorted(changelog.items()):
-        for path_key, status in entries.items():
-            sql_file = main_repo / path_key
-
-            parts = Path(path_key).parts
-            if len(parts) < 7:
-                print(f"  Skipping malformed path: {path_key}")
-                continue
-
-            server    = parts[1]
-            database  = parts[2]
-            schema    = parts[4]
-            procedure = Path(parts[6]).stem
-            doc_key   = f"{server}/{database}/{schema}/{procedure}"
-
-            # Always reprocess MODIFIED, skip only CREATED that's already done
-            if is_processed(processed_path, doc_key) and status != "MODIFIED":
-                print(f"  Already processed {doc_key} — skipping.")
-                continue
-
-            print(f"\n[{date}] {status}: {doc_key}")
-
-            try:
-                if status in ("CREATED", "MODIFIED"):
-                    if not sql_file.exists():
-                        print(f"  File not found: {sql_file}")
-                        add_to_backlog(backlog_path, doc_key, "File not found")
-                        continue
-
-                    sql_text     = sql_file.read_text(encoding="utf-8-sig")
-                    meta         = {
-                        "server":    server,
-                        "database":  database,
-                        "schema":    schema,
-                        "procedure": procedure,
-                    }
-                    parameters   = extract_parameters(sql_text)
-                    variables    = extract_variables(sql_text)
-                    read_tables, write_tables = extract_tables(sql_text)
-                    called_procs = extract_called_procedures(sql_text)
-
-                    ai_description = get_ai_description(sql_text, args.openrouter_key)
-                    if ai_description is None:
-                        print(f"  AI failed for {doc_key} — adding to backlog.")
-                        add_to_backlog(backlog_path, doc_key, "AI call failed — all models exhausted")
-                        continue
-
-                    markdown = build_markdown(
-                        meta=meta,
-                        ai_description=ai_description,
-                        parameters=parameters,
-                        variables=variables,
-                        read_tables=read_tables,
-                        write_tables=write_tables,
-                        called_procs=called_procs,
-                         wiki_dir=wiki_dir,
-                    )
-
-                    output_path = wiki_dir / f"SP_{procedure}.md"
-                    output_path.write_text(markdown, encoding="utf-8")
-                    print(f"  Saved: {output_path}")
-
-                elif status == "DELETED":
-                    md_path = wiki_dir / f"SP_{procedure}.md"
-                    if md_path.exists():
-                        md_path.unlink()
-                        print(f"  Deleted: {md_path}")
-                    else:
-                        print(f"  Skipping delete (not found): {md_path}")
-
-                mark_processed(processed_path, doc_key)
-                remove_from_backlog(backlog_path, doc_key)
-                any_processed = True
-
-            except Exception as e:
-                print(f"  ERROR processing {doc_key}: {e}")
-                add_to_backlog(backlog_path, doc_key, str(e))
-                continue
+    for path_key, status in changes.items():
+        success = process_procedure(path_key, status, main_repo, wiki_dir, args.openrouter_key, backlog_path)
+        if success:
+            any_processed = True
 
     if any_processed:
-        update_sql_home(wiki_dir, processed_path)
-        print("\nSQL-Stored-Procedures.md updated.")
+        update_home_md(wiki_dir)
+        print("\nHome.md updated.")
     else:
         print("\nNothing new to process.")
 

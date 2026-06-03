@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: pip install openai
 
-      - name: Detect changed SSIS packages and update ssis_changelog.md
+      - name: Detect changed SSIS packages
         id: detect
         run: |
           cd main
@@ -66,6 +66,7 @@ jobs:
             exit 0
           fi
 
+          # Update ssis_changelog.md
           touch ssis_changelog.md
 
           python3 - <<EOF
@@ -82,9 +83,8 @@ jobs:
                   status, path = parts
                   incoming[path.strip()] = status.strip()
 
-          changelog_path = "ssis_changelog.md"
           try:
-              with open(changelog_path, "r") as f:
+              with open("ssis_changelog.md", "r") as f:
                   content = f.read()
           except FileNotFoundError:
               content = ""
@@ -103,35 +103,31 @@ jobs:
                           path   = parts[1].strip()
                           if status in ("CREATED", "MODIFIED", "DELETED"):
                               existing[path] = status
-
               for path, new_status in incoming.items():
                   if path not in existing:
                       existing[path] = new_status
                   else:
-                      ex_status = existing[path]
-                      if ex_status == "CREATED":
-                          if new_status == "DELETED":
-                              existing[path] = "DELETED"
-                      elif ex_status == "MODIFIED":
-                          if new_status == "DELETED":
-                              existing[path] = "DELETED"
-                      elif ex_status == "DELETED":
-                          if new_status == "CREATED":
-                              existing[path] = "CREATED"
-
+                      ex = existing[path]
+                      if ex == "CREATED" and new_status == "DELETED":
+                          existing[path] = "DELETED"
+                      elif ex == "MODIFIED" and new_status == "DELETED":
+                          existing[path] = "DELETED"
+                      elif ex == "DELETED" and new_status == "CREATED":
+                          existing[path] = "CREATED"
               lines = [f"{status}: {path}" for path, status in existing.items()]
               sections[0] = f"## {date}\n\n" + "\n".join(lines) + "\n\n---\n"
-
           else:
               lines     = [f"{status}: {path}" for path, status in incoming.items()]
               new_entry = f"## {date}\n\n" + "\n".join(lines) + "\n\n---\n"
               sections.insert(0, new_entry)
 
           trimmed = sections[:30]
-          with open(changelog_path, "w") as f:
+          with open("ssis_changelog.md", "w") as f:
               f.write("\n".join(trimmed).strip() + "\n")
           EOF
 
+          CHANGES_ARG=$(echo "$CHANGES" | tr '\n' ',' | sed 's/,$//')
+          echo "changes_arg=$CHANGES_ARG" >> $GITHUB_OUTPUT
           echo "has_changes=true" >> $GITHUB_OUTPUT
 
       - name: Generate SSIS docs
@@ -142,7 +138,8 @@ jobs:
             --main-repo "." \
             --wiki-repo "../wiki" \
             --ssis-root "SSIS" \
-            --openrouter-key "${{ secrets.OPENROUTER_KEY }}"
+            --openrouter-key "${{ secrets.OPENROUTER_KEY }}" \
+            --changes "${{ steps.detect.outputs.changes_arg }}"
 
       - name: Commit tracking files to main repo
         if: steps.detect.outputs.has_changes == 'true'
@@ -150,7 +147,7 @@ jobs:
           cd main
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add ssis_changelog.md ssis_processed.json
+          git add ssis_changelog.md
           [ -f ssis_backlog.json ] && git add ssis_backlog.json || true
           git diff --staged --quiet || git commit -m "chore: update SSIS docs tracking $(date -u +%Y-%m-%d)"
           git push
