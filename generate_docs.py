@@ -464,27 +464,57 @@ def delete_report_from_wiki(workspace: str, report_name: str, wiki_dir: Path):
 # Home.md updater
 # ---------------------------------------------------------------------------
 
-def update_home_md(wiki_dir: Path):
-    md_files = sorted([
-        f.stem for f in wiki_dir.glob("*.md")
-        if f.stem != "Home"
-    ])
+def update_home_md(wiki_dir: Path, processed_path: Path):
+    """Update Power BI Reports section of Home.md grouped by workspace."""
+    processed = read_processed(processed_path)
 
+    # Group reports by workspace
+    workspaces = {}
+    for key in processed:
+        if processed[key] != "completed":
+            continue
+        parts = key.split("/", 1)
+        if len(parts) != 2:
+            continue
+        workspace, report = parts
+        if workspace not in workspaces:
+            workspaces[workspace] = []
+        workspaces[workspace].append(report)
+
+    # Build Power BI section
     lines = []
-    lines.append("# Power BI Reports\n")
-    lines.append("---\n")
-    lines.append("## Reports\n")
-    if md_files:
-        for name in md_files:
-            encoded = name.replace(" ", "%20")
-            lines.append(f"- [{name}]({encoded})")
+    lines.append("## Power BI Reports\n")
+    if workspaces:
+        for workspace in sorted(workspaces):
+            lines.append(f"### {workspace}\n")
+            for report in sorted(workspaces[workspace]):
+                encoded = report.replace(" ", "%20")
+                lines.append(f"- [{report}]({encoded})")
+            lines.append("")
     else:
-        lines.append("_No reports documented yet._")
-    lines.append("")
+        lines.append("_No reports documented yet._\n")
 
+    new_section = "\n".join(lines)
+
+    # Merge into Home.md
     home_path = wiki_dir / "Home.md"
-    home_path.write_text("\n".join(lines), encoding="utf-8")
-    print(f"  Updated Home.md")
+    if home_path.exists():
+        content = home_path.read_text(encoding="utf-8")
+    else:
+        content = "# Home\n\n---\n"
+
+    if "## Power BI Reports" in content:
+        content = re.sub(
+            r"## Power BI Reports.*?(?=\n---|\n## |\Z)",
+            new_section,
+            content,
+            flags=re.DOTALL
+        )
+    else:
+        content = content.rstrip() + f"\n\n{new_section}\n\n---\n"
+
+    home_path.write_text(content, encoding="utf-8")
+    print(f"  Updated Home.md — Power BI section")
 
 
 # ---------------------------------------------------------------------------
@@ -650,8 +680,8 @@ def main():
                 continue
 
     if any_processed:
-        update_home_md(wiki_dir)
-        print("\nHome.md updated.")
+        update_home_md(wiki_dir, processed_path)
+        print("\nHome.md updated."
     else:
         print("\nNothing new to process.")
 
