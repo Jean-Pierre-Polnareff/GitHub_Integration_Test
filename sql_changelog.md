@@ -3,7 +3,7 @@
 MODIFIED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/pUpdateWFActivity.sql
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/Sp_UpdateStatsAndLoadDetails_Speech_Analytics.sql
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_02_SQL_Compliance_Sampling.sql
-DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_02_SQL_Compliance_Sampling_2.sql
+CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_02_SQL_Compliance_Sampling_2.sql
 DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_03_SQL_Events_Unique_Compliance_ID_2.sql
 DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_04_SQL_Events_Unique_ID_2.sql
 DELETED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_07_SQL_Transcripts_Unique_ID_2.sql
