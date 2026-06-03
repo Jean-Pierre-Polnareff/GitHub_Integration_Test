@@ -72,6 +72,10 @@ OLD_TYPE_MAP = {
     "FileWatcherTask":     "File Watcher Task",
     "TimerTask":           "Timer Task",
     "FileOperationTask":   "File Operation Task",
+    "RestApiTask":         "REST API Task",
+    "SFTPTask":            "SFTP Task",
+    "WebServiceTask":      "Web Service Task",
+    "HttpTask":            "HTTP Task",
     "SSIS.Pipeline":       "Data Flow Task",
     "STOCK:SEQUENCE":      "Sequence Container",
     "STOCK:FOREACH":       "For Each Loop",
@@ -345,7 +349,7 @@ def parse_dtsx(dtsx_path: Path):
                     "ref":        ref,
                     "read_vars":  read_vars,
                     "write_vars": write_vars,
-                    "code":       code,
+                    "code":       code if code else "_BINARY_",
                     "summary":    None,
                 })
 
@@ -371,6 +375,21 @@ def parse_dtsx(dtsx_path: Path):
                         if pname in ("SqlCommand", "SqlCommandParam") and prop.text:
                             sql_cmd = prop.text[:200]
 
+                    # For Flat File Destination — get path from connection manager by GUID
+                    if not table and ("FlatFile" in short_class or "Flat File" in comp_name or
+                                      "Destination" in comp_name):
+                        for conn_ref in elem.iter("connection"):
+                            cm_guid = conn_ref.get("connectionManagerID", "")
+                            if cm_guid:
+                                # Match GUID against connection manager DTSIDs
+                                for cm in root.iter(f"{DTS}ConnectionManager"):
+                                    cm_dtsid = get_prop(cm, "DTSID")
+                                    if cm_dtsid == cm_guid:
+                                        conn_str = get_connection_string(cm)
+                                        if conn_str:
+                                            table = conn_str
+                                        break
+
                     components.append({
                         "name":  comp_name,
                         "type":  short_class,
@@ -382,6 +401,7 @@ def parse_dtsx(dtsx_path: Path):
                     # - Named class contains Destination (new format)
                     # - OR has a table but no SQL (old format with GUID class IDs)
                     is_destination = ("Destination" in short_class or
+                                      "Destination" in comp_name or
                                       (table and not sql_cmd))
                     if is_destination and table:
                         clean = table.replace("[", "").replace("]", "")
@@ -603,7 +623,9 @@ def build_markdown(parsed: dict, project: str, package_name: str, ai_summary: st
                 md.append(f"**Variables Written:** {script['write_vars']}\n")
             if script["summary"]:
                 md.append(f"{script['summary']}\n")
-            if script["code"]:
+            if script["code"] == "_BINARY_":
+                md.append("_Source code stored in compiled binary format — upgrade package to SQL Server 2012+ format to extract._\n")
+            elif script["code"]:
                 md.append("```csharp")
                 md.append(script["code"][:2000])
                 md.append("```\n")
