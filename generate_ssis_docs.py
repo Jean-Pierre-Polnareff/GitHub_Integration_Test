@@ -592,6 +592,8 @@ def build_markdown(parsed: dict, project: str, package_name: str, ai_summary: st
                 md.append("|-----------|------|--------|")
                 for comp in df["components"]:
                     detail = comp["table"] or comp["sql"] or ""
+                    # Sanitize newlines so they don't break markdown table rows
+                    detail = detail.replace("\r\n", " ").replace("\n", " ").replace("\r", " ")
                     md.append(f"| {comp['name']} | {comp['type']} | {detail[:100]} |")
             md.append("")
     else:
@@ -626,9 +628,14 @@ def build_markdown(parsed: dict, project: str, package_name: str, ai_summary: st
             if script["code"] == "_BINARY_":
                 md.append("_Source code stored in compiled binary format — upgrade package to SQL Server 2012+ format to extract._\n")
             elif script["code"]:
+                md.append("<details>")
+                md.append("<summary>View Source Code</summary>")
+                md.append("")
                 md.append("```csharp")
-                md.append(script["code"][:2000])
-                md.append("```\n")
+                md.append(script["code"])
+                md.append("```")
+                md.append("")
+                md.append("</details>\n")
     else:
         md.append("_No Script tasks._")
     md.append("\n---\n")
