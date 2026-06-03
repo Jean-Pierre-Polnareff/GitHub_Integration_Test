@@ -2,9 +2,8 @@
 generate_ssis_docs.py
 
 Processes SSIS package changes passed directly from the workflow.
+Supports both old format (SQL Server 2005-2012) and new format (SQL Server 2012+).
 Also retries any entries in ssis_backlog.json.
-  - CREATED / MODIFIED : generate .md doc
-  - DELETED            : remove .md from wiki
 
 Run from the root of the main repo:
     python generate_ssis_docs.py \
@@ -60,13 +59,127 @@ SCRIPT_RULES = """
 - Do not give any suggestions of your own
 """
 
+# Old format executable type mappings (assembly name fragments -> simple name)
+OLD_TYPE_MAP = {
+    "ExecuteSQLTask":      "Execute SQL Task",
+    "ScriptTask":          "Script Task",
+    "SendMailTask":        "Send Mail Task",
+    "ExecutePackageTask":  "Execute Package Task",
+    "FileSystemTask":      "File System Task",
+    "FtpTask":             "FTP Task",
+    "BulkInsertTask":      "Bulk Insert Task",
+    "DataFlowTask":        "Data Flow Task",
+    "FileWatcherTask":     "File Watcher Task",
+    "TimerTask":           "Timer Task",
+    "FileOperationTask":   "File Operation Task",
+    "SSIS.Pipeline":       "Data Flow Task",
+    "STOCK:SEQUENCE":      "Sequence Container",
+    "STOCK:FOREACH":       "For Each Loop",
+    "STOCK:FORLOOP":       "For Loop",
+}
+
+# New format executable type mappings
+NEW_TYPE_MAP = {
+    "STOCK:SEQUENCE":                    "Sequence Container",
+    "STOCK:FOREACH":                     "For Each Loop",
+    "STOCK:FORLOOP":                     "For Loop",
+    "Microsoft.Pipeline":                "Data Flow Task",
+    "Microsoft.ExecuteSQLTask":          "Execute SQL Task",
+    "Microsoft.ScriptTask":              "Script Task",
+    "Microsoft.SendMailTask":            "Send Mail Task",
+    "Microsoft.ExecutePackageTask":      "Execute Package Task",
+    "Microsoft.FileSystemTask":          "File System Task",
+    "Microsoft.FtpTask":                 "FTP Task",
+    "Microsoft.BulkInsertTask":          "Bulk Insert Task",
+}
+
 
 # ---------------------------------------------------------------------------
-# XML helpers
+# Dual-format XML helpers
 # ---------------------------------------------------------------------------
 
-def get_attr(elem, name):
-    return elem.get(f"{DTS}{name}", "")
+def get_prop(elem, name):
+    """
+    Get a property value from either:
+    - New format: DTS:Name="value" attribute
+    - Old format: <DTS:Property DTS:Name="Name">value</DTS:Property> child element
+    """
+    # New format — attribute
+    val = elem.get(f"{DTS}{name}", "")
+    if val:
+        return val
+    # Old format — property element
+    for prop in elem.findall(f"{DTS}Property"):
+        if prop.get(f"{DTS}Name") == name:
+            return prop.text or ""
+    return ""
+
+
+def simplify_exec_type(etype: str):
+    """Convert full assembly name or short type to a readable label."""
+    if not etype:
+        return "Task"
+
+    # New format — exact match
+    if etype in NEW_TYPE_MAP:
+        return NEW_TYPE_MAP[etype]
+
+    # Old format — match fragment in assembly name
+    for fragment, label in OLD_TYPE_MAP.items():
+        if fragment in etype:
+            return label
+
+    # Fallback — last segment
+    return etype.split(".")[-1] if "." in etype else etype
+
+
+def is_pipeline(etype: str):
+    return "Pipeline" in etype or etype == "Microsoft.Pipeline"
+
+
+def is_execute_sql(etype: str):
+    return "ExecuteSQLTask" in etype or etype == "Microsoft.ExecuteSQLTask"
+
+
+def is_script_task(etype: str):
+    return "ScriptTask" in etype or etype == "Microsoft.ScriptTask"
+
+
+def is_execute_package(etype: str):
+    return "ExecutePackageTask" in etype or etype == "Microsoft.ExecutePackageTask"
+
+
+def get_connection_string(cm_elem):
+    """Extract connection string from either format connection manager."""
+    # New format — attribute on inner ConnectionManager
+    inner = cm_elem.find(f"{DTS}ObjectData/{DTS}ConnectionManager")
+    if inner is not None:
+        cs = get_prop(inner, "ConnectionString")
+        if cs:
+            return cs
+
+    # Old format — inside ObjectData as various child elements
+    obj_data = cm_elem.find(f"{DTS}ObjectData")
+    if obj_data is not None:
+        # Try inner DTS:ConnectionManager
+        inner_cm = obj_data.find(f"{DTS}ConnectionManager")
+        if inner_cm is not None:
+            cs = get_prop(inner_cm, "ConnectionString")
+            if cs:
+                return cs
+        # Try direct child attributes (SMTP, HTTP etc.)
+        for child in obj_data:
+            cs = child.get("ConnectionString", "")
+            if cs:
+                return cs
+
+    # Try iterating all descendants
+    for child in cm_elem.iter():
+        cs = child.get(f"{DTS}ConnectionString") or child.get("ConnectionString", "")
+        if cs:
+            return cs
+
+    return ""
 
 
 # ---------------------------------------------------------------------------
@@ -80,113 +193,129 @@ def parse_dtsx(dtsx_path: Path):
     except Exception as e:
         raise ValueError(f"Failed to parse XML: {e}")
 
+    # Read raw content for regex-based extraction
+    with open(dtsx_path, 'r', encoding='utf-8-sig') as f:
+        raw_content = f.read()
+
     result = {
-        "package_info": {},
-        "variables": [],
-        "connections": [],
-        "file_sources": [],
-        "control_flow": [],
+        "package_info":           {},
+        "variables":              [],
+        "connections":            [],
+        "file_sources":           [],
+        "control_flow":           [],
         "precedence_constraints": [],
-        "data_flows": [],
-        "sql_tasks": [],
-        "script_tasks": [],
-        "event_handlers": [],
-        "tables": {},
-        "procedures": set(),
-        "packages_called": [],
+        "data_flows":             [],
+        "sql_tasks":              [],
+        "script_tasks":           [],
+        "event_handlers":         [],
+        "tables":                 {},
+        "procedures":             set(),
+        "packages_called":        [],
     }
 
+    # -- Package info --
     result["package_info"] = {
-        "name":    get_attr(root, "ObjectName"),
-        "created": get_attr(root, "CreationDate"),
-        "creator": get_attr(root, "CreatorName"),
-        "version": get_attr(root, "LastModifiedProductVersion"),
+        "name":    get_prop(root, "ObjectName") or get_prop(root, "PackageName") or dtsx_path.stem,
+        "created": get_prop(root, "CreationDate"),
+        "creator": get_prop(root, "CreatorName"),
+        "version": get_prop(root, "LastModifiedProductVersion"),
     }
 
-    # Variables
+    # -- Variables --
     seen_vars = set()
     for var in root.iter(f"{DTS}Variable"):
-        name = get_attr(var, "ObjectName")
+        name = get_prop(var, "ObjectName")
         val_elem = var.find(f"{DTS}VariableValue")
         val = val_elem.text if val_elem is not None else ""
         if name and name != "Propagate" and name not in seen_vars:
             seen_vars.add(name)
             result["variables"].append({"name": name, "value": val or ""})
 
-    # Connection managers
+    # -- Connection managers --
     seen_conns = set()
-    for cm in root.findall(f".//{DTS}ConnectionManager"):
-        name  = get_attr(cm, "ObjectName")
-        ctype = get_attr(cm, "CreationName")
-        if not name or not ctype or name in seen_conns:
+    for cm in root.iter(f"{DTS}ConnectionManager"):
+        name  = get_prop(cm, "ObjectName")
+        ctype = get_prop(cm, "CreationName")
+        if not name or name in seen_conns:
             continue
         seen_conns.add(name)
 
-        conn_str = ""
-        for child in cm.iter():
-            cs = child.get(f"{DTS}ConnectionString")
-            if cs:
-                conn_str = cs
-                break
+        conn_str = get_connection_string(cm)
 
-        if "FLATFILE" in ctype.upper():
+        # Simplify type
+        ctype_upper = ctype.upper()
+        if "FLATFILE" in ctype_upper or "FLAT" in ctype_upper:
             simple_type = "Flat File"
-        elif "OLEDB" in ctype.upper():
+        elif "OLEDB" in ctype_upper or "OLE DB" in ctype_upper:
             simple_type = "OLE DB"
-        elif "ADO.NET" in ctype.upper() or "System.Data.SqlClient" in conn_str:
+        elif "ADO.NET" in ctype_upper or "System.Data.SqlClient" in conn_str:
             simple_type = "ADO.NET"
-        elif "SMTP" in ctype.upper():
+        elif "SMTP" in ctype_upper:
             simple_type = "SMTP"
-        elif "Odbc" in conn_str:
-            simple_type = "ADO.NET (ODBC)"
+        elif "HTTP" in ctype_upper:
+            simple_type = "HTTP"
+        elif "FTP" in ctype_upper:
+            simple_type = "FTP"
+        elif "Odbc" in conn_str or "ODBC" in ctype_upper:
+            simple_type = "ODBC"
+        elif "FILE" in ctype_upper:
+            simple_type = "File"
         else:
-            simple_type = ctype
+            simple_type = ctype or "Unknown"
 
-        result["connections"].append({"name": name, "type": simple_type, "conn_string": conn_str})
-        if simple_type == "Flat File" and conn_str:
+        result["connections"].append({
+            "name":        name,
+            "type":        simple_type,
+            "conn_string": conn_str,
+        })
+
+        if simple_type in ("Flat File", "File") and conn_str:
             result["file_sources"].append({"name": name, "path": conn_str})
 
-    # Executables
+    # -- Executables --
     def parse_executables(node, depth=0):
         for exe in node.findall(f"{DTS}Executable"):
-            ref   = get_attr(exe, "refId")
-            name  = get_attr(exe, "ObjectName")
-            etype = get_attr(exe, "ExecutableType")
-            if not ref:
+            name  = get_prop(exe, "ObjectName")
+            etype = get_prop(exe, "ExecutableType")
+            ref   = get_prop(exe, "refId") or get_prop(exe, "DTSID") or name
+
+            if not name:
                 continue
 
-            type_map = {
-                "STOCK:SEQUENCE": "Sequence Container",
-                "Microsoft.Pipeline": "Data Flow Task",
-                "Microsoft.ExecuteSQLTask": "Execute SQL Task",
-                "Microsoft.ScriptTask": "Script Task",
-                "Microsoft.SendMailTask": "Send Mail Task",
-                "STOCK:FOREACH": "For Each Loop",
-                "STOCK:FORLOOP": "For Loop",
-                "Microsoft.ExecutePackageTask": "Execute Package Task",
-            }
-            simple = type_map.get(etype, etype.split(".")[-1] if "." in etype else etype)
+            simple = simplify_exec_type(etype)
 
-            result["control_flow"].append({"ref": ref, "name": name, "type": simple, "depth": depth})
+            result["control_flow"].append({
+                "ref":   ref,
+                "name":  name,
+                "type":  simple,
+                "depth": depth,
+            })
 
-            if etype == "Microsoft.ExecutePackageTask":
+            # Execute Package Task
+            if is_execute_package(etype):
                 for elem in exe.iter():
                     pkg = elem.get("PackageName") or elem.get("PackageNameFromProjectReference")
+                    if not pkg:
+                        pkg = get_prop(elem, "PackageName")
                     if pkg:
                         result["packages_called"].append(pkg)
 
-            if etype == "Microsoft.ExecuteSQLTask":
-                with open(str(dtsx_path), 'r', encoding='utf-8-sig') as f:
-                    raw = f.read()
-                sql_matches = re.findall(r'SqlStatementSource="([^"]{10,})"', raw)
-                for sql in sql_matches:
-                    decoded = html.unescape(sql)
-                    result["sql_tasks"].append({"name": name, "ref": ref, "sql": decoded})
-                    for proc in re.findall(r"EXEC(?:UTE)?\s+(\w[\w\.]+)", decoded, re.IGNORECASE):
-                        result["procedures"].add(proc)
-                    _extract_tables_from_sql(decoded, result["tables"])
+            # Execute SQL Task
+            if is_execute_sql(etype):
+                sql_matches = re.findall(r'SqlStatementSource="([^"]{5,})"', raw_content)
+                # We can't easily associate SQL to specific task in old format
+                # so we collect all SQL and associate by name
+                for elem in exe.iter():
+                    sql_attr = elem.get("SqlStatementSource", "")
+                    if sql_attr:
+                        decoded = html.unescape(sql_attr)
+                        result["sql_tasks"].append({"name": name, "ref": ref, "sql": decoded})
+                        for proc in re.findall(r"EXEC(?:UTE)?\s+(\w[\w\.]+)", decoded, re.IGNORECASE):
+                            result["procedures"].add(proc)
+                        _extract_tables_from_sql(decoded, result["tables"])
 
-            if etype == "Microsoft.ScriptTask":
+            # Script Task — new format CDATA
+            if is_script_task(etype):
                 read_vars = write_vars = code = ""
                 for elem in exe.iter():
                     tag = elem.tag.split("}")[-1] if "}" in elem.tag else elem.tag
@@ -196,54 +325,117 @@ def parse_dtsx(dtsx_path: Path):
                     if tag == "ProjectItem" and elem.get("Name", "") == "ScriptMain.cs":
                         code = elem.text.strip() if elem.text else ""
                 result["script_tasks"].append({
-                    "name": name, "ref": ref,
-                    "read_vars": read_vars, "write_vars": write_vars,
-                    "code": code, "summary": None,
+                    "name":       name,
+                    "ref":        ref,
+                    "read_vars":  read_vars,
+                    "write_vars": write_vars,
+                    "code":       code,
+                    "summary":    None,
                 })
 
-            if etype == "Microsoft.Pipeline":
+            # Data Flow / Pipeline
+            if is_pipeline(etype):
                 components = []
                 for elem in exe.iter():
                     comp_name  = elem.get("name")
                     comp_class = elem.get("componentClassID", "")
                     if not comp_name or not comp_class:
                         continue
+                    # Simplify component class
                     short_class = comp_class.split(".")[-1] if "." in comp_class else comp_class
-                    table = sql = ""
+                    # For GUIDs use generic labels
+                    if re.match(r'^\{[0-9A-F-]+\}$', comp_class, re.IGNORECASE):
+                        short_class = "Component"
+
+                    table = sql_cmd = ""
                     for prop in elem.iter("property"):
                         pname = prop.get("name", "")
                         if pname == "OpenRowset" and prop.text:
                             table = prop.text
                         if pname in ("SqlCommand", "SqlCommandParam") and prop.text:
-                            sql = prop.text[:200]
-                    components.append({"name": comp_name, "type": short_class, "table": table, "sql": sql})
+                            sql_cmd = prop.text[:200]
+
+                    components.append({
+                        "name":  comp_name,
+                        "type":  short_class,
+                        "table": table,
+                        "sql":   sql_cmd,
+                    })
+
                     if "Destination" in short_class and table:
                         clean = table.replace("[", "").replace("]", "")
                         result["tables"][clean] = result["tables"].get(clean, set())
                         result["tables"][clean].add("INSERT")
-                result["data_flows"].append({"ref": ref, "name": name, "components": components})
 
-            execs_node = exe.find(f"{DTS}Executables")
-            if execs_node is not None:
-                parse_executables(execs_node, depth + 1)
+                result["data_flows"].append({
+                    "ref":        ref,
+                    "name":       name,
+                    "components": components,
+                })
+
+            # Recurse
+            inner = exe.find(f"{DTS}Executables")
+            if inner is not None:
+                parse_executables(inner, depth + 1)
 
     execs_node = root.find(f"{DTS}Executables")
     if execs_node is not None:
+        # New format — executables under DTS:Executables wrapper
         parse_executables(execs_node)
+    else:
+        # Old format — executables are direct children of root
+        parse_executables(root)
 
-    # Precedence constraints
+    # -- Precedence constraints --
+    # Build DTSID -> name map for old format PC resolution
+    dtsid_to_name = {get_prop(exe, "DTSID"): get_prop(exe, "ObjectName")
+                     for exe in root.iter(f"{DTS}Executable")
+                     if get_prop(exe, "DTSID") and get_prop(exe, "ObjectName")}
+
     for pc in root.iter(f"{DTS}PrecedenceConstraint"):
-        eval_op = get_attr(pc, "EvalOp")
-        label = "Failure" if eval_op == "1" else "Completion" if eval_op == "2" else "Success"
-        result["precedence_constraints"].append({
-            "from": get_attr(pc, "From"), "to": get_attr(pc, "To"), "label": label
-        })
+        from_ref = get_prop(pc, "From")
+        to_ref   = get_prop(pc, "To")
+        eval_op  = get_prop(pc, "EvalOp")
+        label    = "Failure" if eval_op == "1" else "Completion" if eval_op == "2" else "Success"
 
-    # Event handlers
+        # Old format — From/To are DTS:Executable children with IDREF + DTS:IsFrom attributes
+        if not from_ref and not to_ref:
+            for pc_exe in pc.findall(f"{DTS}Executable"):
+                idref   = pc_exe.get("IDREF", "")
+                is_from = pc_exe.get(f"{DTS}IsFrom", "0")
+                name    = dtsid_to_name.get(idref, idref)
+                if is_from == "-1":
+                    from_ref = name
+                else:
+                    to_ref = name
+
+        if from_ref or to_ref:
+            result["precedence_constraints"].append({
+                "from": from_ref, "to": to_ref, "label": label
+            })
+
+    # -- SQL from raw content (catches old format Execute SQL tasks) --
+    # De-duplicate against already found SQL
+    existing_sqls = {t["sql"] for t in result["sql_tasks"]}
+    all_sql = re.findall(r'SqlStatementSource="([^"]{10,})"', raw_content)
+    for sql in all_sql:
+        decoded = html.unescape(sql)
+        if decoded not in existing_sqls:
+            existing_sqls.add(decoded)
+            result["sql_tasks"].append({"name": "Execute SQL Task", "ref": "", "sql": decoded})
+            for proc in re.findall(r"EXEC(?:UTE)?\s+(\w[\w\.]+)", decoded, re.IGNORECASE):
+                result["procedures"].add(proc)
+            _extract_tables_from_sql(decoded, result["tables"])
+
+    # -- Event handlers --
     for eh in root.iter(f"{DTS}EventHandler"):
-        event_name = get_attr(eh, "EventName")
-        tasks = [{"name": get_attr(e, "ObjectName"), "type": get_attr(e, "ExecutableType").split(".")[-1]}
-                 for e in eh.iter(f"{DTS}Executable")]
+        event_name = get_prop(eh, "EventName")
+        tasks = []
+        for exe in eh.iter(f"{DTS}Executable"):
+            t_name = get_prop(exe, "ObjectName")
+            t_type = simplify_exec_type(get_prop(exe, "ExecutableType"))
+            if t_name:
+                tasks.append({"name": t_name, "type": t_type})
         if event_name:
             result["event_handlers"].append({"event": event_name, "tasks": tasks})
 
@@ -262,10 +454,20 @@ def _extract_tables_from_sql(sql: str, tables: dict):
         tbl = tbl.strip().replace("[", "").replace("]", "")
         tables[tbl] = tables.get(tbl, set())
         tables[tbl].add("TRUNCATE")
+    for tbl in re.findall(r"INSERT\s+(?:INTO\s+)?([^\s\(\);,]+)", text, re.IGNORECASE):
+        tbl = tbl.strip().replace("[", "").replace("]", "")
+        if not tbl.startswith(("#", "@")):
+            tables[tbl] = tables.get(tbl, set())
+            tables[tbl].add("INSERT")
+    for tbl in re.findall(r"UPDATE\s+([^\s\(\);,]+)", text, re.IGNORECASE):
+        tbl = tbl.strip().replace("[", "").replace("]", "")
+        if "." in tbl and not tbl.startswith(("#", "@")):
+            tables[tbl] = tables.get(tbl, set())
+            tables[tbl].add("UPDATE")
 
 
 # ---------------------------------------------------------------------------
-# Mermaid control flow builder
+# Mermaid control flow (simplified top-level only)
 # ---------------------------------------------------------------------------
 
 def build_control_flow_mermaid(parsed: dict):
@@ -275,10 +477,16 @@ def build_control_flow_mermaid(parsed: dict):
     for i, task in enumerate(top_level):
         node_id = f"N{i}"
         node_map[task["ref"]] = node_id
-        lines.append(f'    {node_id}["{task["name"]}\n{task["type"]}"]')
+        node_map[task["name"]] = node_id  # also map by name for old format
+        label = f"{task['name']}\n{task['type']}"
+        lines.append(f'    {node_id}["{label}"]')
+
     for pc in parsed["precedence_constraints"]:
-        if pc["from"] in node_map and pc["to"] in node_map:
-            lines.append(f'    {node_map[pc["from"]]} -->|"{pc["label"]}"| {node_map[pc["to"]]}')
+        from_id = node_map.get(pc["from"])
+        to_id   = node_map.get(pc["to"])
+        if from_id and to_id:
+            lines.append(f'    {from_id} -->|"{pc["label"]}"| {to_id}')
+
     lines.append("```")
     return "\n".join(lines)
 
@@ -297,7 +505,7 @@ def build_markdown(parsed: dict, project: str, package_name: str, ai_summary: st
     md.append("## Package Info\n")
     md.append("| Property | Value |")
     md.append("|----------|-------|")
-    md.append(f"| Package Name | {info.get('name', '')} |")
+    md.append(f"| Package Name | {info.get('name', package_name)} |")
     md.append(f"| Project | {project} |")
     md.append(f"| Created By | {info.get('creator', '')} |")
     md.append(f"| Created Date | {info.get('created', '')} |")
@@ -323,7 +531,7 @@ def build_markdown(parsed: dict, project: str, package_name: str, ai_summary: st
         md.append("| Name | Type | Connection String |")
         md.append("|------|------|------------------|")
         for c in parsed["connections"]:
-            md.append(f"| {c['name']} | {c['type']} | {c['conn_string']} |")
+            md.append(f"| {c['name']} | {c['type']} | {c['conn_string'][:120]} |")
     else:
         md.append("_No connections._")
     md.append("\n---\n")
@@ -361,8 +569,9 @@ def build_markdown(parsed: dict, project: str, package_name: str, ai_summary: st
     if parsed["sql_tasks"]:
         seen = set()
         for task in parsed["sql_tasks"]:
-            if task["ref"] not in seen:
-                seen.add(task["ref"])
+            key = task["sql"][:50]
+            if key not in seen:
+                seen.add(key)
                 md.append(f"### {task['name']}\n")
                 md.append("```sql")
                 md.append(task["sql"])
@@ -454,10 +663,10 @@ def get_ai_description(prompt: str, rules: str, api_key: str):
                 model=model,
                 messages=[
                     {"role": "system", "content": f"You are an SSIS documentation assistant.\nFormatting Rules:\n{rules}"},
-                    {"role": "user", "content": prompt}
+                    {"role": "user",   "content": prompt}
                 ]
             )
-            raw = completion.choices[0].message.content
+            raw     = completion.choices[0].message.content
             cleaned = re.sub(r"^(Package|Script) Analysis:\s*", "", raw.strip(), flags=re.IGNORECASE)
             print(f"  AI description generated using {model}")
             return cleaned
@@ -472,7 +681,7 @@ def build_package_prompt(parsed: dict, package_name: str):
     lines = [f"Package: {package_name}"]
     lines.append(f"Created by: {parsed['package_info'].get('creator', '')}")
     lines.append(f"\nConnections ({len(parsed['connections'])}):")
-    for c in parsed["connections"][:10]:
+    for c in parsed["connections"][:8]:
         lines.append(f"  - {c['name']} ({c['type']}): {c['conn_string'][:80]}")
     lines.append(f"\nFile Sources: {', '.join(f['name'] for f in parsed['file_sources'][:8])}")
     lines.append(f"\nControl Flow ({len(parsed['control_flow'])} tasks):")
@@ -506,7 +715,7 @@ def read_backlog(backlog_path: Path):
 
 
 def add_to_backlog(backlog_path: Path, key: str, reason: str):
-    data = read_backlog(backlog_path)
+    data      = read_backlog(backlog_path)
     data[key] = {"reason": reason, "failed_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")}
     backlog_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
@@ -593,6 +802,7 @@ def process_package(path_key: str, status: str, main_repo: Path, wiki_dir: Path,
                 add_to_backlog(backlog_path, doc_key, "AI call failed — all models exhausted")
                 return False
 
+            # AI summaries for script tasks
             for script in parsed["script_tasks"]:
                 if script["code"]:
                     script["summary"] = get_ai_description(script["code"], SCRIPT_RULES, api_key) or "_AI summary unavailable._"
@@ -649,11 +859,10 @@ def main():
 
     # Load backlog for retry
     backlog = read_backlog(backlog_path)
-    for doc_key in backlog:
+    for doc_key in list(backlog.keys()):
         parts = doc_key.split("/", 1)
         if len(parts) == 2:
             project, package_name = parts
-            # Try to find the file in SSIS folder
             ssis_root = main_repo / args.ssis_root
             matches = list(ssis_root.rglob(f"{package_name}.dtsx"))
             if matches:
