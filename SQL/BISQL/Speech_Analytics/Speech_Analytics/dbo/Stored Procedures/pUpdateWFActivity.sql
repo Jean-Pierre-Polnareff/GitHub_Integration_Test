@@ -1,7 +1,7 @@
 ﻿-- =============================================
 -- Author:		Vladislav Pilipets
 -- Create date: 8/17/22
--- Description:	Update workflow activity 
+-- Description:	Update workflow activity  
 -- =============================================
 --Guid session_id, long activity_id, string error_msg, int isProcessed, string end_time
 CREATE PROCEDURE [dbo].[pUpdateWFActivity] 
