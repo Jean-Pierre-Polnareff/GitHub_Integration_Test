@@ -1,3 +1,10 @@
+## 2026-06-09
+
+CREATED: SSIS/DWDailyUpdate/DWDailyUpdate/Cache_Extractions.dtsx
+CREATED: SSIS/DWDailyUpdate/DWDailyUpdate/Cache_Staging_Customer.dtsx
+
+---
+
 ## 2026-06-03
 
 DELETED: SSIS/CallMiner/GetTextData_CALMNR/CallMiner_ImportJSONFileToSQL.dtsx
