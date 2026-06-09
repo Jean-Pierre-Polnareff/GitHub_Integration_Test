@@ -3,7 +3,8 @@ name: Deploy PBIP to Power BI and Update Changelog
 on:
   push:
     branches: [main]
-  workflow_dispatch:
+    paths:
+      - 'PowerBI/**'
 
 permissions:
   contents: write
