@@ -1,14 +1,51 @@
+## 2026-07-21
+
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/XGBRegressionModel.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RPT_CFPB_excpt_resticted_called.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RPT_Client_KPI_ScoreCard_ins.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RPT_Envision_Placement.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RPT_Envision_Placement_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RPT_Model_Performance_Sloping_RptMonth.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RPT_Model_Performance_Sloping_RptMonth_Auto.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RPT_SMS_Threshold_Excpt.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RPT_TCPA_30_Day_Excpt.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RPT_TCPA_30_Day_Excpt_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RPT_calls_Acct_Worked_Monthly_ins_curr_Month_Prod.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RPT_calls_Acct_Worked_Monthly_ins_prev_Month_Prod.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RPT_email_firstmo_unq_ins.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RPT_email_guid_INS.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RPT_email_guid_INS_delete.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RPT_fact_letter_idn_excpt.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_Radius_call_Stats.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_model_score_TMobile_newplacements.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_model_score_TMobile_newplacements_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_model_score_att.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_model_score_att_instatute.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_model_score_att_oos.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_model_score_envision_pendrick.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_model_score_pendrick_collection.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_model_score_rgs_mv_hi.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_model_score_rgs_mv_lo.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_model_score_rgs_mv_paidamt.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_model_score_rgs_mv_payers.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_model_score_thirdprod_expense.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_model_score_tmobile.sql
+
+---
+
 ## 2026-06-17
 
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/demo_sp..sql
 
 ---
 
+
 ## 2026-06-09
 
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/pTblClientStreams_NewClient_Email.sql
 
 ---
+
 
 
 ## 2026-06-03
@@ -38,6 +75,7 @@ CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_1
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_21_SQL_AXPINCENTIVE_Update_2.sql
 
 ---
+
 
 
 
