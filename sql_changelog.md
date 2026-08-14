@@ -30,6 +30,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_c
 CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_client_amex_segment_missing_notify.sql
 CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_client_amex_segment_missing_notify_1.sql
 CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_insert_RPT_client_CAM_digital.sql
+CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_RPT_Model_Performance_Sloping_RptMonth.sql
 
 ---
 
@@ -69,6 +70,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_m
 ---
 
 
+
 ## 2026-06-17
 
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/demo_sp..sql
@@ -77,11 +79,13 @@ CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/demo_
 
 
 
+
 ## 2026-06-09
 
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/pTblClientStreams_NewClient_Email.sql
 
 ---
+
 
 
 
@@ -113,6 +117,7 @@ CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_1
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_21_SQL_AXPINCENTIVE_Update_2.sql
 
 ---
+
 
 
 
