@@ -1,10 +1,1 @@
-{
-  "BISQL/Client_Analytics/dbo/usp_RPT_Envision_Placement_1": {
-    "reason": "AI call failed \u2014 all models exhausted",
-    "failed_at": "2026-07-21 15:31:52"
-  },
-  "BISQL/Client_Analytics/dbo/usp_RPT_email_guid_INS_delete": {
-    "reason": "AI call failed \u2014 all models exhausted",
-    "failed_at": "2026-07-21 15:34:09"
-  }
-}
+{}

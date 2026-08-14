@@ -1,3 +1,38 @@
+## 2026-08-14
+
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/Sp_UpdateStatsAndLoadDetails_CLIENT_ANALYTICS.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_RPT_Weekly_Amex_Neustar_Report.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_SFTP_Monthly_RPT_client_Amex_digital.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_SFTP_Monthly_RPT_client_Amex_digital_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_SMPROD_Daily_Email_Activity.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_SendHotlistMail.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_61_Rpt_Pendricks_Kpi_Daily.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_61_Rpt_Pendricks_Kpi_Daily_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_62_Rpt_SMS_Summary_Daily.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_63_Rpt_SMS_IDL_Click.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_63_Rpt_SMS_IDL_Click_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_AFF_SMS_Email_Monthly.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_Insert_RPT_POSTDATED_CHECKS.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_Insert_RPT_POSTDATED_CHECKS_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_Insert_RPT_POSTDATED_CHECKS_2.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_Insert_RPT_POSTDATED_CHECKS_UNIQUE_ACCTS.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_Insert_RPT_POSTDATED_CHECKS_UNIQUE_ACCTS_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_Insert_RPT_POSTDATED_CHECKS_UNIQUE_ACCTS_2.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_Insert_RPT_Postdate_12Mth.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_Insert_RPT_Postdate_12Mth_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_Insert_RPT_Postdate_25Mth_USBank.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_Insert_RPT_Postdate_25Mth_USBank_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_Insert_RPT_Promise_Summary.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_Insert_RPT_Web_Waterfall_AXP_Payment_Program_Detail.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_Insert_RPT_Web_Waterfall_AXP_Payment_Program_Detail_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_Insert_Tbl_PostDates_Snapshot.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_client_BridgeCrest_MUM_Uverse_Primary_Inbound_SMS_CTA4_Calls_Daily.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_client_amex_segment_missing_notify.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_client_amex_segment_missing_notify_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_insert_RPT_client_CAM_digital.sql
+
+---
+
 ## 2026-07-21
 
 CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/XGBRegressionModel.sql
@@ -33,6 +68,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_m
 
 ---
 
+
 ## 2026-06-17
 
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/demo_sp..sql
@@ -40,11 +76,13 @@ CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/demo_
 ---
 
 
+
 ## 2026-06-09
 
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/pTblClientStreams_NewClient_Email.sql
 
 ---
+
 
 
 
@@ -75,6 +113,7 @@ CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_1
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_21_SQL_AXPINCENTIVE_Update_2.sql
 
 ---
+
 
 
 
