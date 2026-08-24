@@ -1,3 +1,48 @@
+## 2026-08-24
+
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_RPT_Batch_Inv_Performance.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_RPT_Batch_Inv_Performance_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_RPT_Batch_Inv_Performance_2.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_RPT_Batch_Inv_Performance_3.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_RPT_Batch_Inv_Performance_NEW.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_RPT_Monthly_Amex_Email_Datapoint.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_RPT_Monthly_Amex_Neustar_Report.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_RPT_Monthly_Amex_Web_Datapoint.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_RPT_SMS_sendseq_summary.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_RPT_SMS_sendseq_summary_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_CTNV_transfers.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_CTNV_transfers_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_CTNV_transfers_2.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_Email_Optout_Excpt.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_Email_Optout_Excpt_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_SMS_Optout_Excpt.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_SMS_Optout_Excpt_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_SMS_Optout_Excpt_2.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_SMS_Optout_Excpt_3.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_SMS_Optout_detail.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_SMS_Optout_detail_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_client_Amex_SMS_V2.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_client_Amex_SMS_V2_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_client_Amex_digital.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_client_Amex_digital_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_client_USbank_digital.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_client_USbank_digital_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_client_gold_unit_cost_report.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_RPT_client_gold_unit_cost_report_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_other.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_other_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_other_cfpb.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_letter_excpt_compliance_check.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_letter_excpt_compliance_check_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_letter_excpt_compliance_check_2.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_usaa.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_kpi_rpt.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_mul_rpc_data.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_mul_rpc_data_facs.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_mul_rpc_data_facs_1.sql
+
+---
+
 ## 2026-08-14
 
 CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/Sp_UpdateStatsAndLoadDetails_CLIENT_ANALYTICS.sql
@@ -33,6 +78,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_i
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_RPT_Model_Performance_Sloping_RptMonth.sql
 
 ---
+
 
 ## 2026-07-21
 
@@ -71,6 +117,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_m
 
 
 
+
 ## 2026-06-17
 
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/demo_sp..sql
@@ -80,11 +127,13 @@ CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/demo_
 
 
 
+
 ## 2026-06-09
 
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/pTblClientStreams_NewClient_Email.sql
 
 ---
+
 
 
 
@@ -117,6 +166,7 @@ CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_1
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_21_SQL_AXPINCENTIVE_Update_2.sql
 
 ---
+
 
 
 
