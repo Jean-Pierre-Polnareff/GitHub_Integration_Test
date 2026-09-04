@@ -1,3 +1,48 @@
+## 2026-09-04
+
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_Web_Waterfall_Visits_by_Source_CustomerID.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_Client_Amex_Non_RegF_dials_to_cfpb.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_1P_client.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_2.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_3.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_FACS.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_FACS_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_FACS_call_attempts.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_FACS_call_attempts_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_Non_RegF_AXP_Legal_7in7.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_call_attempts .sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_call_attempts.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_call_attempts_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_call_attempts_2.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_cfpb OLD.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_cfpb.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_cfpb_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_cfpb_2.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_cfpb_3.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_cfpb_4.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_cfpb_AMEX_client.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_cfpb_call_attempts.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_cfpb_call_attempts_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_cfpb_call_attempts_client.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_cfpb_client.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_cfpb_facs.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_cfpb_facs_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_cfpb_facs_call_Attempts.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_cfpb_other.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_client.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_client_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_compliance_check.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_compliance_check_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_compliance_check_2.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_compliance_check_3.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_compliance_check_facs.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_compliance_check_facs_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_compliance_check_facs_2.sql
+
+---
+
 ## 2026-08-24
 
 CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_RPT_Batch_Inv_Performance.sql
@@ -43,6 +88,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_in
 
 ---
 
+
 ## 2026-08-14
 
 CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/Sp_UpdateStatsAndLoadDetails_CLIENT_ANALYTICS.sql
@@ -78,6 +124,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_i
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_RPT_Model_Performance_Sloping_RptMonth.sql
 
 ---
+
 
 
 ## 2026-07-21
@@ -118,6 +165,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_m
 
 
 
+
 ## 2026-06-17
 
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/demo_sp..sql
@@ -128,11 +176,13 @@ CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/demo_
 
 
 
+
 ## 2026-06-09
 
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/pTblClientStreams_NewClient_Email.sql
 
 ---
+
 
 
 
@@ -166,6 +216,7 @@ CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_1
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_21_SQL_AXPINCENTIVE_Update_2.sql
 
 ---
+
 
 
 

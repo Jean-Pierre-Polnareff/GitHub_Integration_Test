@@ -1,34 +1,26 @@
 {
-  "BISQL/Client_Analytics/dbo/sp_RPT_Batch_Inv_Performance_2": {
-    "reason": "AI call failed \u2014 all models exhausted",
-    "failed_at": "2026-08-24 15:29:03"
-  },
-  "BISQL/Client_Analytics/dbo/sp_RPT_Batch_Inv_Performance_NEW": {
-    "reason": "AI call failed \u2014 all models exhausted",
-    "failed_at": "2026-08-24 15:29:12"
-  },
   "BISQL/Client_Analytics/dbo/sp_RPT_SMS_sendseq_summary": {
     "reason": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte",
-    "failed_at": "2026-08-24 15:30:05"
+    "failed_at": "2026-09-04 15:21:58"
   },
   "BISQL/Client_Analytics/dbo/sp_insert_RPT_CTNV_transfers": {
     "reason": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte",
-    "failed_at": "2026-08-24 15:30:25"
+    "failed_at": "2026-09-04 15:21:58"
   },
   "BISQL/Client_Analytics/dbo/sp_insert_RPT_client_Amex_SMS_V2": {
     "reason": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte",
-    "failed_at": "2026-08-24 15:33:55"
+    "failed_at": "2026-09-04 15:21:58"
   },
   "BISQL/Client_Analytics/dbo/sp_insert_fact_dial_excpt_other": {
     "reason": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte",
-    "failed_at": "2026-08-24 15:37:17"
+    "failed_at": "2026-09-04 15:21:58"
   },
-  "BISQL/Client_Analytics/dbo/sp_insert_fact_letter_excpt_compliance_check_2": {
+  "BISQL/Client_Analytics/dbo/sp_insert_fact_dial_excpt_1": {
     "reason": "AI call failed \u2014 all models exhausted",
-    "failed_at": "2026-08-24 15:38:39"
+    "failed_at": "2026-09-04 15:10:06"
   },
-  "BISQL/Client_Analytics/dbo/sp_insert_kpi_rpt": {
+  "BISQL/Client_Analytics/dbo/sp_insert_fact_dial_excpt_call_attempts_1": {
     "reason": "AI call failed \u2014 all models exhausted",
-    "failed_at": "2026-08-24 15:38:46"
+    "failed_at": "2026-09-04 15:14:00"
   }
 }
