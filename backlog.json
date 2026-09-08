@@ -1,26 +1,86 @@
 {
   "BISQL/Client_Analytics/dbo/sp_RPT_SMS_sendseq_summary": {
     "reason": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte",
-    "failed_at": "2026-09-04 15:21:58"
+    "failed_at": "2026-09-08 15:23:36"
   },
   "BISQL/Client_Analytics/dbo/sp_insert_RPT_CTNV_transfers": {
     "reason": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte",
-    "failed_at": "2026-09-04 15:21:58"
+    "failed_at": "2026-09-08 15:23:36"
   },
   "BISQL/Client_Analytics/dbo/sp_insert_RPT_client_Amex_SMS_V2": {
     "reason": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte",
-    "failed_at": "2026-09-04 15:21:58"
+    "failed_at": "2026-09-08 15:23:36"
   },
   "BISQL/Client_Analytics/dbo/sp_insert_fact_dial_excpt_other": {
     "reason": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte",
-    "failed_at": "2026-09-04 15:21:58"
+    "failed_at": "2026-09-08 15:23:36"
   },
-  "BISQL/Client_Analytics/dbo/sp_insert_fact_dial_excpt_1": {
+  "BISQL/Client_Analytics/dbo/RPT_Todds_RPT_PlacementHistory": {
     "reason": "AI call failed \u2014 all models exhausted",
-    "failed_at": "2026-09-04 15:10:06"
+    "failed_at": "2026-09-08 15:15:29"
   },
-  "BISQL/Client_Analytics/dbo/sp_insert_fact_dial_excpt_call_attempts_1": {
+  "BISQL/Client_Analytics/dbo/rpt_transfer_mnsql5": {
     "reason": "AI call failed \u2014 all models exhausted",
-    "failed_at": "2026-09-04 15:14:00"
+    "failed_at": "2026-09-08 15:15:48"
+  },
+  "BISQL/Client_Analytics/dbo/rpt_transfer_mnsql5_daily": {
+    "reason": "AI call failed \u2014 all models exhausted",
+    "failed_at": "2026-09-08 15:15:49"
+  },
+  "BISQL/Client_Analytics/dbo/sp_Amex_Call_Exceptions_30_and_60_days": {
+    "reason": "AI call failed \u2014 all models exhausted",
+    "failed_at": "2026-09-08 15:15:49"
+  },
+  "BISQL/Client_Analytics/dbo/sp_INS_RPT_Web_Waterfall_New_Monthly_Table": {
+    "reason": "AI call failed \u2014 all models exhausted",
+    "failed_at": "2026-09-08 15:17:43"
+  },
+  "BISQL/Client_Analytics/dbo/sp_INS_RPT_client_Southwood_Bi-Monthly_Activity": {
+    "reason": "AI call failed \u2014 all models exhausted",
+    "failed_at": "2026-09-08 15:18:09"
+  },
+  "BISQL/Client_Analytics/dbo/sp_INS_RPT_payment_detail_new": {
+    "reason": "AI call failed \u2014 all models exhausted",
+    "failed_at": "2026-09-08 15:18:09"
+  },
+  "BISQL/Client_Analytics/dbo/sp_INS_client_PRA_Group_Daily_Email_SMS": {
+    "reason": "AI call failed \u2014 all models exhausted",
+    "failed_at": "2026-09-08 15:18:09"
+  },
+  "BISQL/Client_Analytics/dbo/sp_INS_client_Southwood_Daily_Active_Inv_Performance_RadiusCall": {
+    "reason": "AI call failed \u2014 all models exhausted",
+    "failed_at": "2026-09-08 15:18:35"
+  },
+  "BISQL/Client_Analytics/dbo/sp_INS_client_Southwood_Daily_Active_Inv_Performance_RadiusCall_1": {
+    "reason": "AI call failed \u2014 all models exhausted",
+    "failed_at": "2026-09-08 15:18:36"
+  },
+  "BISQL/Client_Analytics/dbo/sp_INS_client_Southwood_Report_Call_Activity": {
+    "reason": "AI call failed \u2014 all models exhausted",
+    "failed_at": "2026-09-08 15:19:03"
+  },
+  "BISQL/Client_Analytics/dbo/sp_INS_client_Southwood_Report_Call_Activity_2": {
+    "reason": "AI call failed \u2014 all models exhausted",
+    "failed_at": "2026-09-08 15:19:04"
+  },
+  "BISQL/Client_Analytics/dbo/sp_amex_payment_portal_QA_export_1": {
+    "reason": "AI call failed \u2014 all models exhausted",
+    "failed_at": "2026-09-08 15:19:32"
+  },
+  "BISQL/Client_Analytics/dbo/sp_ins_RPT_DialerExceptionClientSpecific": {
+    "reason": "AI call failed \u2014 all models exhausted",
+    "failed_at": "2026-09-08 15:20:41"
+  },
+  "BISQL/Client_Analytics/dbo/sp_ins_RPT_FACS_Client_Placement_History": {
+    "reason": "AI call failed \u2014 all models exhausted",
+    "failed_at": "2026-09-08 15:20:41"
+  },
+  "BISQL/Client_Analytics/dbo/sp_ins_RPT_calls_for_callminer": {
+    "reason": "AI call failed \u2014 all models exhausted",
+    "failed_at": "2026-09-08 15:20:57"
+  },
+  "BISQL/Client_Analytics/dbo/sp_ins_Web_Waterfall_Visits_by_Source_2": {
+    "reason": "AI call failed \u2014 all models exhausted",
+    "failed_at": "2026-09-08 15:22:13"
   }
 }

@@ -1,3 +1,48 @@
+## 2026-09-08
+
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/RPT_Todds_RPT_PlacementHistory.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/rpt_RPT_Monthly_ActiveInventory.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/rpt_pull_client_envision_disputes_monthly_ClientID.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/rpt_transfer_mnsql5.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/rpt_transfer_mnsql5_daily.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_Amex_Call_Exceptions_30_and_60_days.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_Amex_Call_Exceptions_30_and_60_days_bkp.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_RPT_Web_Recurring_Payments.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_RPT_Web_Waterfall_Metrics_Data_Client_Summary.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_RPT_Web_Waterfall_Metrics_Data_Client_Summary_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_RPT_Web_Waterfall_Metrics_Data_Client_Summary_2.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_RPT_Web_Waterfall_New_Monthly_Table.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_RPT_Web_Waterfall_New_Monthly_Table_Pivot.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_RPT_client_Southwood_Bi-Monthly_Activity.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_RPT_payment_detail_new.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_client_PRA_Group_Daily_Email_SMS.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_client_Southwood_Daily_Active_Inv_Performance.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_client_Southwood_Daily_Active_Inv_Performance_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_client_Southwood_Daily_Active_Inv_Performance_RadiusCall.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_client_Southwood_Daily_Active_Inv_Performance_RadiusCall_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_client_Southwood_Daily_Active_Inv_Performance_RadiusCall_2.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_client_Southwood_Report_Call_Activity.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_INS_client_Southwood_Report_Call_Activity_2.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_amex_payment_portal_QA_export.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_amex_payment_portal_QA_export_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_Client_USBank_Vendor_Pay.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_FACS_firstrpc.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_FACS_firstrpc_day.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_RPT_DialerExceptionClientSpecific.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_RPT_FACS_Client_Placement_History.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_RPT_Optin_Inventory_by_Month.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_RPT_Optin_Inventory_by_Month_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_RPT_calls_for_callminer.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_RPT_calls_for_callminer_1.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_Web_Waterfall_Visits_by_Source.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_Web_Waterfall_Visits_by_Source_2.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_client_Citi_callsbystate.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_client_usbank_firstrpc.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_client_usbank_firstrpc_day.sql
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_rpt_Email_Spampage.sql
+
+---
+
 ## 2026-09-04
 
 CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_Web_Waterfall_Visits_by_Source_CustomerID.sql
@@ -42,6 +87,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_in
 CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_compliance_check_facs_2.sql
 
 ---
+
 
 ## 2026-08-24
 
@@ -89,6 +135,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_in
 ---
 
 
+
 ## 2026-08-14
 
 CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/Sp_UpdateStatsAndLoadDetails_CLIENT_ANALYTICS.sql
@@ -124,6 +171,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_i
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_RPT_Model_Performance_Sloping_RptMonth.sql
 
 ---
+
 
 
 
@@ -166,6 +214,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_m
 
 
 
+
 ## 2026-06-17
 
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/demo_sp..sql
@@ -177,11 +226,13 @@ CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/demo_
 
 
 
+
 ## 2026-06-09
 
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/pTblClientStreams_NewClient_Email.sql
 
 ---
+
 
 
 
@@ -216,6 +267,7 @@ CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_1
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_21_SQL_AXPINCENTIVE_Update_2.sql
 
 ---
+
 
 
 
