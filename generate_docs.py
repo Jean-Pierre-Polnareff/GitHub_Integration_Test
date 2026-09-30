@@ -621,7 +621,7 @@ def generate_doc(
                 lines.append(f"![{page_name}]({encoded_png})\n")
             else:
                 lines.append(f"![{page_name}]()\n")
-            page_desc = existing_page_descs.get(page_name, "_Add page description here._")
+            page_desc = existing_page_descs.get(page_name, "")
             lines.append(f"{page_desc}\n")
     else:
         lines.append("_No pages found._\n")
