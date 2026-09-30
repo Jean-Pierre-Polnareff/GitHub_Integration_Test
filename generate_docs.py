@@ -252,6 +252,226 @@ def get_tables_data(tables_folder: Path):
 
 
 # ---------------------------------------------------------------------------
+# Relationships parser + Mermaid data-model diagram
+# ---------------------------------------------------------------------------
+
+AUTO_DATE_PREFIXES = ("LocalDateTable_", "DateTableTemplate_")
+
+# TMDL column reference: Table.Column, 'My Table'.'My Col', Table.'My Col' ...
+# Quotes inside names are escaped by doubling them ('').
+_COLREF_RE = re.compile(r"^('(?:[^']|'')+'|[^.']+)\.('(?:[^']|'')+'|.+)$")
+
+
+def _unquote(name: str) -> str:
+    name = name.strip()
+    if len(name) >= 2 and name.startswith("'") and name.endswith("'"):
+        name = name[1:-1].replace("''", "'")
+    return name
+
+
+def _split_colref(ref: str):
+    m = _COLREF_RE.match(ref.strip())
+    if not m:
+        return None, None
+    return _unquote(m.group(1)), _unquote(m.group(2))
+
+
+def is_auto_date_table(table_name: str) -> bool:
+    return table_name.startswith(AUTO_DATE_PREFIXES)
+
+
+def parse_relationships(rel_path: Path):
+    """
+    Parse relationships.tmdl into a list of dicts.
+    TMDL only writes non-default properties, so defaults are filled in:
+      fromCardinality = many, toCardinality = one,
+      crossFilteringBehavior = oneDirection, isActive = true
+    """
+    if not rel_path.exists():
+        return []
+
+    relationships = []
+    current = None
+
+    for raw in rel_path.read_text(encoding="utf-8").splitlines():
+        line = raw.rstrip()
+        header = re.match(r"^relationship\s+(\S+)", line)
+        if header:
+            if current:
+                relationships.append(current)
+            current = {"id": header.group(1)}
+            continue
+        if current is None:
+            continue
+        prop = re.match(r"^\t(\w+)\s*:\s*(.+)$", line)
+        if prop:
+            current[prop.group(1)] = prop.group(2).strip()
+
+    if current:
+        relationships.append(current)
+
+    results = []
+    for r in relationships:
+        from_table, from_col = _split_colref(r.get("fromColumn", ""))
+        to_table, to_col     = _split_colref(r.get("toColumn", ""))
+        if not from_table or not to_table:
+            print(f"  Warning: could not parse relationship {r.get('id')}")
+            continue
+        results.append({
+            "from_table":  from_table,
+            "from_column": from_col,
+            "to_table":    to_table,
+            "to_column":   to_col,
+            "from_card":   r.get("fromCardinality", "many"),
+            "to_card":     r.get("toCardinality", "one"),
+            "cross_filter": r.get("crossFilteringBehavior", "oneDirection"),
+            "is_active":   r.get("isActive", "true").lower() != "false",
+        })
+    return results
+
+
+def get_model_tables(tables_folder: Path):
+    """Return {table_name: {"hidden": bool, "types": {column: dataType}}}."""
+    tables = {}
+    if not tables_folder.exists():
+        return tables
+    for tmdl_file in sorted(tables_folder.glob("*.tmdl")):
+        result = parse_tmdl(tmdl_file)
+        if result is None:
+            continue
+        tables[result["table_name"]] = {
+            "hidden": result["is_hidden"],
+            "types":  {c["Column"]: c["DataType"] for c in result["columns"]},
+        }
+    return tables
+
+
+def _mermaid_id(name: str, used: set) -> str:
+    base = re.sub(r"\W", "_", name).strip("_") or "Table"
+    if base[0].isdigit():
+        base = f"T_{base}"
+    candidate, n = base, 2
+    while candidate in used:
+        candidate = f"{base}_{n}"
+        n += 1
+    used.add(candidate)
+    return candidate
+
+
+def _mermaid_word(text: str) -> str:
+    """Attribute names/types in erDiagram must be single words."""
+    return re.sub(r"\W", "_", text).strip("_") or "col"
+
+
+def _card_label(from_card: str, to_card: str) -> str:
+    sym = {"many": "*", "one": "1"}
+    return f"{sym.get(from_card, '*')}:{sym.get(to_card, '1')}"
+
+
+def build_model_diagram_md(tables: dict, relationships: list):
+    """
+    Build the '## Data Model' body: Mermaid erDiagram + relationships table
+    + collapsible list of auto date/time relationships.
+    """
+    model_rels = [r for r in relationships
+                  if not is_auto_date_table(r["from_table"])
+                  and not is_auto_date_table(r["to_table"])]
+    auto_rels  = [r for r in relationships if r not in model_rels]
+
+    # Tables to draw: every non-auto, non-hidden table, plus anything that
+    # takes part in a relationship (even if hidden).
+    drawn = [t for t, meta in tables.items()
+             if not is_auto_date_table(t) and not meta["hidden"]]
+    for r in model_rels:
+        for t in (r["from_table"], r["to_table"]):
+            if t not in drawn:
+                drawn.append(t)
+
+    out = []
+
+    if not drawn:
+        out.append("_No tables found._")
+        return "\n".join(out)
+
+    # Key columns per table, marked PK (one side) / FK (many side)
+    keys = {t: {} for t in drawn}
+    for r in model_rels:
+        for table, col, card in ((r["from_table"], r["from_column"], r["from_card"]),
+                                 (r["to_table"],   r["to_column"],   r["to_card"])):
+            marks = keys[table].setdefault(col, set())
+            marks.add("PK" if card == "one" else "FK")
+
+    used_ids = set()
+    ids = {t: _mermaid_id(t, used_ids) for t in drawn}
+
+    out.append("```mermaid")
+    out.append("erDiagram")
+    for t in drawn:
+        label = t.replace('"', "'")
+        cols  = keys.get(t, {})
+        if cols:
+            out.append(f'    {ids[t]}["{label}"] {{')
+            for col in sorted(cols):
+                dtype = _mermaid_word(tables.get(t, {}).get("types", {}).get(col) or "column")
+                marks = ", ".join(sorted(cols[col], reverse=True))  # PK before FK
+                out.append(f'        {dtype} {_mermaid_word(col)} {marks}')
+            out.append("    }")
+        else:
+            out.append(f'    {ids[t]}["{label}"]')
+
+    left  = {"many": "}o", "one": "||"}
+    right = {"many": "o{", "one": "||"}
+    for r in model_rels:
+        line  = ".." if not r["is_active"] else "--"
+        arrow = "⇄" if r["cross_filter"] == "bothDirections" else "→"
+        rel_label = f'{r["from_column"]} {arrow} {r["to_column"]}'.replace('"', "'")
+        if not r["is_active"]:
+            rel_label += " (inactive)"
+        out.append(
+            f'    {ids[r["from_table"]]} {left.get(r["from_card"], "}o")}{line}'
+            f'{right.get(r["to_card"], "||")} {ids[r["to_table"]]} : "{rel_label}"'
+        )
+    out.append("```")
+    out.append("")
+    out.append("_Solid line = active relationship, dashed = inactive. "
+               "→ single-direction filter, ⇄ bidirectional filter. "
+               "Only key columns used in relationships are shown; "
+               "see Schema for all columns._")
+    out.append("")
+
+    out.append("### Relationships\n")
+    if model_rels:
+        headers = ["From Table", "From Column", "To Table", "To Column",
+                   "Cardinality", "Cross Filter", "Active"]
+        rows = [[r["from_table"], r["from_column"], r["to_table"], r["to_column"],
+                 _card_label(r["from_card"], r["to_card"]),
+                 "Both" if r["cross_filter"] == "bothDirections" else "Single",
+                 "Yes" if r["is_active"] else "No"]
+                for r in model_rels]
+        out.append(rows_to_markdown(headers, rows))
+    else:
+        out.append("_No relationships between model tables._")
+
+    disconnected = [t for t in drawn if not keys.get(t)]
+    if disconnected and model_rels:
+        out.append("")
+        out.append("**Disconnected tables:** " + ", ".join(f"`{t}`" for t in disconnected))
+
+    if auto_rels:
+        out.append("")
+        out.append("<details>")
+        out.append(f"<summary>Auto date/time relationships ({len(auto_rels)}) — "
+                   "generated by Power BI's Auto date/time setting</summary>\n")
+        out.append(rows_to_markdown(
+            ["Table", "Date Column"],
+            [[r["from_table"], r["from_column"]] for r in auto_rels],
+        ))
+        out.append("\n</details>")
+
+    return "\n".join(out)
+
+
+# ---------------------------------------------------------------------------
 # Pages reader
 # ---------------------------------------------------------------------------
 
@@ -375,6 +595,7 @@ def generate_doc(
     png_list: list,
     pages: list,
     all_columns, all_measures, sources, dax_tables,
+    data_model_md=None,
     existing_report_desc=None,
     existing_page_descs=None,
     existing_users=None,
@@ -412,6 +633,10 @@ def generate_doc(
 
     lines.append("## DAX Tables\n")
     lines.append(build_dax_tables_md(dax_tables))
+    lines.append("\n---\n")
+
+    lines.append("## Data Model\n")
+    lines.append(data_model_md if data_model_md else "_No semantic model found._")
     lines.append("\n---\n")
 
     lines.append("## Schema\n")
@@ -560,14 +785,23 @@ def main():
                 else:
                     existing_report_desc, existing_page_descs, existing_users = None, {}, None
 
-                # Remove old PNGs before regenerating
                 prefix = f"{workspace}_{report_name}_page"
-                for old_png in wiki_dir.glob(f"{prefix}*.png"):
-                    old_png.unlink()
-                    print(f"  Removed old PNG: {old_png}")
-
-                # Convert PDF to PNGs
-                png_list = pdf_to_pngs(pdf_path, workspace, report_name, wiki_dir)
+                if pdf_path.exists():
+                    # New PDF supplied: replace old PNGs
+                    for old_png in wiki_dir.glob(f"{prefix}*.png"):
+                        old_png.unlink()
+                        print(f"  Removed old PNG: {old_png}")
+                    png_list = pdf_to_pngs(pdf_path, workspace, report_name, wiki_dir)
+                else:
+                    # No new PDF (e.g. model-only change): keep existing PNGs
+                    existing_pngs = sorted(
+                        wiki_dir.glob(f"{prefix}*.png"),
+                        key=lambda p: int(re.search(r"page(\d+)\.png$", p.name).group(1))
+                        if re.search(r"page(\d+)\.png$", p.name) else 0,
+                    )
+                    png_list = [(f"Page {i}", p.name) for i, p in enumerate(existing_pngs, start=1)]
+                    if png_list:
+                        print(f"  No PDF supplied — reusing {len(png_list)} existing PNG(s).")
 
                 # Delete PDF from main repo after conversion
                 if pdf_path.exists():
@@ -581,6 +815,11 @@ def main():
                 else:
                     all_columns, all_measures, sources, dax_tables = [], [], [], []
 
+                rel_path = pbip_folder / f"{report_name}.SemanticModel" / "definition" / "relationships.tmdl"
+                model_tables = get_model_tables(tables_folder)
+                data_model_md = (build_model_diagram_md(model_tables, parse_relationships(rel_path))
+                                 if model_tables else None)
+
                 generate_doc(
                     workspace=workspace,
                     report_name=report_name,
@@ -591,6 +830,7 @@ def main():
                     all_measures=all_measures,
                     sources=sources,
                     dax_tables=dax_tables,
+                    data_model_md=data_model_md,
                     existing_report_desc=existing_report_desc,
                     existing_page_descs=existing_page_descs,
                     existing_users=existing_users,
