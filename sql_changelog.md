@@ -1,3 +1,9 @@
+## 2026-10-05
+
+CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_RptART_MTDDailyProduction.sql
+
+---
+
 ## 2026-09-08
 
 CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/RPT_Todds_RPT_PlacementHistory.sql
@@ -43,6 +49,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_in
 
 ---
 
+
 ## 2026-09-04
 
 CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_ins_Web_Waterfall_Visits_by_Source_CustomerID.sql
@@ -87,6 +94,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_in
 CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_insert_fact_dial_excpt_compliance_check_facs_2.sql
 
 ---
+
 
 
 ## 2026-08-24
@@ -136,6 +144,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/sp_in
 
 
 
+
 ## 2026-08-14
 
 CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/Sp_UpdateStatsAndLoadDetails_CLIENT_ANALYTICS.sql
@@ -171,6 +180,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_i
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_RPT_Model_Performance_Sloping_RptMonth.sql
 
 ---
+
 
 
 
@@ -215,6 +225,7 @@ CREATED: SQL/BISQL/Client_Analytics/Client_Analytics/dbo/Stored Procedures/usp_m
 
 
 
+
 ## 2026-06-17
 
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/demo_sp..sql
@@ -227,11 +238,13 @@ CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/demo_
 
 
 
+
 ## 2026-06-09
 
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/pTblClientStreams_NewClient_Email.sql
 
 ---
+
 
 
 
@@ -267,6 +280,7 @@ CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_1
 CREATED: SQL/BISQL/Speech_Analytics/Speech_Analytics/dbo/Stored Procedures/usp_21_SQL_AXPINCENTIVE_Update_2.sql
 
 ---
+
 
 
 
