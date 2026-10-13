@@ -76,6 +76,36 @@ def parse_m_expression(expression: str):
     if "Table.FromRows" in expression or "Binary.Decompress" in expression:
         return {"Source Type": "Hardcoded Embedded Table", "Database": None, "Schema": None, "Table": None}
 
+    # Native SQL query: Sql.Database("server", "db", [Query="SELECT ... FROM ..."])
+    if "Sql.Database" in expression and re.search(r'\[\s*Query\s*=', expression):
+        db_match = re.search(r'Sql\.Database\s*\(\s*"[^"]+"\s*,\s*"([^"]+)"', expression)
+        q_match  = re.search(r'Query\s*=\s*"((?:[^"]|"")*)"', expression)
+        sql = (q_match.group(1) if q_match else "")
+        sql = (sql.replace("#(lf)", " ").replace("#(cr)", " ")
+                  .replace("#(tab)", " ").replace('""', '"'))
+
+        # Tables referenced in FROM / JOIN clauses: [db].[schema].[table], schema.table, table
+        refs = re.findall(
+            r'\b(?:FROM|JOIN)\s+((?:\[[^\]]+\]|[\w#@]+)(?:\s*\.\s*(?:\[[^\]]+\]|[\w#@]+)){0,2})',
+            sql, re.IGNORECASE,
+        )
+        schemas, tables = [], []
+        for ref in refs:
+            parts  = [x.strip().strip("[]") for x in re.split(r"\s*\.\s*", ref)]
+            table  = parts[-1]
+            schema = parts[-2] if len(parts) >= 2 else ""
+            if table not in tables:
+                tables.append(table)
+            if schema and schema not in schemas:
+                schemas.append(schema)
+
+        return {
+            "Source Type": "SQL Query",
+            "Database":    db_match.group(1) if db_match else None,
+            "Schema":      ", ".join(schemas) or None,
+            "Table":       ", ".join(tables)  or None,
+        }
+
     if "Sql.Database" in expression:
         db_match = re.search(r'Sql\.Database\s*\(\s*"[^"]+"\s*,\s*"([^"]+)"', expression)
         database = db_match.group(1) if db_match else None
@@ -163,7 +193,7 @@ def parse_tmdl(tmdl_path: Path):
             i += 1
             continue
 
-        part_match = re.match(r"^\tpartition\s+\S+\s*=\s*(calculated|m)\s*$", line)
+        part_match = re.match(r"^\tpartition\s+(?:'(?:[^']|'')+'|\S+)\s*=\s*(calculated|m)\s*$", line)
         if part_match:
             partition_type = part_match.group(1)
             src_lines  = []
@@ -181,7 +211,7 @@ def parse_tmdl(tmdl_path: Path):
                 if in_source:
                     if pl.startswith("\t") and not pl.startswith("\t\t\t"):
                         kw = pl.strip().split()[0] if pl.strip() else ""
-                        if kw in ("annotation", "partition", "column",
+                        if kw in ("annotation", "partition", "column", "changedProperty",
                                   "measure", "hierarchy", "mode"):
                             break
                     src_lines.append(pl.strip())
@@ -225,14 +255,14 @@ def get_tables_data(tables_folder: Path):
         if result is None:
             continue
 
-        tn        = result["table_name"]
-        is_hidden = result["is_hidden"]
+        tn = result["table_name"]
 
         if result["is_dax"] and result["dax_expr"]:
             dax_tables.append({"TableName": tn, "Expression": result["dax_expr"]})
             continue
 
-        if is_hidden:
+        # Include hidden tables; skip only Power BI's auto date/time tables
+        if is_auto_date_table(tn):
             continue
 
         all_columns.extend(result["columns"])
@@ -331,7 +361,7 @@ def parse_relationships(rel_path: Path):
 
 
 def get_model_tables(tables_folder: Path):
-    """Return {table_name: {"hidden": bool, "types": {column: dataType}}}."""
+    """Return {table_name: {"hidden": bool, "columns": [(name, dataType), ...]}} in model order."""
     tables = {}
     if not tables_folder.exists():
         return tables
@@ -339,10 +369,20 @@ def get_model_tables(tables_folder: Path):
         result = parse_tmdl(tmdl_file)
         if result is None:
             continue
-        tables[result["table_name"]] = {
-            "hidden": result["is_hidden"],
-            "types":  {c["Column"]: c["DataType"] for c in result["columns"]},
-        }
+        # Calculated (DAX) columns and columns of calculated tables carry no
+        # dataType in TMDL - Power BI infers it - so label them "calculated".
+        calc_cols = set()
+        for ln in tmdl_file.read_text(encoding="utf-8").splitlines():
+            m = re.match(r"^\tcolumn\s+('(?:[^']|'')+'|[^=]+?)\s*=", ln)
+            if m:
+                calc_cols.add(m.group(1).strip().strip("'").replace("''", "'"))
+        cols = []
+        for c in result["columns"]:
+            dtype = c["DataType"]
+            if not dtype and (result["is_dax"] or c["Column"] in calc_cols):
+                dtype = "calculated"
+            cols.append((c["Column"], dtype))
+        tables[result["table_name"]] = {"hidden": result["is_hidden"], "columns": cols}
     return tables
 
 
@@ -370,51 +410,46 @@ def _card_label(from_card: str, to_card: str) -> str:
 
 def build_model_diagram_md(tables: dict, relationships: list):
     """
-    Build the '## Data Model' body: Mermaid erDiagram + relationships table
-    + collapsible list of auto date/time relationships.
+    Build the '## Data Model' body: Mermaid erDiagram of every table (key
+    columns only) + relationships table + collapsible list of auto date/time
+    relationships.
     """
     model_rels = [r for r in relationships
                   if not is_auto_date_table(r["from_table"])
                   and not is_auto_date_table(r["to_table"])]
     auto_rels  = [r for r in relationships if r not in model_rels]
 
-    # Tables to draw: every non-auto, non-hidden table, plus anything that
-    # takes part in a relationship (even if hidden).
-    drawn = [t for t, meta in tables.items()
-             if not is_auto_date_table(t) and not meta["hidden"]]
+    # Every table in the model except Power BI's auto date/time tables
+    drawn = [t for t in tables if not is_auto_date_table(t)]
     for r in model_rels:
         for t in (r["from_table"], r["to_table"]):
             if t not in drawn:
                 drawn.append(t)
-
-    out = []
-
     if not drawn:
-        out.append("_No tables found._")
-        return "\n".join(out)
+        return "_No tables found._"
 
-    # Key columns per table, marked PK (one side) / FK (many side)
-    keys = {t: {} for t in drawn}
+    # PK (one side) / FK (many side) markers for relationship columns
+    marks = {}
     for r in model_rels:
         for table, col, card in ((r["from_table"], r["from_column"], r["from_card"]),
                                  (r["to_table"],   r["to_column"],   r["to_card"])):
-            marks = keys[table].setdefault(col, set())
-            marks.add("PK" if card == "one" else "FK")
+            marks.setdefault((table, col), set()).add("PK" if card == "one" else "FK")
 
     used_ids = set()
     ids = {t: _mermaid_id(t, used_ids) for t in drawn}
 
-    out.append("```mermaid")
-    out.append("erDiagram")
+    out = ["```mermaid", "erDiagram"]
     for t in drawn:
         label = t.replace('"', "'")
-        cols  = keys.get(t, {})
+        # Only the columns used in relationships (full list is in Schema)
+        types = dict(tables.get(t, {}).get("columns", []))
+        cols  = sorted({(mc, types.get(mc, "")) for (mt, mc) in marks if mt == t})
         if cols:
             out.append(f'    {ids[t]}["{label}"] {{')
-            for col in sorted(cols):
-                dtype = _mermaid_word(tables.get(t, {}).get("types", {}).get(col) or "column")
-                marks = ", ".join(sorted(cols[col], reverse=True))  # PK before FK
-                out.append(f'        {dtype} {_mermaid_word(col)} {marks}')
+            for col, dtype in cols:
+                m = marks.get((t, col))
+                suffix = " " + ", ".join(sorted(m, reverse=True)) if m else ""
+                out.append(f"        {_mermaid_word(dtype or 'unknown')} {_mermaid_word(col)}{suffix}")
             out.append("    }")
         else:
             out.append(f'    {ids[t]}["{label}"]')
@@ -427,48 +462,37 @@ def build_model_diagram_md(tables: dict, relationships: list):
         rel_label = f'{r["from_column"]} {arrow} {r["to_column"]}'.replace('"', "'")
         if not r["is_active"]:
             rel_label += " (inactive)"
-        out.append(
-            f'    {ids[r["from_table"]]} {left.get(r["from_card"], "}o")}{line}'
-            f'{right.get(r["to_card"], "||")} {ids[r["to_table"]]} : "{rel_label}"'
-        )
+        out.append(f'    {ids[r["from_table"]]} {left.get(r["from_card"], "}o")}{line}'
+                   f'{right.get(r["to_card"], "||")} {ids[r["to_table"]]} : "{rel_label}"')
     out.append("```")
     out.append("")
     out.append("_Solid line = active relationship, dashed = inactive. "
                "→ single-direction filter, ⇄ bidirectional filter. "
-               "Only key columns used in relationships are shown; "
-               "see Schema for all columns._")
+               "Only key columns used in relationships are shown; see Schema for all columns._")
     out.append("")
 
     out.append("### Relationships\n")
     if model_rels:
-        headers = ["From Table", "From Column", "To Table", "To Column",
-                   "Cardinality", "Cross Filter", "Active"]
         rows = [[r["from_table"], r["from_column"], r["to_table"], r["to_column"],
                  _card_label(r["from_card"], r["to_card"]),
                  "Both" if r["cross_filter"] == "bothDirections" else "Single",
-                 "Yes" if r["is_active"] else "No"]
-                for r in model_rels]
-        out.append(rows_to_markdown(headers, rows))
+                 "Yes" if r["is_active"] else "No"] for r in model_rels]
+        out.append(rows_to_markdown(["From Table", "From Column", "To Table", "To Column",
+                                     "Cardinality", "Cross Filter", "Active"], rows))
     else:
         out.append("_No relationships between model tables._")
-
-    disconnected = [t for t in drawn if not keys.get(t)]
-    if disconnected and model_rels:
-        out.append("")
-        out.append("**Disconnected tables:** " + ", ".join(f"`{t}`" for t in disconnected))
 
     if auto_rels:
         out.append("")
         out.append("<details>")
         out.append(f"<summary>Auto date/time relationships ({len(auto_rels)}) — "
                    "generated by Power BI's Auto date/time setting</summary>\n")
-        out.append(rows_to_markdown(
-            ["Table", "Date Column"],
-            [[r["from_table"], r["from_column"]] for r in auto_rels],
-        ))
+        out.append(rows_to_markdown(["Table", "Date Column"],
+                                    [[r["from_table"], r["from_column"]] for r in auto_rels]))
         out.append("\n</details>")
-
     return "\n".join(out)
+
+
 
 
 # ---------------------------------------------------------------------------
