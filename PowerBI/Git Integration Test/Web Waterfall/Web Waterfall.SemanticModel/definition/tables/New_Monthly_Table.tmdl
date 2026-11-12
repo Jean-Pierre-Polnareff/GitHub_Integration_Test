@@ -1,0 +1,935 @@
+table New_Monthly_Table
+	isHidden
+	lineageTag: 6f54e01d-5eb7-4a17-b07a-17d23978e1b3
+
+	measure Count_of_Rows = CALCULATE(DISTINCTCOUNT('New_Monthly_Table'[SessionId]))
+		formatString: 0
+		isHidden
+		lineageTag: 4b2aecff-e0df-4260-ac3c-f059e4df72eb
+
+		changedProperty = IsHidden
+
+	measure 'KMS PIN Entered New test' = CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI]IN {"account_suppressed","pin_login_failed","pin_login_succeeded","dob_login_succeeded","ssn_login_succeeded","dob_login_failed","ssn_login_failed","frictionless_login"} )
+		formatString: 0
+		isHidden
+		lineageTag: acd8d473-42d6-4e51-bb3b-16da12fbf23a
+
+		changedProperty = IsHidden
+
+	measure 'KMS PIN Login New test' = CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI] IN { "pin_login_succeeded","dob_login_succeeded","ssn_login_succeeded","frictionless_login"}  )
+		formatString: 0
+		isHidden
+		lineageTag: 5f760d2f-a3c3-4837-910f-7bbb10c9f09a
+
+		changedProperty = IsHidden
+
+	measure 'Main Measure' = ```
+			
+			VAR varKM = UPPER(IF(HASONEVALUE('KMS New'[KPI]),VALUES('KMS New'[KPI]),BLANK()))
+			RETURN
+			SWITCH(varKM,
+			--==========================================Log in UX==================================================
+			"Reference Number Entered",format(CALCULATE([KMS Hits New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")),"#,0"),
+			"PIN Entered",format(CALCULATE([KMS PIN Entered New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")),"#,0"),
+			"Successful Log In",format(CALCULATE([KMS PIN Login New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")),"#,0"),
+			"Reference Number Locked",format(CALCULATE([KMS Hits New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reference_number_locked" ),"#,0"),
+			"Reference Number Failed",format(CALCULATE([KMS Hits New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reference_number_login_failed" ),"#,0"),
+			"Reference Number Succeeded",format(CALCULATE([KMS Hits New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reference_number_login_succeeded" ),"#,0"),
+			"PIN Failed",format(CALCULATE([KMS PIN Entered New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "pin_login_failed" || 'New_Monthly_Table'[Key] = "ssn_login_failed" || 'New_Monthly_Table'[Key] ="dob_login_failed"),"#,0"),
+			"Account Suppressed",format(CALCULATE([KMS PIN Entered New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "account_suppressed" ),"#,0"),
+			"Log In Rate",format(CALCULATE([KMS Login % New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")),"0%;(0%)"),
+			--========================================Performance================================================
+			
+			"Payments",format(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")),"#,0"),
+			"Conversion Rate",format(CALCULATE([KMS Conversion %  New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <>"Nil")),"0%;(0%)"),
+			
+			"Payment $", 
+			FORMAT( CALCULATE([KMS Payment $ New test],  KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"),New_Monthly_Table[is_email]||New_Monthly_Table[is_sms]||New_Monthly_Table[is_unspecified]), "$#,##0" ),
+			
+			"Average Payment", 
+			FORMAT( CALCULATE([KMS Average Payment New test],  KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month]<> "Nil")), "$#,##0" ),
+			
+			"Future Payments Set Up", format(CALCULATE([KMS Future Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")),"#,0"),
+			"Future Payment $ Set Up", format(CALCULATE([KMS Future Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")),"$#,##0"),
+			
+			--========================================Payment Programs================================================
+			
+			"Payments in Full",format(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "pay_in_full_submitted" ),"#,0"),
+			"Payment in Full as % of Total",format(DIVIDE(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "pay_in_full_submitted" ),CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),"0%;(0%)"),
+			"Installments",format(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "installment_submitted" ),"#,0"),
+			"Installments as % of Total",format(DIVIDE(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "installment_submitted" ),CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),"0%;(0%)"),
+			"Reocurring Payments",format(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reocurring_submitted" ),"#,0"),
+			"Reocurring Payments as % of Total",format(DIVIDE(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reocurring_submitted" ),CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),"0%;(0%)"),
+			"Settlements",format(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "settlement_submitted" ),"#,0"),
+			"Settlements as % of Total",format(DIVIDE(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "settlement_submitted" ),CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),"0%;(0%)"),
+			"One Time Payments",format(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "one_time_payment_submitted" ),"#,0"),
+			"One Time Payments as % of Total",format(DIVIDE(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "one_time_payment_submitted" ),CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),"0%;(0%)"),
+			
+			"AXP Payment Programs",format(CALCULATE([KMS AXP Payment Programs # New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")),"#,0"),
+			
+			"AXP Payment Programs % of Total",
+			format(DIVIDE(CALCULATE([KMS AXP Payment Programs # New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Amod")),
+			CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"),New_Monthly_Table[SourceSystem]="AMEX Latitude")),"0%;(0%)"),
+			
+			
+			
+			"Payments in Full $",format(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"),New_Monthly_Table[is_pay_in_full_submitted]),"$#,##0"),
+			"Payment in Full as % of $",format(DIVIDE(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Amod"),New_Monthly_Table[is_pay_in_full_submitted]),CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),"0%;(0%)"),
+			
+			"Installments $",format(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"),New_Monthly_Table[is_installment_submitted]),"$#,##0"),
+			"Installments as % of $",format(DIVIDE(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"),New_Monthly_Table[is_installment_submitted]),CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),"0%;(0%)"),
+			
+			
+			"Reocurring Payments $",format(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_recurring_submitted] ),"$#,##0"),
+			"Reocurring Payments as % of $",format(DIVIDE(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_recurring_submitted]),CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),"0%;(0%)"),
+			
+			"Settlements $",format(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_settlement_submitted]),"$#,##0"),
+			"Settlements as % of $",format(DIVIDE(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_settlement_submitted]),CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),"0%;(0%)"),
+			
+			
+			"One Time Payments $",format(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_one_time_payment_submitted] ),"$#,##0"),
+			"One Time Payments as % of $",format(DIVIDE(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_one_time_payment_submitted]),CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),"0%;(0%)"),
+			
+			
+			"AXP Payment Programs $",format(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_Axp_payment_programs]),"$#,##0"),
+			"AXP Payment Programs % of $",format(DIVIDE(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_Axp_payment_programs] ),CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[SourceSystem] = "AMEX Latitude")),"0%;(0%)"),
+			
+			--==================================================Contact Information===============
+			"Contact Information Updated",format(CALCULATE([KMS Contact Info New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "contact_information_updated" ),"#,0"),
+			"Contact Information Removed",format(CALCULATE([KMS Contact Info New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "contact_information_removed" ),"#,0"),
+			"Email Consent Provided",format(CALCULATE([KMS Contact Info New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "email_consent_provided" ),"#,0"),
+			"Email Consent Removed",format(CALCULATE([KMS Contact Info New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "email_consent_removed" ),"#,0"),
+			"SMS Consent Provided",format(CALCULATE([KMS Contact Info New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "sms_consent_provided" ),"#,0"),
+			"SMS Consent Removed",format(CALCULATE([KMS Contact Info New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "sms_consent_removed" ),"#,0"),
+			"Support Email Sent",format(CALCULATE([KMS Contact Info New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "support_email_sent" ),"#,0"),
+			
+			
+			format(CALCULATE([Count_of_Rows],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")),"#,0")
+			)
+			```
+		isHidden
+		lineageTag: cd88fd95-6e20-48e5-b08a-1879b4d01d68
+
+		changedProperty = IsHidden
+
+	measure 'KMS Hits New test' = CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI] IN {"reference_number_locked" ,"reference_number_login_failed" ,"reference_number_login_succeeded","frictionless_Login" })
+		formatString: 0
+		isHidden
+		lineageTag: c4cd2150-49b1-4f62-8f85-8548cab9c727
+
+		changedProperty = IsHidden
+
+	measure 'KMS Average Payment New test' = DIVIDE(CALCULATE(sum('New_Monthly_Table'[Payments]),ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order])),CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI] IN {"one_time_payment_submitted","pay_in_full_submitted","settlement_submitted","installment_submitted","custom_installment_submitted","reocurring_submitted"}))
+		isHidden
+		lineageTag: 05381e64-7d7f-4291-8746-bc56f45712d4
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'KMS AXP Payment Programs # New test' = CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI]="program_enrollment")
+		formatString: 0
+		isHidden
+		lineageTag: 2d29bb09-b2d8-4f72-a711-010b10e8542f
+
+		changedProperty = IsHidden
+
+	measure 'KMS Contact Info New test' = CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI]IN {"contact_information_updated","email_consent_provided" ,"sms_consent_provided","contact_information_removed","email_consent_removed","sms_consent_removed","support_email_sent"})
+		formatString: 0
+		isHidden
+		lineageTag: 0c6200b8-2edf-4807-a3fa-027ff0880ab1
+
+		changedProperty = IsHidden
+
+	measure 'KMS Future Payment $ New test' = CALCULATE(SUM('New_Monthly_Table'[PaySeriesAmount]),ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI] IN {"program_enrollment","pay_in_full_submitted","settlement_submitted","installment_submitted","reocurring_submitted" })
+		isHidden
+		lineageTag: a8c25825-4763-47ae-b2a1-282f46448526
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'KMS Future Payments New test' = CALCULATE(SUM('New_Monthly_Table'[PaySeriesCount]),ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI] IN {"program_enrollment","pay_in_full_submitted","settlement_submitted", "installment_submitted","reocurring_submitted"})
+		formatString: 0
+		isHidden
+		lineageTag: d856686b-452d-437c-ba36-3c713b23e724
+
+		changedProperty = IsHidden
+
+	measure 'KMS Login % New test' = Divide(CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI] IN {"pin_login_succeeded","dob_login_succeeded","ssn_login_succeeded","alt_pin_login_succeeded","frictionless_login" } ),CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI] IN {"reference_number_locked" ,"reference_number_login_failed","reference_number_login_succeeded","frictionless_login"} ))
+		isHidden
+		lineageTag: df8404b6-b76a-46b1-8d5d-a7644c6089c7
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'KMS Payment $ New test' = CALCULATE(sum('New_Monthly_Table'[Payments]),ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]))
+		isHidden
+		lineageTag: 4b954a33-7784-473d-b2ff-cc832c7904d4
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'KMS Conversion %  New test' = CALCULATE(Divide([KMS Payments New test],[KMS PIN Login New test]))
+		isHidden
+		lineageTag: 99a1b71f-0741-4d92-be29-38a22cd1e349
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'KMS Payments New test' = CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI]  IN {"one_time_payment_submitted","pay_in_full_submitted","settlement_submitted" , "installment_submitted","custom_installment_submitted","reocurring_submitted"})
+		formatString: 0
+		isHidden
+		lineageTag: aa7cbb7e-3b44-47a3-81b0-156f9a6ce68b
+
+		changedProperty = IsHidden
+
+	measure 'Main Measure Numeric' = ```
+			
+			VAR varKM = UPPER(IF(HASONEVALUE('KMS New'[KPI]),VALUES('KMS New'[KPI]),BLANK()))
+			RETURN
+			SWITCH(varKM,
+			--==========================================Log in UX==================================================
+			"Reference Number Entered",(CALCULATE([KMS Hits New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),
+			"PIN Entered",(CALCULATE([KMS PIN Entered New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),
+			"Successful Log In",(CALCULATE([KMS PIN Login New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),
+			"Reference Number Locked",(CALCULATE([KMS Hits New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reference_number_locked" )),
+			"Reference Number Failed",(CALCULATE([KMS Hits New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reference_number_login_failed" )),
+			"Reference Number Succeeded",(CALCULATE([KMS Hits New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reference_number_login_succeeded" )),
+			"PIN Failed",(CALCULATE([KMS PIN Entered New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"),  'New_Monthly_Table'[Key] = "pin_login_failed" || 'New_Monthly_Table'[Key] = "ssn_login_failed" || 'New_Monthly_Table'[Key] ="dob_login_failed" )),
+			"Account Suppressed",(CALCULATE([KMS PIN Entered New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "account_suppressed" )),
+			"Log In Rate",(CALCULATE([KMS Login % New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),
+			--========================================Performance================================================
+			
+			"Payments",(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),
+			"Conversion Rate",(CALCULATE([KMS Conversion %  New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <>"Nil"))),
+			
+			"Payment $", 
+			( CALCULATE([KMS Payment $ New test],  KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"),New_Monthly_Table[is_email]||New_Monthly_Table[is_sms]||New_Monthly_Table[is_unspecified]) ),
+			
+			"Average Payment", 
+			( CALCULATE([KMS Average Payment New test],  KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),
+			
+			"Future Payments Set Up", (CALCULATE([KMS Future Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),
+			"Future Payment $ Set Up", (CALCULATE([KMS Future Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),
+			
+			--========================================Payment Programs================================================
+			
+			"Payments in Full",(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "pay_in_full_submitted" )),
+			"Payment in Full as % of Total",(DIVIDE(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "pay_in_full_submitted" ),CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")))),
+			"Installments",(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "installment_submitted" )),
+			"Installments as % of Total",(DIVIDE(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "installment_submitted" ),CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")))),
+			"Reocurring Payments",(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reocurring_submitted" )),
+			"Reocurring Payments as % of Total",(DIVIDE(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reocurring_submitted" ),CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")))),
+			"Settlements",(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "settlement_submitted" )),
+			"Settlements as % of Total",(DIVIDE(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "settlement_submitted" ),CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")))),
+			"One Time Payments",(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "one_time_payment_submitted" )),
+			"One Time Payments as % of Total",(DIVIDE(CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "one_time_payment_submitted" ),CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")))),
+			
+			"AXP Payment Programs",(CALCULATE([KMS AXP Payment Programs # New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),
+			
+			"AXP Payment Programs % of Total",
+			(DIVIDE(CALCULATE([KMS AXP Payment Programs # New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")),
+			CALCULATE([KMS Payments New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"),New_Monthly_Table[SourceSystem]="AMEX Latitude"))),
+			
+			
+			
+			"Payments in Full $",(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"),New_Monthly_Table[is_pay_in_full_submitted])),
+			"Payment in Full as % of $",(DIVIDE(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Amod"),New_Monthly_Table[is_pay_in_full_submitted]),CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")))),
+			
+			"Installments $",(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"),New_Monthly_Table[is_installment_submitted])),
+			"Installments as % of $",(DIVIDE(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"),New_Monthly_Table[is_installment_submitted]),CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")))),
+			
+			
+			"Reocurring Payments $",(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_recurring_submitted] )),
+			"Reocurring Payments as % of $",(DIVIDE(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_recurring_submitted]),CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")))),
+			
+			"Settlements $",(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_settlement_submitted])),
+			"Settlements as % of $",(DIVIDE(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_settlement_submitted]),CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")))),
+			
+			
+			"One Time Payments $",(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_one_time_payment_submitted] )),
+			"One Time Payments as % of $",(DIVIDE(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_one_time_payment_submitted]),CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")))),
+			
+			
+			"AXP Payment Programs $",(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_Axp_payment_programs])),
+			"AXP Payment Programs % of $",(DIVIDE(CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[is_Axp_payment_programs] ),CALCULATE([KMS Payment $ New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[SourceSystem] = "AMEX Latitude"))),
+			
+			--==================================================Contact Inion===============
+			"Contact Inion Updated",(CALCULATE([KMS Contact Info New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "contact_inion_updated" )),
+			"Contact Inion Removed",(CALCULATE([KMS Contact Info New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "contact_inion_removed" )),
+			"Email Consent Provided",(CALCULATE([KMS Contact Info New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "email_consent_provided" )),
+			"Email Consent Removed",(CALCULATE([KMS Contact Info New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "email_consent_removed" )),
+			"SMS Consent Provided",(CALCULATE([KMS Contact Info New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "sms_consent_provided" )),
+			"SMS Consent Removed",(CALCULATE([KMS Contact Info New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "sms_consent_removed" )),
+			"Support Email Sent",(CALCULATE([KMS Contact Info New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "support_email_sent" )),
+			
+			
+			(CALCULATE([Count_of_Rows],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")))
+			)
+			```
+		isHidden
+		lineageTag: 85c19a6c-ae1e-466a-b3b1-34a56c54e16b
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'NMT MoM%' = ```
+			
+			IF(
+			    ISFILTERED('New_Monthly_Table'[CapturedOn]),
+			    ERROR("Time intelligence quick measures can only be grouped or filtered by the Power BI-provided date hierarchy or primary date column."),
+			    VAR __PREV_MONTH =
+			        CALCULATE(
+			            [Main Measure Numeric],
+			            DATEADD('New_Monthly_Table'[CapturedOn].[Date], -1, MONTH)
+			        )
+			    VAR __CURRENT_MONTH = [Main Measure Numeric]
+			    RETURN
+			        IF(
+			            ISBLANK(__PREV_MONTH) || ISBLANK(__CURRENT_MONTH),
+			            BLANK(),  
+			            DIVIDE(__CURRENT_MONTH - __PREV_MONTH, __PREV_MONTH)
+			        )
+			)
+			
+			```
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		isHidden
+		lineageTag: 94741a77-d1c8-4b55-8b78-07db51d98351
+
+		changedProperty = IsHidden
+
+	measure 'NMT YoY%' = ```
+			
+			IF(
+			    ISFILTERED('New_Monthly_Table'[CapturedOn]),
+			    ERROR("Time intelligence quick measures can only be grouped or filtered by the Power BI-provided date hierarchy or primary date column."),
+			    VAR PREV_YEAR =
+			        CALCULATE(
+			            [Main Measure Numeric],
+			            DATEADD('New_Monthly_Table'[CapturedOn].[Date], -1, YEAR)
+			        )
+			    VAR CURRENT_YEAR = [Main Measure Numeric]
+			    RETURN
+			        IF(
+			            ISBLANK(PREV_YEAR) || ISBLANK(CURRENT_YEAR),
+			            BLANK(), 
+			            DIVIDE(CURRENT_YEAR - PREV_YEAR, PREV_YEAR)
+			        )
+			)
+			
+			```
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		isHidden
+		lineageTag: 9f620ce4-3a69-4f45-a823-9e579180e1af
+
+		changedProperty = IsHidden
+
+	measure 'Monthly Sessions Table Selected Year' =
+			
+			VAR singleselection = "Year " & SELECTEDVALUE('New_Monthly_Table'[CapturedOn].[Year])
+			VAR currentyear = "Year " & year(today())
+			RETURN
+			----IF
+			----(
+			----[DefaultSelection]=[AllSelections] ,"Year not Selected",singleselection)
+			"Monthly Table " & singleselection
+		isHidden
+		lineageTag: 674012c2-ba1a-4051-8ea9-2445706520c8
+
+		changedProperty = IsHidden
+
+	measure 'Daily Table Selected Month Year-NMT' = ```
+			
+			VAR SelectedMonth = SELECTEDVALUE('New_Monthly_Table'[Month-Year])
+			VAR MaxCapturedDate = CALCULATE(
+			    MAX('New_Monthly_Table'[CapturedOn]),
+			    ALL('New_Monthly_Table') 
+			)
+			VAR MaxMonthYear = FORMAT(MaxCapturedDate, "MMM-yy")
+			
+			VAR FinalMonth = 
+			    IF(
+			        NOT ISBLANK(SelectedMonth),
+			        SelectedMonth,
+			        BLANK()
+			    )
+			
+			RETURN
+			IF(
+			    ISBLANK(FinalMonth),
+			    "Daily Table",
+			    "Daily Table " & FinalMonth
+			)
+			
+			
+			```
+		isHidden
+		displayFolder: Daily Table
+		lineageTag: 26691a08-fa5f-4c4a-9ab9-7966f010fc55
+
+		changedProperty = IsHidden
+
+	measure SelectedMonthYear = ```
+			
+			VAR SelectedMonth = SELECTEDVALUE('New_Monthly_Table'[Month-Year])
+			VAR CurrentMonth = FORMAT(TODAY(), "MMM-yyyy")
+			RETURN
+			IF(
+			    NOT ISBLANK(SelectedMonth),
+			    SelectedMonth,
+			    CurrentMonth
+			)
+			
+			```
+		isHidden
+		displayFolder: Daily Table
+		lineageTag: fefb1f49-d902-4800-ac4f-52c088ab1240
+
+		changedProperty = IsHidden
+
+	column MetricId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e793a67d-edb0-4fad-86e8-81dee49e519a
+		summarizeBy: count
+		sourceColumn: MetricId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Key
+		dataType: string
+		isHidden
+		lineageTag: 41f865e2-a32d-4ca7-95d5-828e658ae946
+		summarizeBy: none
+		sourceColumn: Key
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CapturedOn
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: 5f725f30-ac6b-4a29-ad88-9fe71e343c88
+		summarizeBy: none
+		sourceColumn: CapturedOn
+
+		variation Variation
+			isDefault
+			relationship: a5d5e7bb-9275-46c1-ab66-0df7e3f2b529
+			defaultHierarchy: LocalDateTable_15e7e707-b51f-408b-86c7-c54c4360d140.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Count
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6392c84f-415c-4221-9c95-611bb671d13f
+		summarizeBy: sum
+		sourceColumn: Count
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ReferenceNumber
+		dataType: string
+		isHidden
+		lineageTag: 75476d89-c128-4386-9ada-68234f9f2e6a
+		summarizeBy: none
+		sourceColumn: ReferenceNumber
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Payments
+		dataType: double
+		isHidden
+		lineageTag: 531eab49-6d8d-4562-bcda-49b6e4a8da41
+		summarizeBy: sum
+		sourceColumn: Payments
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ClientId
+		dataType: string
+		isHidden
+		lineageTag: b01591d6-3eb3-4ea5-b893-b80f06dc6ebe
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientParent
+		dataType: string
+		isHidden
+		lineageTag: 9fd9f5e4-4328-4d3c-946d-8f5a310ed17c
+		summarizeBy: none
+		sourceColumn: ClientParent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column IpAddress
+		dataType: string
+		isHidden
+		lineageTag: 79249e96-ed2f-4186-9c56-a4736a1a94e6
+		summarizeBy: none
+		sourceColumn: IpAddress
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SessionId
+		dataType: string
+		isHidden
+		lineageTag: 3f2ddbfb-59a2-4968-8716-019f08de18db
+		summarizeBy: distinctCount
+		sourceColumn: SessionId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+	column UTM_Source
+		dataType: string
+		isHidden
+		lineageTag: c44a2356-d015-4255-9807-7756eea8c091
+		summarizeBy: none
+		sourceColumn: UTM_Source
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column UTM_Campaign
+		dataType: string
+		isHidden
+		lineageTag: 716b57d4-565b-419d-9574-0f29bceb53ef
+		summarizeBy: none
+		sourceColumn: UTM_Campaign
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SourceSystem
+		dataType: string
+		isHidden
+		lineageTag: 254e4820-efa3-4abd-b4b5-e8731b6d7b76
+		summarizeBy: none
+		sourceColumn: SourceSystem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: dfbce1db-1548-4fc1-8ee8-3aee523421d0
+		summarizeBy: count
+		sourceColumn: CustomerID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column PaySeriesAmount
+		dataType: double
+		isHidden
+		lineageTag: b799c33e-3144-4031-8d68-cc73cc2d5131
+		summarizeBy: sum
+		sourceColumn: PaySeriesAmount
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column PaySeriesCount
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 24b5f55e-4a48-4a73-9b9b-16ba5e7038eb
+		summarizeBy: sum
+		sourceColumn: PaySeriesCount
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Channel
+		dataType: string
+		isHidden
+		lineageTag: 9ec1370e-86ed-4325-bc85-a335a921b3d9
+		summarizeBy: none
+		sourceColumn: Channel
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Payment Method'
+		dataType: string
+		isHidden
+		lineageTag: 969a9177-3ead-4eb7-9adf-27e6246cd5b5
+		summarizeBy: none
+		sourceColumn: Payment Method
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column User
+		dataType: string
+		isHidden
+		lineageTag: 9fd9add8-8fae-48dd-a1a0-7258df73f233
+		summarizeBy: none
+		sourceColumn: User
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'PIN Method'
+		dataType: string
+		isHidden
+		lineageTag: eb952610-d03b-4cfb-84e0-ecbf8f125620
+		summarizeBy: none
+		sourceColumn: PIN Method
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month-Year =
+			
+			FORMAT(New_Monthly_Table[CapturedOn],"MMM-YY")
+		isHidden
+		lineageTag: 763966d2-3635-4a34-8047-7459e86626fb
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM =
+			
+			VAR YYYY= YEAR(New_Monthly_Table[CapturedOn])
+			VAR MM =  FORMAT(New_Monthly_Table[CapturedOn],"mm")
+			RETURN
+			YYYY & MM
+		isHidden
+		lineageTag: 72c19089-41d9-4c2b-87d1-795cdac36e18
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_Axp_payment_programs
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2593e0e7-6124-4aa5-9d76-426a3436f5ad
+		summarizeBy: sum
+		sourceColumn: Is_Axp_payment_programs
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_checks
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ccd80b4c-d303-45d6-9e84-eb5a934df1de
+		summarizeBy: sum
+		sourceColumn: Is_checks
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_comaker
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 3cbe9b7a-46ae-493a-81d9-2da10bfc1a43
+		summarizeBy: sum
+		sourceColumn: Is_comaker
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_credit_cards
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b0fd289a-0433-4d02-8efa-25851dcee488
+		summarizeBy: sum
+		sourceColumn: Is_credit_cards
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_debit_cards
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 812eabd3-27aa-42ae-a676-29125666a6d5
+		summarizeBy: sum
+		sourceColumn: Is_debit_cards
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_email
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: cccc4e27-344c-4483-a08d-b8e51c6ce405
+		summarizeBy: sum
+		sourceColumn: Is_email
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_frictionless
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 8be3bf1f-2ea7-41cd-8526-3d23dccd6d62
+		summarizeBy: sum
+		sourceColumn: Is_frictionless
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_future_payment_dollar_set_up
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 189e12a5-4c2b-4c85-9ee0-981c8afb6399
+		summarizeBy: sum
+		sourceColumn: Is_future_payment_dollar_set_up
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_future_payments_set_up
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 040a791c-26d4-46df-8945-d8aebca7ea3c
+		summarizeBy: sum
+		sourceColumn: Is_future_payments_set_up
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_installment_submitted
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b619ee90-09e5-4f1a-ba32-63f235dca400
+		summarizeBy: sum
+		sourceColumn: Is_installment_submitted
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_one_time_payment_submitted
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0686fb98-ed2e-4f72-a101-590b5b43a3a4
+		summarizeBy: sum
+		sourceColumn: Is_one_time_payment_submitted
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_pay_in_full_submitted
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: eddee9bf-b161-4a9a-8343-b1c09aeb2742
+		summarizeBy: sum
+		sourceColumn: Is_pay_in_full_submitted
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_pin
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5542cb40-a116-44d3-ac99-daec72094760
+		summarizeBy: sum
+		sourceColumn: Is_pin
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_primary
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2ce438c0-6432-4f05-9614-764977d51933
+		summarizeBy: sum
+		sourceColumn: Is_primary
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_recurring_submitted
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 99007ab9-e480-4ffe-8a5b-9c301f8e3e32
+		summarizeBy: sum
+		sourceColumn: Is_recurring_submitted
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_settlement_submitted
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7ab936c3-d074-4add-89a5-113c06cc9131
+		summarizeBy: sum
+		sourceColumn: Is_settlement_submitted
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_sms
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 401d0539-899c-40b8-bada-f1d9af24cddf
+		summarizeBy: sum
+		sourceColumn: Is_sms
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_ssn_dob_failed
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: cd89fcf9-8132-4d7b-9848-01b61f92b1d3
+		summarizeBy: sum
+		sourceColumn: Is_ssn_dob_failed
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_ssn_dob_succeeded
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f0050dc9-aa5a-4ac3-8c70-1e733bbd21c6
+		summarizeBy: sum
+		sourceColumn: Is_ssn_dob_succeeded
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Is_unspecified
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ec5d6e09-c99c-439e-b4be-23974fc4c745
+		summarizeBy: sum
+		sourceColumn: Is_unspecified
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStreamId
+		dataType: string
+		isHidden
+		lineageTag: 0d8855f0-3a7d-4ce7-963f-d99a2d06d91f
+		summarizeBy: none
+		sourceColumn: ClientStreamId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStream
+		dataType: string
+		isHidden
+		lineageTag: 38134353-604e-4ee5-996b-567c22d42b3d
+		summarizeBy: none
+		sourceColumn: ClientStream
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition New_Monthly_Table = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Databases("dfw2-bisql-001"),
+				    CLIENT_ANALYTICS = Source{[Name="CLIENT_ANALYTICS"]}[Data],
+				    dbo.RPT_Web_Waterfall_New_Monthly_Table_Pivot= CLIENT_ANALYTICS{[Schema="dbo",Item="RPT_Web_Waterfall_New_Monthly_Table_Pivot"]}[Data],
+				    #"Filtered Rows" = Table.SelectRows(dbo.RPT_Web_Waterfall_New_Monthly_Table_Pivot, each Date.IsInCurrentYear([CapturedOn]) or Date.IsInPreviousYear([CapturedOn])),
+				    #"Merged Queries" = Table.NestedJoin(#"Filtered Rows", {"SourceSystem", "ClientId"}, ClientMapping, {"SourceSystem2", "ClientId"}, "ClientMapping", JoinKind.LeftOuter),
+				    #"Expanded ClientMapping" = Table.ExpandTableColumn(#"Merged Queries", "ClientMapping", {"ClientStreamId", "ClientStream"}, {"ClientStreamId", "ClientStream"})
+				in
+				    #"Expanded ClientMapping"
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

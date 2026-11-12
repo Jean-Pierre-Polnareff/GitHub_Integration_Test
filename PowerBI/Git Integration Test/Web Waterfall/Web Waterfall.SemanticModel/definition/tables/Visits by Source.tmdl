@@ -1,0 +1,384 @@
+table 'Visits by Source'
+	isHidden
+	lineageTag: 3ef2ec62-3963-483c-9b7a-6eaf204ba93e
+
+	measure '% Sessions with Logins' = CALCULATE(DIVIDE(SUM('Visits by Source'[Logins]), SUM('Visits by Source'[Sessions_or_Visits])))
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		isHidden
+		lineageTag: 32640612-26f2-4d18-9b78-042f833c5a6e
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+	measure '% Sessions with Payment' = CALCULATE(DIVIDE(SUM('Visits by Source'[Payment_Succeed]), SUM('Visits by Source'[Sessions_or_Visits])))
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		isHidden
+		lineageTag: 82db3c7d-a199-4121-a70e-2a55bdd280b0
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+	measure 'Payment $ per Session' = CALCULATE(DIVIDE(SUM('Visits by Source'[Payments]), SUM('Visits by Source'[Sessions_or_Visits])))
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		isHidden
+		lineageTag: a1dffe81-6fcd-45bd-a071-5695813ff59d
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+	measure 'Payment $ per Payment' = CALCULATE(DIVIDE(SUM('Visits by Source'[Payments]), SUM('Visits by Source'[Payment_Succeed])))
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		isHidden
+		lineageTag: 4254574c-f4e4-4dfe-be09-94a9e2a9d8d5
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+	measure '% Sessions with Failed Login' = CALCULATE(DIVIDE(SUM('Visits by Source'[Logins_Failed]), SUM('Visits by Source'[Sessions_or_Visits])))
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		isHidden
+		lineageTag: 3186693a-c5e9-484b-91f9-8374cbd2ca25
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+	measure 'Campaigns DateRange' = ```
+			
+			VAR RangeStart = Min('Visits by Source'[CapturedDate]) 
+			VAR RangeEnd = Max('Visits by Source'[CapturedDate]) 
+			Return
+			"Visits by Source " & CONCATENATE(CONCATENATE(RangeStart," - "),RangeEnd)
+			```
+		isHidden
+		lineageTag: 25703abb-9319-425a-9897-fc1917eebf42
+
+		changedProperty = IsHidden
+
+	measure 'Volume DateRange' = ```
+			
+			VAR RangeStart = Min('Visits by Source'[CapturedDate]) 
+			VAR RangeEnd = Max('Visits by Source'[CapturedDate]) 
+			Return
+			"Volume " & CONCATENATE(CONCATENATE(RangeStart," - "),RangeEnd)
+			```
+		isHidden
+		lineageTag: 27c23e6d-9220-4bee-95e1-8b58214a81ce
+
+		changedProperty = IsHidden
+
+	measure 'Visits %per Source' =
+			DIVIDE(sum('Visits by Source'[Sessions_or_Visits]),CALCULATE(SUM('Visits by Source'[Sessions_or_Visits]), ALLEXCEPT('Visits by Source','Visits by Source'[Month-Year])))
+			/*
+			DIVIDE(
+			    SUM('Email/SMS Campaigns'[Sessions_or_Visits]),
+			    SUMX(
+			      CALCULATETABLE(
+			        'Email/SMS Campaigns',
+			        ALL('Email/SMS Campaigns'[Campaign])
+			      ),
+			      [Sessions_or_Visits]
+			    ))
+			    */
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		isHidden
+		lineageTag: 7165ec34-7ca5-4678-a04f-7cc9cc89f030
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+	measure 'Visits with Login %per Source' = DIVIDE(sum('Visits by Source'[Logins]),CALCULATE(SUM('Visits by Source'[Logins]), ALLEXCEPT('Visits by Source','Visits by Source'[Month-Year])))
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		isHidden
+		lineageTag: d85528b1-f8ea-4e47-8698-0e5b113648f4
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+	measure 'Visits with Pymt %per Source' = DIVIDE(sum('Visits by Source'[Payment_Succeed]),CALCULATE(SUM('Visits by Source'[Payment_Succeed]), ALLEXCEPT('Visits by Source','Visits by Source'[Month-Year])))
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		isHidden
+		lineageTag: 8d728c33-a117-461c-84a1-f8c771e0d291
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+	measure 'Pymt $ %per Source' = DIVIDE(sum('Visits by Source'[Payments]),CALCULATE(SUM('Visits by Source'[Payments]), ALLEXCEPT('Visits by Source','Visits by Source'[Month-Year])))
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		isHidden
+		lineageTag: 91d3a155-c589-4372-8a71-5ddcac3d75ab
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+	column CapturedDate
+		dataType: dateTime
+		isHidden
+		formatString: m/d/yy
+		lineageTag: 47c08955-4512-492f-9074-1404ffe8f652
+		summarizeBy: none
+		sourceColumn: CapturedDate
+
+		variation Variation
+			isDefault
+			relationship: 321ab28c-4c36-429b-ae98-610e826f7a99
+			defaultHierarchy: LocalDateTable_9081d408-10cf-43fc-b131-ed9ad59fb0cb.'Date Hierarchy'
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ClientId
+		dataType: string
+		isHidden
+		lineageTag: 72c25642-79c3-4465-8b94-fb47ae852a30
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Campaign
+		dataType: string
+		isHidden
+		lineageTag: 6ca9e21b-c46d-4802-96e5-4fa516e29709
+		summarizeBy: none
+		sourceColumn: Campaign
+		sortByColumn: Campaign_Order
+
+		changedProperty = IsHidden
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column Sessions_or_Visits
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: a1e8dd38-3d96-42c5-85ea-c2ca58a8f756
+		summarizeBy: sum
+		sourceColumn: Sessions_or_Visits
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Payments
+		dataType: double
+		isHidden
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 4f69f321-63b8-4f08-85df-6703405bb47f
+		summarizeBy: sum
+		sourceColumn: Payments
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Logins
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: c1e8f840-3ada-4312-88f7-d1d9609d52b0
+		summarizeBy: sum
+		sourceColumn: Logins
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Payment_Succeed
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: e220623d-b813-4b90-860b-81b04e8f0aa6
+		summarizeBy: sum
+		sourceColumn: Payment_Succeed
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Payment_Processing
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: d558fb3e-3d0e-4606-8d6b-d4edc5254b2e
+		summarizeBy: sum
+		sourceColumn: Payment_Processing
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column KeySourceSystem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a9799d8b-d486-405a-96a7-129cf3a5fd5e
+		summarizeBy: sum
+		sourceColumn: KeySourceSystem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SourceSystem
+		dataType: string
+		isHidden
+		lineageTag: 73d15c83-e11a-45ed-8f18-75513e5c13ff
+		summarizeBy: none
+		sourceColumn: SourceSystem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientParent
+		dataType: string
+		isHidden
+		lineageTag: dd289502-878c-4a67-a117-b2747b7cc723
+		summarizeBy: none
+		sourceColumn: ClientParent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStreamId
+		dataType: string
+		isHidden
+		lineageTag: 75211f46-11e1-4179-8ee4-d2ecd98a15bd
+		summarizeBy: none
+		sourceColumn: ClientStreamId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStream
+		dataType: string
+		isHidden
+		lineageTag: 573f482f-bdcf-4917-a570-cc240ac69336
+		summarizeBy: none
+		sourceColumn: ClientStream
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Logins_Failed
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 31b95ee7-0978-4b97-bf2c-cb13b03ea1a0
+		summarizeBy: sum
+		sourceColumn: Logins_Failed
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Campaign_Order
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 16fe52fc-c832-4386-b52a-c11cabfb2a75
+		summarizeBy: none
+		sourceColumn: Campaign_Order
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+	column Month-Year = FORMAT('Visits by Source'[CapturedDate],"MMM-YY")
+		isHidden
+		lineageTag: f65d11cd-1dfb-4f29-823c-b561cc86ff5c
+		summarizeBy: none
+		sortByColumn: YYYYMM
+
+		changedProperty = SortByColumn
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM =
+			
+			VAR YYYY= YEAR('Visits by Source'[CapturedDate])
+			VAR MM =  FORMAT('Visits by Source'[CapturedDate],"mm")
+			RETURN
+			YYYY & MM
+		isHidden
+		lineageTag: d074df7f-617e-4813-8fe1-09d1b208ca46
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerID
+		dataType: int64
+		formatString: 0
+		lineageTag: 6c2f2585-7b72-4210-baff-1de12faa3227
+		summarizeBy: count
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column UTM_Campaign
+		dataType: string
+		lineageTag: 9af71f8f-ff56-4911-9e7d-3dca10165ec5
+		summarizeBy: none
+		sourceColumn: UTM_Campaign
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Visits by Source-14ec9fd3-5993-4897-a9b4-7c4cfafd8785' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("DFW2-BISQL-001", "CLIENT_ANALYTICS"),
+				    dbo_Web_Waterfall_Visits_by_Source_CustomerID = Source{[Schema="dbo",Item="Web_Waterfall_Visits_by_Source_CustomerID"]}[Data],
+				    #"Left Join DimSourceSystem" = Table.NestedJoin(dbo_Web_Waterfall_Visits_by_Source_CustomerID, {"KeySourceSystem"}, DimSourceSystem, {"KeySourceSystem"}, "DimSourceSystem", JoinKind.LeftOuter),
+				    #"Expanded DimSourceSystem - SourceSystem" = Table.ExpandTableColumn(#"Left Join DimSourceSystem", "DimSourceSystem", {"SourceSystem"}, {"SourceSystem"}),
+				    #"Left Join ClientMapping" = Table.NestedJoin(#"Expanded DimSourceSystem - SourceSystem", {"ClientId", "SourceSystem"}, ClientMapping, {"ClientId", "SourceSystem"}, "ClientMapping", JoinKind.LeftOuter),
+				    #"Expanded ClientMapping - ClientParent, ClientStreamId, ClientStream" = Table.ExpandTableColumn(#"Left Join ClientMapping", "ClientMapping", {"ClientParent", "ClientStreamId", "ClientStream"}, {"ClientParent", "ClientStreamId", "ClientStream"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Expanded ClientMapping - ClientParent, ClientStreamId, ClientStream", each Date.IsInPreviousYear([CapturedDate]) or Date.IsInCurrentYear([CapturedDate]))
+				in
+				    #"Filtered Rows"
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

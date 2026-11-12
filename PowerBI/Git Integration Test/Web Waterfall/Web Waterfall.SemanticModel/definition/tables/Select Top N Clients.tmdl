@@ -1,0 +1,26 @@
+table 'Select Top N Clients'
+	isHidden
+	lineageTag: cc0856a4-b4a0-4c71-ad9a-a9ecff4bb199
+
+	measure 'Select Top N Clients Value' = SELECTEDVALUE('Select Top N Clients'[Select Top N Clients], 10)
+		isHidden
+		lineageTag: 9e44a9b6-113e-4af1-b94a-7dfa578839b6
+
+	column 'Select Top N Clients'
+		isHidden
+		formatString: 0
+		lineageTag: e0c8f491-d8b8-4f9c-8f11-3fe74a375a59
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+		annotation SummarizationSetBy = User
+
+	partition 'Select Top N Clients-7477a942-165a-4c8d-8c52-9283cddfc6e1' = calculated
+		mode: import
+		source = GENERATESERIES(0, 50, 1)
+

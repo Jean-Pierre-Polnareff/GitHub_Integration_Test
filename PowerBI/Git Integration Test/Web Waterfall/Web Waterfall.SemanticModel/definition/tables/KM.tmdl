@@ -1,0 +1,83 @@
+table KM
+	isHidden
+	lineageTag: 43a94787-ed38-421c-8797-899a214a8387
+
+	column KM
+		dataType: string
+		isHidden
+		lineageTag: 9f8812f0-eb0a-4aef-bbbf-0593c287b451
+		summarizeBy: none
+		sourceColumn: KM
+		sortByColumn: Column1
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column1
+		dataType: double
+		isHidden
+		lineageTag: 8f908429-e22a-48a9-82e3-b34789e24e86
+		summarizeBy: none
+		sourceColumn: Column1
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Conditional Formatting'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 3f46500f-faf3-4105-8395-7bb43d41d8ca
+		summarizeBy: none
+		sourceColumn: Conditional Formatting
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Background Formatting'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ae0a435d-df3f-4150-bbcd-a8c8918279af
+		summarizeBy: none
+		sourceColumn: Background Formatting
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month = ```
+			IF(KM[KM]="Current Month", 
+			format((today()-1),"mmmm"),
+			IF(KM[KM]="Previous Month", 
+			format(Month((Today()-1)-1),"mmmm"),
+			IF(KM[KM]="% Diff from Previous", 
+			"Percent diff from " & format(Month((Today()-1)-1),"mmmm"),
+			KM[KM])))
+			```
+		isHidden
+		lineageTag: f481c5aa-255b-4c48-b817-874ee404aaa7
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition KM-48fd5f0e-0148-4e83-913c-3a73a43bc0a9 = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("jZZha9swEIb/ikhX6KBQO3bj7WOXDlZYu9Luy+iKUORzIiJbRpID/feTrNrJJfK2QvIhenR67707qS8vM/rvv9nlLHWfpP+8Xr7MfndJkgF5ggo0NBzIQ1evQJOvjXU/lOTi5qNj5+/70n6PHmDa9DCVim+hdOsZih3h1qKhFROyp/P/oU3HOUDZb7hGG05TW8RSe7x7GLJxS8XogEdad8CRqE8oBuNcdY11KtpWgzE98hkh+xijVHLxxbuWJsi2oCd8t1rUkQTTWHHCN1c120ZdSedo03cPkCdmwcm46suXZkhIrCnyqHXsrYbGGnKx7MNcI/OWqtmBNkINpy2vQtoLdJpqgFpRA21DNKd9VQtrg/YCe8neqC9GJyXGcFUMWCvhNBgujGiMZVKeYPMEYbwzVtV0ksYl0aB4p7Vo1pjCNXg3jnzwSxly7cZ5xtajtx7IETA1t3Pc/bhE5B7sRvVKFiga3wDferVDJ3ehh+fYeO6mQ1jKmS5HAntewuoYwHafCM6SmGDXNZZxS+6aSnkoxXLDqqtGpXTNrGsu2rUlCy5n2GWo3dBSt8X4orVa7USYiAzfQ6Y2USqP6/dLUa9/2A1ov4otVsrQUhgulek0eKOhfdeLTT4CzVa0beCO2tu6fKdCYtP9vaS0pcEKExoqx8YPc+dddIgEHkLluLP3Q2WoFMZSDVYL2AUWO38wLDE4mwhMS7BeJ4Lzqcgx+hprdtVca1ZTVbm3IyjxEBb7Tbgb7Mz/jnX1F6VbIVfk3K9iIQe320jgrli6e8CP3i9gmtz/vPUErs6jhp1QnTlEFkk0yL1r/I1fTuMRxnWc2xm5FVVFKq1qMrCewpmeT1A446FPQGvl23yB0428cx7Cby6TbsTiIJ6FSgvup1u6RzXQnsFz8NyyRpgN9R3O5J7CJpdqFTmuwDYbE9NUpH8RP/5HUGQT5+2JfOKwPXHkZfz5L7CZ009+cWDm6x8=", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [KM = _t, Column1 = _t, #"Conditional Formatting" = _t, #"Background Formatting" = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"KM", type text}, {"Column1", type number}, {"Conditional Formatting", Int64.Type}, {"Background Formatting", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_QueryRelationships = {"columnCount":4,"keyColumnNames":[],"queryRelationships":[],"columnIdentities":["Section1/KM/Changed Type.{KM,0}","Section1/KM/Changed Type.{Column1,1}","Section1/KM/Changed Type.{Conditional Formatting,2}","Section1/KM/Changed Type.{Background Formatting,3}"],"ColumnCount":4,"KeyColumnNames":[],"ColumnIdentities":["Section1/KM/Changed Type.{KM,0}","Section1/KM/Changed Type.{Column1,1}","Section1/KM/Changed Type.{Conditional Formatting,2}","Section1/KM/Changed Type.{Background Formatting,3}"],"RelationshipInfo":[]}
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

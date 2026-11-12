@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Web Waterfall"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "988b281b-51a2-4405-81df-ad9aa3353e01"
+  }
+}

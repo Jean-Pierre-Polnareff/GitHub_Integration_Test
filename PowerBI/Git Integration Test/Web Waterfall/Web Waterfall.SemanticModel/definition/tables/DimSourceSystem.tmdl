@@ -1,0 +1,92 @@
+table DimSourceSystem
+	isHidden
+	lineageTag: 9bae08a0-18e6-4eca-9e64-49e4807320e3
+
+	column KeySourceSystem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f8d32a80-f3f4-40f0-8fe3-ca5ef32e4e89
+		summarizeBy: sum
+		sourceColumn: KeySourceSystem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SourceSystem
+		dataType: string
+		isHidden
+		lineageTag: ec5f47c5-8532-4c05-9659-ecfcfb342bb8
+		summarizeBy: none
+		sourceColumn: SourceSystem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column InsertDate
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: 55cd9be7-65d2-4fee-ba6d-1c383a9087dd
+		summarizeBy: none
+		sourceColumn: InsertDate
+
+		variation Variation
+			isDefault
+			relationship: 61b94327-e475-4942-922c-a696f303e932
+			defaultHierarchy: LocalDateTable_87ed8d94-c79a-46bb-bbbc-1d8d16154308.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SourceSystem2
+		dataType: string
+		isHidden
+		lineageTag: 347b0927-bcae-408b-876f-14c7df350f0d
+		summarizeBy: none
+		sourceColumn: SourceSystem2
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SourceSystem_Prefix
+		dataType: string
+		isHidden
+		lineageTag: b6d246e0-b93a-423d-9dd0-ff26176d48d5
+		summarizeBy: none
+		sourceColumn: SourceSystem_Prefix
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SourceSystem_Prefix2
+		dataType: string
+		isHidden
+		lineageTag: fa52048d-50b4-4c29-99ae-6e44c49483e8
+		summarizeBy: none
+		sourceColumn: SourceSystem_Prefix2
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimSourceSystem-076372d6-b914-4543-896c-b03ec6cd8fcc = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("DFW2-BISQL-001", "DW_MSTR_DM"),
+				    dbo_DimSourceSystem = Source{[Schema="dbo",Item="DimSourceSystem"]}[Data]
+				in
+				    dbo_DimSourceSystem
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

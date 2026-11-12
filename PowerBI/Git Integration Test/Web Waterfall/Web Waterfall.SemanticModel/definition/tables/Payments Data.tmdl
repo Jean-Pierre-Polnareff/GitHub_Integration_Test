@@ -1,0 +1,487 @@
+table 'Payments Data'
+	lineageTag: a396a780-d1a2-45c2-a29e-93b01b02bd55
+
+	measure 'Average Payment' = ```
+			DIVIDE(CALCULATE(sum('Payments Data'[payments])),CALCULATE(count('Payments Data'[payments]),ALL('Payments Data'[payments]),'Payments Data'[payments]<>0.00))
+			
+			```
+		formatString: \$#,0;(\$#,0);\$#,0
+		isHidden
+		lineageTag: 35f59179-fe32-4667-85b9-de402af566b3
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'KM Payment $' = CALCULATE(sum('Payments Data'[payments]),ALL(KM[KM],KM[Column1]))
+		isHidden
+		lineageTag: 9ad5c654-353a-42af-a0b2-1307d6d3e5f2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'KM Average Payment' = DIVIDE(CALCULATE(sum('Payments Data'[payments]),ALL(KM[KM],KM[Column1])),CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
+		isHidden
+		lineageTag: 0f92df8f-56fb-40ba-b7cd-035b8a2c1cc3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'No. of Payments' = COUNTROWS('Payments Data')
+		formatString: #,0
+		isHidden
+		lineageTag: 9d69a502-2681-40f1-9097-2339f1159052
+
+	measure 'Payment $' =
+			
+			---VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			---VAR selectedyear = ALLSELECTED('Metrics Data'[CapturedOn].[Year])
+			VAR selectedmonthyear = ALLSELECTED('Metrics Data'[Month-Year])
+			return
+			IF(
+			[DefaultSelection]=[AllSelections] ,
+			CALCULATE(SUM('Payments Data'[payments]),
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=FORMAT(today()-1,"MMM-YY"))),
+			---FILTER('Metrics Data',month('metrics data'[capturedon])=month(today()-1) && Year('metrics data'[capturedon])=Year(today()-1))),
+			
+			
+			CALCULATE(SUM('Payments Data'[payments]),
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=selectedmonthyear)))
+			---FILTER('Metrics Data','metrics data'[capturedon].[month]=selectedmonth && 'metrics data'[capturedon].[Year]=selectedyear)))
+		formatString: \$#,0;(\$#,0);\$#,0
+		isHidden
+		lineageTag: 01f4e83b-898a-40fe-b761-5df20639599f
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Average Payment 2' =
+			
+			---VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			---VAR selectedyear = ALLSELECTED('Metrics Data'[CapturedOn].[Year])
+			VAR selectedmonthyear = ALLSELECTED('Metrics Data'[Month-Year])
+			return
+			IF(
+			[DefaultSelection]=[AllSelections] ,
+			CALCULATE([Average Payment],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=FORMAT(today()-1,"MMM-YY"))),
+			---FILTER('Metrics Data',month('metrics data'[capturedon])=month(today()-1) && Year('metrics data'[capturedon])=Year(today()-1))),
+			
+			CALCULATE([Average Payment],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=selectedmonthyear)))
+			---FILTER('Metrics Data','metrics data'[capturedon].[month]=selectedmonth && 'metrics data'[capturedon].[Year]=selectedyear)))
+		formatString: \$#,0;(\$#,0);\$#,0
+		isHidden
+		lineageTag: 524db543-5f56-4d8b-be42-99ea3e6a72e6
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'No. of Payments 2' =
+			
+			---VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			---VAR selectedyear = ALLSELECTED('Metrics Data'[CapturedOn].[Year])
+			VAR selectedmonthyear = ALLSELECTED('Metrics Data'[Month-Year])
+			return
+			IF(
+			[DefaultSelection]=[AllSelections] ,
+			CALCULATE([No. of Payments],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=FORMAT(today()-1,"MMM-YY"))),
+			---FILTER('Metrics Data',month('metrics data'[capturedon])=month(today()-1) && Year('metrics data'[capturedon])=Year(today()-1))),
+			
+			CALCULATE([No. of Payments],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=selectedmonthyear)))
+			---FILTER('Metrics Data','metrics data'[capturedon].[month]=selectedmonth && 'metrics data'[capturedon].[Year]=selectedyear)))
+		formatString: #,0
+		isHidden
+		lineageTag: bea6c5d6-3a35-4598-8cf7-c41033b9df23
+
+	measure 'Payment $ D' = CALCULATE(sum('Payments Data'[payments]),FILTER('Metrics Data',month('metrics data'[capturedon])=month(today()-1) && Year('metrics data'[capturedon])=Year(today()-1)))
+		isHidden
+		lineageTag: 37a28097-22e3-424f-a611-ea1c0423767f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Payment $ S' = ```
+			
+			VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			VAR selectedyear = ALLSELECTED('Metrics Data'[CapturedOn].[Year])
+			RETURN
+			CALCULATE(sum('Payments Data'[payments])
+			,FILTER('Metrics Data','metrics data'[capturedon].[month]=selectedmonth && 'metrics data'[capturedon].[Year]=selectedyear)
+			--,FILTER('Metrics Data',month('Metrics Data'[capturedon])=selectedmonth)
+			)
+			
+			```
+		formatString: 0
+		isHidden
+		lineageTag: 3b87362f-8304-485b-b6ec-a1dd7c6e5450
+
+	measure 'Payments $' =
+			
+			-- var payments =
+			CALCULATE(SUM('Payments Data'[payments]))
+			--Return
+			--IF(
+			--[DefaultSelection]=[AllSelections] ,
+			--CALCULATE(payments,
+			--FILTER('Metrics Data',year('metrics data'[capturedon])=year(today()))),
+			
+			--CALCULATE(payments,
+			--FILTER('Metrics Data','metrics data'[capturedon].[year]=2019))
+			--)
+		formatString: \$#,0;(\$#,0);\$#,0
+		lineageTag: f35c75bf-eb83-4c04-9969-d351b11e8f3d
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Previous MTD Payments $' = CALCULATE('Payments Data'[Payments $],PREVIOUSMONTH(DATESMTD('Metrics Data'[CapturedOn])))
+		formatString: \$#,0;(\$#,0);\$#,0
+		isHidden
+		lineageTag: 364537dc-7462-4654-999d-39d69f804dca
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Current MTD Payments $' = CALCULATE('Payments Data'[Payments $],DATESMTD('Metrics Data'[CapturedOn]))
+		formatString: \$#,0;(\$#,0);\$#,0
+		isHidden
+		lineageTag: 92e06b57-e824-49ee-ba4a-a400bce3f93c
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure '% B/(W) Payments $' =
+			
+			---FORMAT(CALCULATE([Current MTD Payments $]- [Previous MTD Payments $]),"$#,##0;($#,##0)")
+			FORMAT(CALCULATE(divide(([Current MTD Payments $] - [Previous MTD Payments $]), [Previous MTD Payments $])),"0%;(0%)")
+		isHidden
+		lineageTag: bad96df9-f29c-456a-b015-c12e7d0f0c93
+
+	measure 'Client Summary Payments $' =
+			
+			VAR varKM13 = UPPER(IF(HASONEVALUE(KM[Month]),VALUES(KM[Month]),BLANK()))
+			VAR CurrentMTDPayments = CALCULATE([Current MTD Payments $],ALL(KM[Month],KM[KM]))
+			VAR PreviousMTDPayments = CALCULATE([Previous MTD Payments $],ALL(KM[Month],KM[KM]))
+			----VAR MTDConversionBW = CALCULATE([# B/(W) Conversion #],ALL(KM[KM],KM[Column1]))
+			VAR MTDPaymentsDifferencePercentage = CALCULATE([% B/(W) Payments $],ALL(KM[Month],KM[KM]))
+			VAR Currentmmmm=format(today()-1,"mmmm")
+			VAR Previousmmmm = format(Month((Today()-1)-1),"mmmm")
+			VAR Pctdiffmmmm =  "Percent diff from " & format(Month((Today()-1)-1),"mmmm")
+			RETURN
+			SWITCH(varKM13,
+			Currentmmmm,format(CurrentMTDPayments,"$#,##0"),
+			Previousmmmm,format(PreviousMTDPayments,"$#,##0")
+			,
+			----"# Diff from Previous",format(MTDConversionBW,"0%;(0%)"),
+			Pctdiffmmmm,format(MTDPaymentsDifferencePercentage,"0%;(0%)")
+			)
+		isHidden
+		lineageTag: 45d4809b-86fd-463e-94b3-da2ba5fc5762
+
+	measure 'Client Summary Payments $ / Hit' =
+			
+			VAR varKM13 = UPPER(IF(HASONEVALUE(KM[Month]),VALUES(KM[Month]),BLANK()))
+			VAR CurrentMTDPayments = CALCULATE(Divide([Current MTD Payments $],[Current MTD Hits]),ALL(KM[Month],KM[KM]))
+			VAR PreviousMTDPayments = CALCULATE(Divide([Previous MTD Payments $],[Previous MTD Hits]),ALL(KM[Month],KM[KM]))
+			----VAR MTDConversionBW = CALCULATE([# B/(W) Conversion #],ALL(KM[KM],KM[Column1]))
+			VAR MTDPaymentsDifferencePercentage = CALCULATE(Divide((Divide([Current MTD Payments $],[Current MTD Hits]))- (Divide([Previous MTD Payments $],[Previous MTD Hits])),(Divide([Current MTD Payments $],[Current MTD Hits]))),ALL(KM[Month],KM[KM]))
+			VAR Currentmmmm=format(today()-1,"mmmm")
+			VAR Previousmmmm = format(Month((Today()-1)-1),"mmmm")
+			VAR Pctdiffmmmm =  "Percent diff from " & format(Month((Today()-1)-1),"mmmm")
+			RETURN
+			SWITCH(varKM13,
+			Currentmmmm,format(CurrentMTDPayments,"$#,##0"),
+			Previousmmmm,format(PreviousMTDPayments,"$#,##0")
+			,
+			----"# Diff from Previous",format(MTDConversionBW,"0%;(0%)"),
+			Pctdiffmmmm,format(MTDPaymentsDifferencePercentage,"0%;(0%)")
+			)
+		isHidden
+		lineageTag: 761f7036-6e17-4f78-bdca-482d97dd7979
+
+	measure 'Summary Payments $' =
+			
+			VAR varKM13 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentMTDPayments = CALCULATE([Current MTD Payments $],ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDPayments = CALCULATE([Previous MTD Payments $],ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionBW = CALCULATE([# B/(W) Payments $],ALL(KM[KM],KM[Column1]))
+			VAR MTDPaymentsDifferencePercentage = CALCULATE([% B/(W) Payments $],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM13,
+			"Current Month",format(CurrentMTDPayments,"$#,##0"),
+			"Previous Month",format(PreviousMTDPayments,"$#,##0")
+			,
+			"# Diff from Previous",format(MTDConversionBW,"$#,##0;($#,##0)"),
+			"% Diff from Previous",format(MTDPaymentsDifferencePercentage,"0%;(0%)")
+			)
+		isHidden
+		lineageTag: 8753b81f-2841-4a59-a3b4-3cf098bd30f1
+
+	measure 'Summary Payments $ / Hit' =
+			
+			VAR varKM13 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentMTDPayments = CALCULATE(Divide([Current MTD Payments $],[Current MTD Hits]),ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDPayments = CALCULATE(Divide([Previous MTD Payments $],[Previous MTD Hits]),ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionBW = CALCULATE((Divide([Current MTD Payments $],[Current MTD Hits]))- (Divide([Previous MTD Payments $],[Previous MTD Hits])),ALL(KM[KM],KM[Column1]))
+			VAR MTDPaymentsDifferencePercentage = CALCULATE(Divide(Divide([Current MTD Payments $],[Current MTD Hits])- Divide([Previous MTD Payments $],[Previous MTD Hits]),Divide([Current MTD Payments $],[Current MTD Hits])),ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM13,
+			"Current Month",format(CurrentMTDPayments,"$#,##0"),
+			"Previous Month",format(PreviousMTDPayments,"$#,##0")
+			,
+			"# Diff from Previous",format(MTDConversionBW,"$#,##0;($#,##0)"),
+			"% Diff from Previous",format(
+			--CALCULATE(Divide(
+			MTDConversionBW/PreviousMTDPayments
+			--,CurrentMTDPayments))
+			,"0%;(0%)")
+			)
+		isHidden
+		lineageTag: b2f17146-2125-4520-a35c-178c8e1fb728
+
+	measure '# B/(W) Payments $' =
+			
+			FORMAT(CALCULATE([Current MTD Payments $]- [Previous MTD Payments $]),"$#,##0;($#,##0)")
+			----FORMAT(CALCULATE(divide(([Current MTD Payments $] - [Previous MTD Payments $]), [Previous MTD Payments $])),"0%;(0%)")
+		isHidden
+		lineageTag: d1b9cbad-b89d-41cd-9a7e-3a8ca021d4f4
+
+	measure 'Current MTD Payments $ / Hit' = CALCULATE(Divide([Current MTD Payments $],[Current MTD Hits]))
+		formatString: \$#,0;(\$#,0);\$#,0
+		isHidden
+		lineageTag: b6524aae-6807-4ad3-92d9-8a6694f7d95e
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Previous MTD Payments $ / Hit' = CALCULATE(Divide([Previous MTD Payments $],[Previous MTD Hits]))
+		formatString: \$#,0;(\$#,0);\$#,0
+		isHidden
+		lineageTag: 6627ac6c-8437-4afa-b3e8-9aa27589700a
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure '% B/(W) Payments $ / Hit' =
+			
+			FORMAT(CALCULATE(divide(([Current MTD Payments $ / Hit] - [Previous MTD Payments $ / Hit]), [Previous MTD Payments $ / Hit])),"0%;(0%)")
+		isHidden
+		lineageTag: 610368b3-1727-4715-b1a8-c6eb2b8a5537
+
+	measure '$ / Hit' = CALCULATE(DIVIDE('Payments Data'[Payments $],[Hits]))
+		formatString: \$#,0;(\$#,0);\$#,0
+		isHidden
+		lineageTag: 3aad3385-f35e-4993-a02a-caa69e750586
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure '$ / Hit 2' = ```
+			
+			VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			VAR selectedyear = ALLSELECTED('Metrics Data'[CapturedOn].[Year])
+			return
+			IF(
+			[DefaultSelection]=[AllSelections] ,
+			
+			CALCULATE('Payments Data'[$ / Hit],
+			FILTER('Metrics Data',month('metrics data'[capturedon])=month(today()-1) && Year('metrics data'[capturedon])=Year(today()-1))),
+			
+			
+			CALCULATE('Payments Data'[$ / Hit],
+			FILTER('Metrics Data','metrics data'[capturedon].[month]=selectedmonth && 'metrics data'[capturedon].[Year]=selectedyear)))
+			
+			```
+		formatString: \$#,0;(\$#,0);\$#,0
+		isHidden
+		lineageTag: 737fdbb6-d7ab-44a6-80f2-6813972ee909
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Summary Average Payment' =
+			
+			VAR varKM13 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentMTDPayments = CALCULATE(Divide([Current MTD Payments $],[Current MTD Conversion #]),ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDPayments = CALCULATE(Divide([Previous MTD Payments $],[Previous MTD Conversion #]),ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionBW = CALCULATE((Divide([Current MTD Payments $],[Current MTD Conversion #]))- (Divide([Previous MTD Payments $],[Previous MTD Conversion #])),ALL(KM[KM],KM[Column1]))
+			VAR MTDPaymentsDifferencePercentage = CALCULATE(Divide(Divide([Current MTD Payments $],[Current MTD Conversion #])- Divide([Previous MTD Payments $],[Previous MTD Conversion #]),Divide([Current MTD Payments $],[Current MTD Conversion #])),ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM13,
+			"Current Month",format(CurrentMTDPayments,"$#,##0"),
+			"Previous Month",format(PreviousMTDPayments,"$#,##0")
+			,
+			"# Diff from Previous",format(MTDConversionBW,"$#,##0;($#,##0)"),
+			"% Diff from Previous",format(
+			--CALCULATE(Divide(
+			MTDConversionBW/PreviousMTDPayments
+			--,CurrentMTDPayments))
+			,"0%;(0%)")
+			)
+		isHidden
+		lineageTag: d7218c0f-c57d-4378-845a-6cf97eefebba
+
+		changedProperty = IsHidden
+
+	measure 'Previous MTD Payments $ YoY' =
+			CALCULATE('Payments Data'[Payments $],
+			SAMEPERIODLASTYEAR(DATESMTD('Metrics Data'[CapturedOn])))
+		isHidden
+		lineageTag: 2ca70ad7-12f8-45e1-a674-12da8f6d9c69
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure '# B/(W) Payments $ YoY' =
+			
+			FORMAT(CALCULATE([Current MTD Payments $]- [Previous MTD Payments $ YoY]),"$#,##0;($#,##0)")
+		isHidden
+		lineageTag: 505aa6f1-f235-4086-a7ee-7f54e0394d04
+
+		changedProperty = IsHidden
+
+	measure '% B/(W) Payments $ YoY' =
+			
+			FORMAT(CALCULATE(divide(([Current MTD Payments $] - [Previous MTD Payments $ YoY]), [Previous MTD Payments $ YoY])),"0%;(0%)")
+		isHidden
+		lineageTag: 2357b19c-595e-491d-adab-e21161517419
+
+		changedProperty = IsHidden
+
+	measure 'Summary Payments $ YoY' =
+			
+			VAR varKM13 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentMTDPayments = CALCULATE([Current MTD Payments $],ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDPayments = CALCULATE([Previous MTD Payments $ YoY],ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionBW = CALCULATE([# B/(W) Payments $ YoY],ALL(KM[KM],KM[Column1]))
+			VAR MTDPaymentsDifferencePercentage = CALCULATE([% B/(W) Payments $ YoY],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM13,
+			"Current Year MTD",format(CurrentMTDPayments,"$#,##0"),
+			"Previous Year MTD",format(PreviousMTDPayments,"$#,##0"),
+			"# Diff from Previous",format(MTDConversionBW,"$#,##0;($#,##0)"),
+			"% Diff from Previous",format(MTDPaymentsDifferencePercentage,"0%;(0%)")
+			)
+		isHidden
+		lineageTag: 3f0b658e-4b52-4c8a-8738-997deab794e9
+
+		changedProperty = IsHidden
+
+	measure 'Summary Average Payment YoY' =
+			
+			VAR varKM13 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentMTDPayments = CALCULATE(Divide([Current MTD Payments $],[Current MTD Conversion # YoY]),ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDPayments = CALCULATE(Divide([Previous MTD Payments $ YoY],[Previous MTD Conversion # YoY]),ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionBW = CALCULATE((Divide([Current MTD Payments $],[Current MTD Conversion # YoY]))- (Divide([Previous MTD Payments $ YoY],[Previous MTD Conversion # YoY])),ALL(KM[KM],KM[Column1]))
+			VAR MTDPaymentsDifferencePercentage = CALCULATE(Divide(Divide([Current MTD Payments $],[Current MTD Conversion # YoY])- Divide([Previous MTD Payments $ YoY],[Previous MTD Conversion # YoY]),Divide([Current MTD Payments $],[Current MTD Conversion # YoY])),ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM13,
+			"Current Year MTD",format(CurrentMTDPayments,"$#,##0"),
+			"Previous Year MTD",format(PreviousMTDPayments,"$#,##0")
+			,
+			"# Diff from Previous",format(MTDConversionBW,"$#,##0;($#,##0)"),
+			"% Diff from Previous",format(
+			--CALCULATE(Divide(
+			MTDConversionBW/PreviousMTDPayments
+			--,CurrentMTDPayments))
+			,"0%;(0%)")
+			)
+		isHidden
+		lineageTag: 0c282fd0-f918-4231-883d-eec4b92cca6c
+
+		changedProperty = IsHidden
+
+	column MetricId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 25b3a73d-ba6c-4ca8-87d7-1d7049e2933a
+		summarizeBy: none
+		sourceColumn: MetricId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ReferenceNumber
+		dataType: string
+		isHidden
+		lineageTag: 5987e75f-3456-4df3-95ac-5c9d1fd13bc1
+		summarizeBy: none
+		sourceColumn: ReferenceNumber
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column capturedon
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: f05852c7-397c-4544-9561-39d765522c13
+		summarizeBy: none
+		sourceColumn: capturedon
+
+		variation Variation
+			isDefault
+			relationship: c204526a-7266-4a9c-8ec5-b1655f9a9d8b
+			defaultHierarchy: LocalDateTable_cfa96e0b-4c26-44f1-92a4-a7408f3b4909.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column sourcesystem
+		dataType: string
+		isHidden
+		lineageTag: 015ec5d3-be12-4c52-853c-dbaba9cac544
+		summarizeBy: none
+		sourceColumn: sourcesystem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Key2
+		dataType: string
+		isHidden
+		lineageTag: 9642f846-2d85-4980-9d5b-d2fc8f085a83
+		summarizeBy: none
+		sourceColumn: Key2
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Key
+		dataType: string
+		isHidden
+		lineageTag: 5aa04566-aab4-4f1b-b186-de54a6a514c2
+		summarizeBy: none
+		sourceColumn: Key
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Payments
+		dataType: double
+		isHidden
+		lineageTag: 59418382-d6aa-4d5d-b38a-2ab7345e3b52
+		summarizeBy: sum
+		sourceColumn: Payments
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Payments Data-26677b9e-d892-4fe8-bd06-ee1be9690ebf' = m
+		mode: import
+		source = ```
+				let
+				    
+				    Source = Sql.Database("DFW2-BISQL-001", "CLIENT_ANALYTICS", [Query="SELECT [MetricId]#(lf)      ,[ReferenceNumber]#(lf)      ,[capturedon]#(lf)      ,[sourcesystem]#(lf)         ,[Key]#(lf)      ,[Payments]#(lf)  FROM [CLIENT_ANALYTICS].[dbo].[vw_Web_Waterfall_Payments_Data]#(lf)"]),
+				    #"Added Conditional Column" = Table.AddColumn(Source, "Key2", each if [Key] = "credit_card_used" then "CC" else if [Key] = "debit_card_used" then "Debit" else if [Key] = "checking_account_used" then "Check" else [Key]),
+				    #"Filtered Rows" = Table.SelectRows(#"Added Conditional Column", each Date.IsInPreviousYear([capturedon]) or Date.IsInCurrentYear([capturedon]))
+				in
+				    #"Filtered Rows"
+				```
+
+	annotation PBI_QueryRelationships = {"columnCount":7,"keyColumnNames":[],"queryRelationships":[],"columnIdentities":["Section1/Payments Data/Source.{MetricId,0}","Section1/Payments Data/Source.{ReferenceNumber,1}","Section1/Payments Data/Source.{capturedon,2}","Section1/Payments Data/Source.{sourcesystem,3}","Section1/Payments Data/Source.{Key,4}","Section1/Payments Data/Source.{Payments,5}","Section1/Payments Data/Added Conditional Column.{Key2,6}"],"ColumnCount":7,"KeyColumnNames":[],"ColumnIdentities":["Section1/Payments Data/Source.{MetricId,0}","Section1/Payments Data/Source.{ReferenceNumber,1}","Section1/Payments Data/Source.{capturedon,2}","Section1/Payments Data/Source.{sourcesystem,3}","Section1/Payments Data/Source.{Key,4}","Section1/Payments Data/Source.{Payments,5}","Section1/Payments Data/Added Conditional Column.{Key2,6}"],"RelationshipInfo":[]}
+
+	annotation PBI_ResultType = Exception
+
+	annotation PBI_NavigationStepName = Navigation
+

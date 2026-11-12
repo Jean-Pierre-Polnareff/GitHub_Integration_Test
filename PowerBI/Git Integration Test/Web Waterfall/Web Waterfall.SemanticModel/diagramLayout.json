@@ -1,0 +1,161 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 45.300813008130078
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 0,
+            "y": 682.71862839404741
+          },
+          "nodeIndex": "KM",
+          "size": {
+            "height": 200,
+            "width": 267
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 364.30834213305172,
+            "y": 45.406546990496295
+          },
+          "nodeIndex": "Metrics Data",
+          "size": {
+            "height": 646,
+            "width": 251
+          },
+          "zIndex": 9
+        },
+        {
+          "location": {
+            "x": 768.04799838771282,
+            "y": 30.62302006335797
+          },
+          "nodeIndex": "Payments Data",
+          "size": {
+            "height": 599,
+            "width": 232
+          },
+          "zIndex": 10
+        },
+        {
+          "location": {
+            "x": 1081.5395711554347,
+            "y": 0
+          },
+          "nodeIndex": "Select Top N Clients",
+          "size": {
+            "height": 213,
+            "width": 234
+          },
+          "zIndex": 11
+        },
+        {
+          "location": {
+            "x": 1384.2208955223882,
+            "y": 4.2089552238806078
+          },
+          "nodeIndex": "ClientMapping",
+          "nodeLineageTag": "b19f91ce-187e-4731-8cd8-7dd0260072af",
+          "size": {
+            "height": 245,
+            "width": 234
+          },
+          "zIndex": 12
+        },
+        {
+          "location": {
+            "x": 362.27436729396504,
+            "y": 868.07268007787138
+          },
+          "nodeIndex": "vw_Amex_ClientCodes_LookupTable",
+          "nodeLineageTag": "79329d53-0c76-4f23-9ebc-69d5cef5ab53",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 999.81792779079319,
+            "y": 1216.1276605156211
+          },
+          "nodeIndex": "DimSourceSystem",
+          "nodeLineageTag": "9bae08a0-18e6-4eca-9e64-49e4807320e3",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 1340.7417910447762,
+            "y": 1179.3731343283582
+          },
+          "nodeIndex": "AXP Payment Program Detail",
+          "nodeLineageTag": "69fda654-5647-4407-b27e-94f354e4b627",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 1059.7765863077911,
+            "y": 604.43177331179459
+          },
+          "nodeIndex": "Visits by Source",
+          "nodeLineageTag": "3ef2ec62-3963-483c-9b7a-6eaf204ba93e",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 1034.2933347893361,
+            "y": 944.44581659082633
+          },
+          "nodeIndex": "KMS New",
+          "nodeLineageTag": "14a83808-eddf-46f1-938c-2088eb13f738",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 727.14173887553943,
+            "y": 997.94437497345916
+          },
+          "nodeIndex": "New_Monthly_Table",
+          "nodeLineageTag": "6f54e01d-5eb7-4a17-b07a-17d23978e1b3",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 13
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 61.809045226130657,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

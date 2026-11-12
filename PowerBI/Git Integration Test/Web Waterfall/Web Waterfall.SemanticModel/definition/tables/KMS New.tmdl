@@ -1,0 +1,73 @@
+table 'KMS New'
+	isHidden
+	lineageTag: 14a83808-eddf-46f1-938c-2088eb13f738
+
+	column Column1
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f6ff5fe4-1344-4034-90f2-36ef19507844
+		summarizeBy: none
+		sourceColumn: Column1
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column KPI
+		dataType: string
+		isHidden
+		lineageTag: 61d037f6-064c-48fd-9cff-6d3045275f5a
+		summarizeBy: none
+		sourceColumn: KPI
+		sortByColumn: Column1
+
+		changedProperty = SortByColumn
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parent KPI'
+		dataType: string
+		isHidden
+		lineageTag: 56155e8a-6eca-4d68-91bb-c0a9aa4cef3b
+		summarizeBy: none
+		sourceColumn: Parent KPI
+		sortByColumn: 'Parent KPI-Sort Order'
+
+		changedProperty = SortByColumn
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parent KPI-Sort Order'
+		dataType: string
+		isHidden
+		lineageTag: fc2fb5be-d58e-434b-92bd-3156e07de625
+		summarizeBy: none
+		sourceColumn: Parent KPI-Sort Order
+
+		changedProperty = SortByColumn
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'KMS New' = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("lZbbauMwEIZfRYTuXS+ac3oZlhYK3W5oWiiUIhRZTkVsyUhyoW+/oyix3Vhje++M5puDR79Gen8fjUfXo2eRCiMUF+SpzHfCkDvlYCEB06PekwdFXt9GH9fvo0kMftT8EGGnMfaeySzCzmLstuRciCSCz2Fl8/CElrk42ZFsS1hZc65L5SBJURhhbQRbwcqxBmvTMiPB2KJu65Vn5kS7Db7BG/adC+Ws/xQm1SZn8KPB7nv6W6svYazUVZAWNq3DkKsY4Hu4hihsL8gJjGG+d/elK01FWbIVjrwWMXrRoskVji+a/0qkIvdlljXq3hi9Nyy3AZ40LCeWMEt+EZ2SF+0Y7ul78aAsIFnV1ig4uwAHxp8f5ah5aYxUe9LcvSi/iPMDs3k5QktdJrqzrH5yw6Ivb8DyVwnyInPR+yfLcYwemMnv5/ptQ1pWzGGKOAxJNosoLZyLKD7v0BrutbiUD44uMaXhLitENbjHbY/OUM/VzYV2cHKMqAz3mEQ1g/PTTo3hfjNMLrjLvFNhqN/tOMxkx7iDUX6ccc4P59cigfGcxK3BdYK4Potcf3W7+sbc5XBnEUDsqaovmXR7zVpeA1L5xmz/bP8r0eLCZ0Ca42iDG1YbR0KN23AtYR7juVeqOT8FqDo+BWh2fmK8dVN7qWh6vvQHsLbxxGjiBdg6orHweAD3xuOhCfBPwQ9wROmZLCMMvFyko5yZJGZOxK7DykP/qKz7R8tKnH2kqXauSQq/QZSH3aVFrQgcigeyue0L00SQIEE2NCS0QTZNQNbTFjZil0sX+fnSOp3TIWjBvqnfb7gZUMZWcxFFtBLUwWCjRRgsKGiqOY6XFGYSFcroUH275mMOYYw2qIQxkadGci+HDBQc0AtgWzAl7Sf1+8CyKJLoXU8Wa/vqqGNED1sdIGrW2tJEWp5pC69Uf+BEEdmWn5Q9yKJoZ3JwfgYEO7fdHzdQZiZ4l1Sgt9J6lTsjRVvnDW32kA31JcL5UzEgZh961phOYUCGAlqEzHt2kOucHbCh+vEP", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t, KPI = _t, #"Parent KPI" = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", Int64.Type}, {"KPI", type text}, {"Parent KPI", type text}}),
+				    #"Added Conditional Column" = Table.AddColumn(#"Changed Type", "Parent KPI-Sort Order", each if [Parent KPI] = "Log In UX" then 1 else if [Parent KPI] = "Performance" then 2 else if [Parent KPI] = "Payment Programs" then 3 else if [Parent KPI] = "Contact Information" then 4 else 5)
+				in
+				    #"Added Conditional Column"
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

@@ -1,0 +1,663 @@
+table 'AXP Payment Program Detail'
+	isHidden
+	lineageTag: 69fda654-5647-4407-b27e-94f354e4b627
+
+	measure 'Enrollments (#)' = CALCULATE(DISTINCTCOUNT('AXP Payment Program Detail'[SessionId]), KEEPFILTERS('AXP Payment Program Detail'[Key] = "program_enrollment"), 'AXP Payment Program Detail'[Campaign] = "Enrolled")
+		formatString: #,0
+		isHidden
+		lineageTag: c49d18f4-16b1-435b-a1c0-820f536579f7
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+	measure Viewed = CALCULATE(DISTINCTCOUNT('AXP Payment Program Detail'[SessionId]), KEEPFILTERS('AXP Payment Program Detail'[Key] = "program_offers_list"), 'AXP Payment Program Detail'[Campaign] = "Viewed")
+		formatString: #,0
+		isHidden
+		lineageTag: 5a4385ba-969c-423d-a3ff-dc66304ab8ad
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+	measure 'Enrolled %' = CALCULATE(DIVIDE([Enrollments (#)], [Viewed]))
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		isHidden
+		lineageTag: 3d58d290-cdbd-4f8d-9791-db7d075eec11
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+	measure 'Enrolled Balances' =
+			CALCULATE(SUM('AXP Payment Program Detail'[InitialBalance]) - sum('AXP Payment Program Detail'[Payments]), KEEPFILTERS('AXP Payment Program Detail'[Key] = "program_enrollment"), 'AXP Payment Program Detail'[Campaign] = "Enrolled")
+			---CALCULATE(SUM('AXP Payment Program Detail'[InitialBalance]) - sum('AXP Payment Program Detail'[total_collections]), KEEPFILTERS('AXP Payment Program Detail'[Key] = "program_enrollment"), 'AXP Payment Program Detail'[Campaign] = "Enrolled")
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		isHidden
+		lineageTag: e6a381e3-be04-4875-990e-900254def4ce
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+	measure 'Enrolled Payment $' =
+			
+			CALCULATE(SUM('AXP Payment Program Detail'[Payments]), KEEPFILTERS( 'AXP Payment Program Detail'[Campaign] = "Enrolled"), 'AXP Payment Program Detail'[Key] = "checking_account_used" || 'AXP Payment Program Detail'[Key] = "debit_card_used" || 'AXP Payment Program Detail'[Key] = "credit_card_used")
+			-----CALCULATE(SUM('AXP Payment Program Detail'[total_collections]), KEEPFILTERS( 'AXP Payment Program Detail'[Campaign] = "Enrolled"), 'AXP Payment Program Detail'[Key] = "checking_account_used" || 'AXP Payment Program Detail'[Key] = "debit_card_used" || 'AXP Payment Program Detail'[Key] = "credit_card_used")
+			----CALCULATE(SUM('AXP Payment Program Detail'[Payments]), KEEPFILTERS( 'AXP Payment Program Detail'[Campaign] = "Enrolled"))
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		isHidden
+		lineageTag: 91fbe29b-5e94-4979-ba2d-bf68c82882d2
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+	measure 'Enrolled Future Payment $ Set Up' =
+			
+			VAR PaySeriesAmount = CALCULATE(SUM('AXP Payment Program Detail'[PaySeriesAmount]), KEEPFILTERS('AXP Payment Program Detail'[Key] = "program_enrollment"), 'AXP Payment Program Detail'[Campaign] = "Enrolled")
+			VAR PaySeriesCount = CALCULATE(SUM('AXP Payment Program Detail'[PaySeriesCount]), KEEPFILTERS('AXP Payment Program Detail'[Key] = "program_enrollment"), 'AXP Payment Program Detail'[Campaign] = "Enrolled")
+			
+			RETURN
+			CALCULATE(PaySeriesCount * PaySeriesAmount)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		isHidden
+		lineageTag: 1fa366d9-1826-43f8-adae-c575adcb67fd
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+	measure 'Enrolled Average Term (months)' =
+			
+			VAR Monthly = CALCULATE(SUM('AXP Payment Program Detail'[PaySeriesCount]), KEEPFILTERS('AXP Payment Program Detail'[Key] = "program_enrollment"), 'AXP Payment Program Detail'[Campaign] = "Enrolled", 'AXP Payment Program Detail'[PaySeriesFrequency] = "Monthly")
+			VAR BiWeekly  = DIVIDE(CALCULATE(SUM('AXP Payment Program Detail'[PaySeriesCount]), KEEPFILTERS('AXP Payment Program Detail'[Key] = "program_enrollment"), 'AXP Payment Program Detail'[Campaign] = "Enrolled", 'AXP Payment Program Detail'[PaySeriesFrequency] = "BiWeekly"), 2)
+			RETURN
+			
+			CALCULATE(DIVIDE((Monthly + BiWeekly),[Enrollments (#)]))
+		formatString: #,0
+		isHidden
+		lineageTag: 1f41ff2a-413a-40c7-ad2d-805945ae7c20
+
+		changedProperty = FormatString
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure 'Enrollments Oasis (#)' = CALCULATE(DISTINCTCOUNT('AXP Payment Program Detail'[SessionId]), KEEPFILTERS('AXP Payment Program Detail'[Key] = "program_enrollment"), 'AXP Payment Program Detail'[Campaign] = "Enrolled",'AXP Payment Program Detail'[Description] = "Oasis")
+		formatString: 0
+		isHidden
+		lineageTag: 9eb9434d-1403-4f8e-a9a3-8c56f29fad9a
+
+		changedProperty = IsHidden
+
+	measure 'AXP Programs DateRange' =
+			
+			VAR RangeStart = FORMAT(Min('AXP Payment Program Detail'[CapturedOn]),"m/d/yyyy")
+			VAR RangeEnd = FORMAT(Max('AXP Payment Program Detail'[CapturedOn])  ,"m/d/yyyy")
+			Return
+			"AXP Payment Program Detail " & CONCATENATE(CONCATENATE(RangeStart," - "),RangeEnd)
+		isHidden
+		lineageTag: 87254bde-174b-4a98-8f6f-5777f4ac7806
+
+		changedProperty = IsHidden
+
+	measure 'Enrollments FRP (#)' = CALCULATE(DISTINCTCOUNT('AXP Payment Program Detail'[SessionId]), KEEPFILTERS('AXP Payment Program Detail'[Key] = "program_enrollment"), 'AXP Payment Program Detail'[Campaign] = "Enrolled",'AXP Payment Program Detail'[Description] = "FRP")
+		formatString: 0
+		isHidden
+		lineageTag: 95579e83-ac81-4b89-be40-f916ef48ef20
+
+		changedProperty = IsHidden
+
+	measure 'Enrollments Apollo (#)' = CALCULATE(DISTINCTCOUNT('AXP Payment Program Detail'[SessionId]), KEEPFILTERS('AXP Payment Program Detail'[Key] = "program_enrollment"), 'AXP Payment Program Detail'[Campaign] = "Enrolled",'AXP Payment Program Detail'[Description] = "Apollo")
+		formatString: 0
+		isHidden
+		lineageTag: ed75c2ee-b1ea-4c6a-851b-cd3a2294f6db
+
+		changedProperty = IsHidden
+
+	measure 'Enrollments ReAge (#)' = CALCULATE(DISTINCTCOUNT('AXP Payment Program Detail'[SessionId]), KEEPFILTERS('AXP Payment Program Detail'[Key] = "program_enrollment"), 'AXP Payment Program Detail'[Campaign] = "Enrolled",'AXP Payment Program Detail'[Description] = "ReAge")
+		formatString: 0
+		isHidden
+		lineageTag: ce1b802f-5da6-413f-b284-a93b872334d3
+
+		changedProperty = IsHidden
+
+	column MetricId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a95834cf-2142-457e-9e6d-a822daeed2d9
+		summarizeBy: count
+		sourceColumn: MetricId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Key
+		dataType: string
+		isHidden
+		lineageTag: a3a5e527-e28a-45f3-88da-89948e6a6ef1
+		summarizeBy: none
+		sourceColumn: Key
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CapturedOn
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: c0486497-84dc-42a1-991a-d57e2bdd368e
+		summarizeBy: none
+		sourceColumn: CapturedOn
+
+		variation Variation
+			isDefault
+			relationship: a1da3654-1323-49c8-b96b-7efc2ee92379
+			defaultHierarchy: LocalDateTable_22bde93b-a13b-4c0b-88aa-fe36b39ce50d.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		changedProperty = FormatString
+
+		annotation SummarizationSetBy = Automatic
+
+	column Count
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 1d9a4fab-0fe0-4f3b-915f-fcd11ce35220
+		summarizeBy: sum
+		sourceColumn: Count
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		isHidden
+		lineageTag: a67b3338-109a-405c-b1b7-963d15e38b8f
+		summarizeBy: none
+		sourceColumn: Description
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ReferenceNumber
+		dataType: string
+		isHidden
+		lineageTag: 97731584-8c6e-428a-9a9b-151ab55ca0fd
+		summarizeBy: none
+		sourceColumn: ReferenceNumber
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Payments
+		dataType: double
+		isHidden
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 9edfbec7-3250-4aa8-a6af-3d709d79baff
+		summarizeBy: sum
+		sourceColumn: Payments
+
+		changedProperty = IsHidden
+
+		changedProperty = FormatString
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientId
+		dataType: string
+		isHidden
+		lineageTag: 882bea30-69b9-42cd-80bd-637e36e83c6d
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientParent
+		dataType: string
+		isHidden
+		lineageTag: 9741ace7-ac6a-422c-bd02-b5e7050f8492
+		summarizeBy: none
+		sourceColumn: ClientParent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column PDC
+		dataType: double
+		isHidden
+		lineageTag: 28ee0c7c-890d-4e87-bc83-fa00e7b55477
+		summarizeBy: sum
+		sourceColumn: PDC
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Posted
+		dataType: double
+		isHidden
+		lineageTag: 7b439726-46ff-4b9c-88c0-669ac3256321
+		summarizeBy: sum
+		sourceColumn: Posted
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column IpAddress
+		dataType: string
+		isHidden
+		lineageTag: 5bd98ecc-a4e6-4585-91a6-763c5d5ed1f3
+		summarizeBy: none
+		sourceColumn: IpAddress
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SessionId
+		dataType: string
+		isHidden
+		lineageTag: c6b11834-40eb-4472-9593-10d2d701c0a1
+		summarizeBy: none
+		sourceColumn: SessionId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column QueryString
+		dataType: string
+		isHidden
+		lineageTag: 59e1bb6f-34e2-42a8-b279-28803f213422
+		summarizeBy: none
+		sourceColumn: QueryString
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column UTM_Source
+		dataType: string
+		isHidden
+		lineageTag: 8efa58b5-f58a-4e58-8b4f-df216191619c
+		summarizeBy: none
+		sourceColumn: UTM_Source
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column UTM_Campaign
+		dataType: string
+		isHidden
+		lineageTag: 29e5e0cd-eac6-44c2-904e-20486cd7f12c
+		summarizeBy: none
+		sourceColumn: UTM_Campaign
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SourceSystem
+		dataType: string
+		isHidden
+		lineageTag: d811140f-ec70-47a3-8a95-1a5d7ae060bb
+		summarizeBy: none
+		sourceColumn: SourceSystem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column KeySourceSystem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 930e5e39-7c0a-40bc-a9ba-58d5162986f4
+		summarizeBy: sum
+		sourceColumn: KeySourceSystem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column KeyCustomer
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 94ee9dec-2157-4636-9932-c4ad4163ad53
+		summarizeBy: sum
+		sourceColumn: KeyCustomer
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column KeyClient
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: aca8a1b3-ab71-4033-95cb-443a8aee3ab2
+		summarizeBy: sum
+		sourceColumn: KeyClient
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 53efb353-63bd-4ec1-81c9-13cb29a9e9aa
+		summarizeBy: count
+		sourceColumn: CustomerID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column KeyETLAuditHistory_Inserted
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c67efac5-dc1f-4054-a8bc-6beea74b027c
+		summarizeBy: sum
+		sourceColumn: KeyETLAuditHistory_Inserted
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column KeyETLAuditHistory_Last_Updated
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 208b7de8-bace-4c10-bd60-b0c8e9f1fa79
+		summarizeBy: sum
+		sourceColumn: KeyETLAuditHistory_Last_Updated
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column InsertDate
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: aae7d946-e7ad-4f0a-a18e-7c8711ce9bd6
+		summarizeBy: none
+		sourceColumn: InsertDate
+
+		variation Variation
+			isDefault
+			relationship: 96f7e88e-9a70-4fb6-b761-184a92340612
+			defaultHierarchy: LocalDateTable_514188c9-c281-49be-8507-88320e738953.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column UpdateDate
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: f593f8bd-ae33-4266-b3df-22ab197ac733
+		summarizeBy: none
+		sourceColumn: UpdateDate
+
+		variation Variation
+			isDefault
+			relationship: c27341f4-c9c7-4955-b9ea-5c67b4809ae7
+			defaultHierarchy: LocalDateTable_d0ee4d2e-cbc6-4867-95ca-ef7fa569b8ba.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column OneTimePaymentDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 7c904add-27c1-4d70-982a-cde01d5288b6
+		summarizeBy: none
+		sourceColumn: OneTimePaymentDate
+
+		variation Variation
+			isDefault
+			relationship: f386fc48-d5e1-415d-b80b-bc03e61719b0
+			defaultHierarchy: LocalDateTable_ac92f811-01cb-4c80-a8f2-d46ff028b44f.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column OneTimePaymentAmount
+		dataType: double
+		isHidden
+		lineageTag: 0eef9c8a-4ec3-4066-92b4-c27d0819eede
+		summarizeBy: sum
+		sourceColumn: OneTimePaymentAmount
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column PaySeriesStart
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: aa010083-8e65-4ff1-aa69-e627b4d3fe49
+		summarizeBy: none
+		sourceColumn: PaySeriesStart
+
+		variation Variation
+			isDefault
+			relationship: 9c946779-7fec-4f40-8c5c-53e5e6e3ba44
+			defaultHierarchy: LocalDateTable_247b35f6-7e56-4e69-b766-3bdae1b992e3.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column PaySeriesFrequency
+		dataType: string
+		isHidden
+		lineageTag: 314dabd6-acb3-4dc6-a843-f448b09339d2
+		summarizeBy: none
+		sourceColumn: PaySeriesFrequency
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column PaySeriesAmount
+		dataType: double
+		isHidden
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 6b1ea6cd-89be-461e-8329-7e3015b44c47
+		summarizeBy: sum
+		sourceColumn: PaySeriesAmount
+
+		changedProperty = IsHidden
+
+		changedProperty = FormatString
+
+		annotation SummarizationSetBy = Automatic
+
+	column PaySeriesCount
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 848c7aae-5c87-4a57-a6c8-6b09b6226a0a
+		summarizeBy: sum
+		sourceColumn: PaySeriesCount
+
+		changedProperty = IsHidden
+
+		changedProperty = FormatString
+
+		annotation SummarizationSetBy = Automatic
+
+	column PaySumTotal
+		dataType: double
+		isHidden
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 0e5352f1-7d2f-4c0f-b556-adb698b37db7
+		summarizeBy: sum
+		sourceColumn: PaySumTotal
+
+		changedProperty = IsHidden
+
+		changedProperty = FormatString
+
+		annotation SummarizationSetBy = Automatic
+
+	column Campaign
+		dataType: string
+		isHidden
+		lineageTag: 6e2aa380-8ca7-4f14-9c6a-5aabe38ded0a
+		summarizeBy: none
+		sourceColumn: Campaign
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Campaign_Order
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 55898222-1cec-4acb-952a-0f02a6fd7e0a
+		summarizeBy: sum
+		sourceColumn: Campaign_Order
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DeviceCategory
+		dataType: string
+		isHidden
+		lineageTag: 43a52c26-0f14-42aa-8845-59c01078f53f
+		summarizeBy: none
+		sourceColumn: DeviceCategory
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column OS
+		dataType: string
+		isHidden
+		lineageTag: ed9258e1-c113-457c-acd9-d32faee08414
+		summarizeBy: none
+		sourceColumn: OS
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Browser
+		dataType: string
+		isHidden
+		lineageTag: a095ff45-28cb-4999-82e5-80a451771956
+		summarizeBy: none
+		sourceColumn: Browser
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Program_Type
+		dataType: string
+		isHidden
+		lineageTag: b99143fb-a2cc-44c5-9c7f-5cc00ef8a6b2
+		summarizeBy: none
+		sourceColumn: Program_Type
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Occurrence
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: bfc78b3b-4b13-48f4-921a-6524672870d3
+		summarizeBy: sum
+		sourceColumn: Occurrence
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column InitialBalance
+		dataType: double
+		lineageTag: 08998ea9-e05b-40ad-bdd7-67f45a75fc2d
+		summarizeBy: sum
+		sourceColumn: InitialBalance
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ClientStreamId
+		dataType: string
+		lineageTag: 5e17a7a2-f077-43e2-a03d-4b2f14f243f3
+		summarizeBy: none
+		sourceColumn: ClientStreamId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStream
+		dataType: string
+		lineageTag: 3bc13ac4-ef24-45f4-a7f7-8a548fc51f1d
+		summarizeBy: none
+		sourceColumn: ClientStream
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'AXP Payment Program Detail-5c850892-e70c-48a4-a149-d3cc780c3cf2' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("DFW2-BISQL-001", "CLIENT_ANALYTICS"),
+				    dbo_RPT_Web_Waterfall_AXP_Payment_Program_Detail = Source{[Schema="dbo",Item="RPT_Web_Waterfall_AXP_Payment_Program_Detail"]}[Data],
+				    #"Filtered Rows" = Table.SelectRows(dbo_RPT_Web_Waterfall_AXP_Payment_Program_Detail, each Date.IsInPreviousYear([CapturedOn]) or Date.IsInCurrentYear([CapturedOn])),
+				    #"Merged Queries" = Table.NestedJoin(#"Filtered Rows", {"ClientId", "SourceSystem"}, ClientMapping, {"ClientId", "SourceSystem2"}, "ClientMapping", JoinKind.LeftOuter),
+				    #"Expanded ClientMapping" = Table.ExpandTableColumn(#"Merged Queries", "ClientMapping", {"ClientStreamId", "ClientStream"}, {"ClientStreamId", "ClientStream"})
+				in
+				    #"Expanded ClientMapping"
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

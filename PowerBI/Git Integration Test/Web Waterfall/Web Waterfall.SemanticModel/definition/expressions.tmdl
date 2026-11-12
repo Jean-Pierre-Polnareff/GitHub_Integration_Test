@@ -1,0 +1,20 @@
+expression StartDate = #datetime(2024, 1, 1, 0, 0, 0) meta [IsParameterQuery=true, Type="DateTime", IsParameterQueryRequired=true]
+	lineageTag: f369c0ba-b791-4f96-a8e5-47f19b7732f7
+
+	annotation PBI_ResultType = DateTime
+
+expression EndDate = #datetime(2050, 1, 1, 0, 0, 0) meta [IsParameterQuery=true, Type="DateTime", IsParameterQueryRequired=true]
+	lineageTag: a232c5b0-3bb0-4cc3-bc8a-1e7eeaa5ac5d
+
+	annotation PBI_ResultType = DateTime
+
+expression RangeStart = #datetime(2024, 10, 1, 0, 0, 0) meta [IsParameterQuery=true, Type="DateTime", IsParameterQueryRequired=true]
+	lineageTag: ac36f5eb-4431-4024-a661-5976192af96d
+
+	annotation PBI_ResultType = DateTime
+
+expression RangeEnd = #datetime(2050, 1, 1, 0, 0, 0) meta [IsParameterQuery=true, Type="DateTime", IsParameterQueryRequired=true]
+	lineageTag: 07da873c-6bcb-4da5-a9cb-398306b7146c
+
+	annotation PBI_ResultType = DateTime
+

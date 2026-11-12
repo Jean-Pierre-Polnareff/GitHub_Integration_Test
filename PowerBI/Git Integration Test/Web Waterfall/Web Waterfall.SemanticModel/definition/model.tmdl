@@ -1,0 +1,44 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["Metrics Data","Payments Data","KM","ClientMapping","StartDate","EndDate","vw_Amex_ClientCodes_LookupTable","Visits by Source","DimSourceSystem","AXP Payment Program Detail","RangeStart","RangeEnd","KMS New","New_Monthly_Table"]
+
+annotation PBIDesktopVersion = 2.145.1105.0 (25.07)+decbc46fce458c5b8d5109d6f32a743f2ac949c8
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table 'Metrics Data'
+ref table DateTableTemplate_d3e03340-9dc4-49de-a41c-6754f8f7a053
+ref table 'Payments Data'
+ref table LocalDateTable_cfa96e0b-4c26-44f1-92a4-a7408f3b4909
+ref table KM
+ref table LocalDateTable_53482261-772e-487d-9b60-70f973df86c5
+ref table 'Select Top N Clients'
+ref table ClientMapping
+ref table vw_Amex_ClientCodes_LookupTable
+ref table LocalDateTable_dfb4f2d7-95da-452c-84d2-7350019081b9
+ref table LocalDateTable_b53a55d2-3296-44a1-89c0-e97111cef474
+ref table 'Visits by Source'
+ref table LocalDateTable_9081d408-10cf-43fc-b131-ed9ad59fb0cb
+ref table DimSourceSystem
+ref table LocalDateTable_87ed8d94-c79a-46bb-bbbc-1d8d16154308
+ref table 'AXP Payment Program Detail'
+ref table LocalDateTable_22bde93b-a13b-4c0b-88aa-fe36b39ce50d
+ref table LocalDateTable_514188c9-c281-49be-8507-88320e738953
+ref table LocalDateTable_d0ee4d2e-cbc6-4867-95ca-ef7fa569b8ba
+ref table LocalDateTable_ac92f811-01cb-4c80-a8f2-d46ff028b44f
+ref table LocalDateTable_247b35f6-7e56-4e69-b766-3bdae1b992e3
+ref table LocalDateTable_49ca26ca-1e32-4e94-9566-bdaa9313a2eb
+ref table 'KMS New'
+ref table New_Monthly_Table
+ref table LocalDateTable_15e7e707-b51f-408b-86c7-c54c4360d140
+
+ref cultureInfo en-US
+

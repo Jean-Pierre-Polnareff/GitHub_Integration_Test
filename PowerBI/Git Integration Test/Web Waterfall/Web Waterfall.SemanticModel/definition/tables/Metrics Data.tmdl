@@ -1,0 +1,3269 @@
+table 'Metrics Data'
+	lineageTag: efd6efbe-c221-4dab-ad73-50d4d6679dc4
+
+	measure 'Login %' = DIVIDE(CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key]="pin_login_succeeded" || 'Metrics Data'[Key]="dob_login_succeeded"  || 'Metrics Data'[Key]="ssn_login_succeeded"  || 'Metrics Data'[Key]="alt_pin_login_succeeded"  || 'Metrics Data'[Key]="frictionless_login" ),CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Reference Number Entered (A)"  || 'Metrics Data'[Key (groups)]="frictionless_login"))
+		formatString: 0\ %;-0\ %;0\ %
+		isHidden
+		lineageTag: 607f0e14-773b-4b62-aa4f-ed219a577b64
+
+	measure 'Conversion %' = DIVIDE(CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Payments (C)"),CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key]="pin_login_succeeded" || 'Metrics Data'[Key]="dob_login_succeeded"  || 'Metrics Data'[Key]="ssn_login_succeeded"  || 'Metrics Data'[Key]="alt_pin_login_succeeded"  || 'Metrics Data'[Key]="frictionless_login"  ))
+		formatString: 0\ %;-0\ %;0\ %
+		isHidden
+		lineageTag: d1a15b6b-5279-416d-9402-20c1c10f09a5
+
+	measure Hits = CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Reference Number Entered (A)" || 'Metrics Data'[Key (groups)]= "frictionless_login" )
+		formatString: #,0
+		isHidden
+		lineageTag: 0c34f839-beeb-4eaf-b63a-709bffe2cf4c
+
+	measure 'Previous MTD Hits' = CALCULATE('Metrics Data'[Hits],PREVIOUSMONTH(DATESMTD('Metrics Data'[CapturedOn])))
+		formatString: #,0
+		isHidden
+		lineageTag: 3e6905d6-70bd-4df9-8bab-7e18a5e19890
+
+	measure 'Current MTD Hits' = CALCULATE('Metrics Data'[Hits],DATESMTD('Metrics Data'[CapturedOn]))
+		formatString: #,0
+		isHidden
+		lineageTag: 836d2379-0995-449d-8dfa-6d083f0b4240
+
+	measure '# B/(W) Hits' =
+			
+			--Format(
+			CALCULATE([Current MTD Hits]- [Previous MTD Hits])
+			--,"#,##;(#,##)")
+		formatString: 0
+		isHidden
+		lineageTag: 8c5690db-4827-4771-82e4-8a0af840ac67
+
+	measure '% B/(W) Hits' = FORMAT(CALCULATE(divide(([Current MTD Hits] - [Previous MTD Hits]), [Previous MTD Hits])),"0%;(0%)")
+		isHidden
+		lineageTag: 32e284ca-93ac-494e-8a9b-d708d9634097
+
+	measure 'Weekday Conditional Formatting' = ```
+			
+			
+			--VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			VAR selectedmonthyear = ALLSELECTED('Metrics Data'[Month-Year])
+			return
+			
+			IF(
+			[DefaultSelection]=[AllSelections] ,
+			
+			CALCULATE(sum('Metrics Data'[weekdayc]),
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=FORMAT(today()-1,"MMM-YY"))),
+			--FILTER('Metrics Data',month('metrics data'[capturedon])=month(today()))),
+			
+			CALCULATE(SUM('Metrics Data'[IsWeekDay]),
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=selectedmonthyear)))
+			--FILTER('Metrics Data','metrics data'[capturedon].[month]=selectedmonth)))
+			
+			```
+		formatString: 0
+		isHidden
+		lineageTag: cc0dbce6-7942-4d72-bd03-1b165c6ab74a
+
+	measure 'Today''s Hits' = TOTALMTD([Hits],DATEADD('Metrics Data'[CapturedOn],-1,MONTH),DAY('Metrics Data'[CapturedOn])=DAY(TODAY()))
+		formatString: 0
+		isHidden
+		lineageTag: 9a360de5-c097-4583-bdf0-37662bd1c553
+
+	measure '% B/(W) Login%' = format(CALCULATE([Current MTD Login%]- [Previous MTD Login%]),"0%;(0%)")
+		isHidden
+		lineageTag: f3a02403-5b60-40be-985e-60282c0b5a38
+
+	measure 'Current MTD Login%' = CALCULATE('Metrics Data'[Login %],DATESMTD('Metrics Data'[CapturedOn]))
+		formatString: 0\ %;-0\ %;0\ %
+		isHidden
+		lineageTag: 5b328ccd-788c-4826-8952-08c05319cd1a
+
+	measure 'Previous MTD Login%' = CALCULATE('Metrics Data'[Login %],PREVIOUSMONTH(DATESMTD('Metrics Data'[CapturedOn])))
+		formatString: 0\ %;-0\ %;0\ %
+		isHidden
+		lineageTag: ff59d7e1-04d9-497b-adc3-04e118009446
+
+	measure 'Login #' = CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key]="pin_login_succeeded" || 'Metrics Data'[Key]="dob_login_succeeded"  || 'Metrics Data'[Key]="ssn_login_succeeded"  || 'Metrics Data'[Key]="alt_pin_login_succeeded"  || 'Metrics Data'[Key]="frictionless_login")
+		formatString: #,0
+		isHidden
+		lineageTag: 04789383-da61-4514-b0d1-db42fa686da4
+
+	measure 'Current MTD Logins #' = CALCULATE('Metrics Data'[Login #],DATESMTD('Metrics Data'[CapturedOn]))
+		formatString: #,0
+		isHidden
+		lineageTag: ab4267bf-8876-4f20-a5d7-9e1640454f7b
+
+	measure 'Previous MTD Logins #' = CALCULATE('Metrics Data'[Login #],PREVIOUSMONTH(DATESMTD('Metrics Data'[CapturedOn])))
+		formatString: #,0
+		isHidden
+		lineageTag: ab08ce1c-8b14-410e-949c-7df60cd8f99c
+
+	measure '% B/(W) Logins #' = FORMAT(CALCULATE(divide(([Current MTD Logins #] - [Previous MTD Logins #]), [Previous MTD Logins #])),"0%;(0%)")
+		isHidden
+		lineageTag: 7df254cd-6bd4-464c-950d-c8f6eb68ac35
+
+	measure '# B/(W) Logins #' = FORMAT(CALCULATE([Current MTD Logins #]- [Previous MTD Logins #]),"#,##;(#,##)")
+		isHidden
+		lineageTag: a48c6b05-e68d-409f-946c-0a15e529e7ba
+
+	measure 'Conversion #' = CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Payments (C)")
+		formatString: #,0
+		isHidden
+		lineageTag: e96efa90-559c-4b82-9de5-c3d3c9b02283
+
+	measure 'Current MTD Conversion #' = CALCULATE('Metrics Data'[Conversion #],DATESMTD('Metrics Data'[CapturedOn]))
+		formatString: #,0
+		isHidden
+		lineageTag: 8e021b94-462e-4a8f-aaed-d8a784bc466d
+
+	measure 'Previous MTD Conversion #' = CALCULATE('Metrics Data'[Conversion #],PREVIOUSMONTH(DATESMTD('Metrics Data'[CapturedOn])))
+		formatString: #,0
+		isHidden
+		lineageTag: 4e7757b6-fad3-4e6d-abfd-cedb93512316
+
+	measure 'Current MTD Conversion %' = CALCULATE('Metrics Data'[Conversion %],DATESMTD('Metrics Data'[CapturedOn]))
+		formatString: 0\ %;-0\ %;0\ %
+		isHidden
+		lineageTag: b84738d9-82d8-44c2-8afc-60135effe8a9
+
+	measure 'Previous MTD Conversion %' = CALCULATE('Metrics Data'[Conversion %],PREVIOUSMONTH(DATESMTD('Metrics Data'[CapturedOn])))
+		formatString: 0\ %;-0\ %;0\ %
+		isHidden
+		lineageTag: fd469acb-f605-49cc-b294-cbe505ae0e80
+
+	measure '# B/(W) Conversion #' = FORMAT(CALCULATE([Current MTD Conversion #]- [Previous MTD Conversion #]),"#,##;(#,##)")
+		isHidden
+		lineageTag: 2c708db5-b4dd-40dd-b1e3-ca532e101851
+
+	measure '% B/(W) Conversion #' = FORMAT(CALCULATE(divide(([Current MTD Conversion #] - [Previous MTD Conversion #]), [Previous MTD Conversion #])),"0%;(0%)")
+		isHidden
+		lineageTag: 3e8c1b2d-4dc3-4f92-9706-c01362175da4
+
+	measure '% B/(W) Conversion %' = FORMAT(CALCULATE([Current MTD Conversion %]- [Previous MTD Conversion %]),"0%;(0%)")
+		isHidden
+		lineageTag: 56db07b5-0a24-4234-8973-a9c9e1b9bbba
+
+	measure 'Current MTD Hits %' = "-"
+		isHidden
+		lineageTag: 5ed936e4-4115-4d13-a990-192bd059573b
+
+	measure 'Previous MTD Hits %' = "-"
+		isHidden
+		lineageTag: 6d2898cd-c0c4-4f5d-afbd-b68d6ea9493a
+
+	measure '% B/(W) Hits %' = "-"
+		isHidden
+		lineageTag: 690b891c-9064-4434-9240-1eab313c9cde
+
+	measure SumAndRatios =
+			
+			VAR varKM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varKM,"> Reference Number Entered (A)",format([KM Hits],"#,0"),
+			"> PIN Entered",format([KM PIN Entered],"#,0"),
+			"Login Rate (B/A)",format([KM Login %],"0%;(0%)"),
+			"> Payments (C)",format([KM Payments],"#,0"),
+			"Conversion Rate (C/B)",format([KM Conversion %],"0%;(0%)"),
+			"Payment $",format([KM Payment $],"$#,##0"),
+			"Average Payment",format([KM Average Payment],"$#,##0"),
+			"> Payment Method",format([KM Payment Method],"#,0"),
+			"> Contact Info",format([KM Contact Info],"#,0"),
+			"> Other",format([KM Other],"#,0"),
+			
+			"pin_login_succeeded (B)",format([KM PIN Login],"#,0"),
+			
+			">>prim_login_succeeded",format([KM PIN Prim],"#,0"),
+			">>comaker_login_succeeded",format([KM PIN Comaker],"#,0"),
+			
+			format([RegularSum],"#,0"))
+		isHidden
+		lineageTag: d2a17b3b-06a2-4028-b845-a995f8395280
+
+	measure RegularSum = COUNTROWS('Metrics Data')
+		formatString: 0
+		isHidden
+		lineageTag: 3d1f8fc2-6491-47c2-a848-94100650ae1b
+
+	measure 'KM Login %' = Divide(CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded" || KM[KM]="frictionless_login" ))
+		isHidden
+		lineageTag: 394d9222-308a-4db7-a88d-44eeac43f227
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'KM Hits' = CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded" || KM[KM]="frictionless_Login" )
+		formatString: 0
+		isHidden
+		lineageTag: 2a44e0d8-08f1-4953-a844-9a09cae97ce1
+
+	measure 'KM Conversion %' = Divide(CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted" || KM[KM]="reocurring_submitted"),CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+		isHidden
+		lineageTag: 959c3237-ef4b-4a8e-9b20-0d1edfaa63bf
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'KM Payments' = CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted")
+		formatString: 0
+		isHidden
+		lineageTag: 6c35ea13-d174-4636-8a72-e6606ac27482
+
+	measure 'KM PIN Entered' = CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )
+		formatString: 0
+		isHidden
+		lineageTag: 2a0c8466-45da-4d85-a444-8f58ecd2a629
+
+	measure 'KM Payment Method' = CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="checking_account_used" || KM[KM]="debit_card_used" || KM[KM]="credit_card_used")
+		formatString: 0
+		isHidden
+		lineageTag: 65113c0d-a300-422c-98f9-26111d6492d7
+
+	measure 'KM Contact Info' = CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="contact_information_updated" || KM[KM]="email_consent_provided" || KM[KM]="sms_consent_provided")
+		formatString: 0
+		isHidden
+		lineageTag: a5864b58-5598-469d-be83-2f5b028677ca
+
+	measure 'KM Other' = CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent")
+		formatString: 0
+		isHidden
+		lineageTag: d9ace524-4c2b-48db-84c4-58a3259e8f14
+
+	measure 'SPLM Hits' = ```
+			CALCULATE('Metrics Data'[Hits],DATEADD(FILTER(DATESMTD('Metrics Data'[CapturedOn]),'Metrics Data'[CapturedOn]<TODAY()),-1,month))
+			---CALCULATE('Metrics Data'[Hits], KEEPFILTERS('Metrics Data'[CapturedOn].[month]= "December"))
+			
+			```
+		formatString: 0
+		isHidden
+		lineageTag: e8f2ae7b-2207-497f-b200-ac7081c0dbde
+
+	measure SumAndRatios2 =
+			
+			VAR varKM2 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varKM2,"> Reference Number Entered (A)",[KM Hits],
+			"> PIN Entered",[KM PIN Entered],
+			"Login Rate (B/A)",[KM Login %],
+			"> Payments (C)",[KM Payments],
+			"Conversion Rate (C/B)",[KM Conversion %],
+			"Payment $",[KM Payment $],
+			"Average Payment",[KM Average Payment],
+			"> Payment Method",[KM Payment Method],
+			"> Contact Info",[KM Contact Info],
+			"> Other",[KM Other],
+			[RegularSum])
+		isHidden
+		lineageTag: 47533d36-79a3-4f08-991c-b3ed1e377735
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Summary Hits' = "Hits #"
+		isHidden
+		lineageTag: bdb303e7-41ed-488a-b111-611b68511a48
+
+	measure 'Summary Logins' = "Logins #/%"
+		isHidden
+		lineageTag: ec042c8d-6927-4898-b7ec-abb6cf616a93
+
+	measure 'Summary Conversion' = "Conversion #/%"
+		isHidden
+		lineageTag: b6903a28-8dab-4335-bccd-84115d96d3df
+
+	measure 'Avg Payment' = divide(CALCULATE(sum('Payments Data'[payments])),[Conversion #])
+		formatString: \$#,0;(\$#,0);\$#,0
+		isHidden
+		lineageTag: b09376f9-2c83-4955-a0d5-ee7bef7b066f
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Avg 1' =
+			
+			AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([SumAndRatios2])
+			)
+		formatString: 0
+		isHidden
+		lineageTag: 31760911-c8e6-40f1-b433-6fe63bebffdb
+
+	measure 'Max 1' =
+			
+			MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([SumAndRatios2])
+			)
+		isHidden
+		lineageTag: cabe80ba-e063-416c-bef6-0524b5b5ebb4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Min 1' =
+			
+			MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([SumAndRatios2])
+			)
+		isHidden
+		lineageTag: 8cc324dd-e1f8-46d4-83f9-002914688bec
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Avg =
+			
+			VAR varAvg = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varAvg,"> Reference Number Entered (A)",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Hits])),"#,0"),
+			"> PIN Entered",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM PIN Entered])),"#,0"),
+			"Login Rate (B/A)",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Login %])),"0%;(0%)"),
+			"> Payments (C)",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Payments])),"#,0"),
+			"Conversion Rate (C/B)",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Conversion %])),"0%;(0%)"),
+			"Payment $",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Payment $])),"$#,##0"),
+			"Average Payment",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Average Payment])),"$#,##0"),
+			"> Payment Method",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Payment Method])),"#,0"),
+			"> Contact Info",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Contact Info])),"#,0"),
+			"> Other",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Other])),"#,0"),
+			FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([RegularSum])),"#,0"))
+		isHidden
+		lineageTag: ea9c9d76-d76c-41ba-b30a-6bf329d9ae38
+
+	measure Max = ```
+			
+			VAR varMax = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varMax,"> Reference Number Entered (A)",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Hits])),"0"),
+			"> PIN Entered",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM PIN Entered])),"0"),
+			"Login Rate (B/A)",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Login %])),"0%;(0%)"),
+			"> Payments (C)",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Payments])),"0"),
+			"Conversion Rate (C/B)",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Conversion %])),"0%;(0%)"),
+			"Payment $",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Payment $])),"$#,##0"),
+			"Average Payment",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Average Payment])),"$#,##0"),
+			"> Payment Method",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Payment Method])),"0"),
+			"> Contact Info",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Contact Info])),"0"),
+			"> Other",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Other])),"0"),
+			FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([RegularSum])),"#,0"))
+			
+			```
+		isHidden
+		lineageTag: df6f9879-2016-487e-8149-b858ab5762bf
+
+	measure Min =
+			
+			VAR varMin = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varMin,"> Reference Number Entered (A)",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Hits])),"0"),
+			"> PIN Entered",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM PIN Entered])),"0"),
+			"Login Rate (B/A)",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Login %])),"0%;(0%)"),
+			"> Payments (C)",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Payments])),"0"),
+			"Conversion Rate (C/B)",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Conversion %])),"0%;(0%)"),
+			"Payment $",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Payment $])),"$#,##0"),
+			"Average Payment",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Average Payment])),"$#,##0"),
+			"> Payment Method",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Payment Method])),"0"),
+			"> Contact Info",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Contact Info])),"0"),
+			"> Other",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([KM Other])),"0"),
+			FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([RegularSum])),"#,0"))
+		isHidden
+		lineageTag: 73b0b56d-e195-48ba-8ce3-f844a6d7ce06
+
+	measure 'Avg M' =
+			
+			VAR varAvgM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varAvgM,"> Reference Number Entered (A)",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Hits])),"#,0"),
+			"> PIN Entered",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM PIN Entered])),"#,0"),
+			"Login Rate (B/A)",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Login %])),"0%;(0%)"),
+			"> Payments (C)",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Payments])),"#,0"),
+			"Conversion Rate (C/B)",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Conversion %])),"0%;(0%)"),
+			"Payment $",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Payment $])),"$#,##0"),
+			"Average Payment",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Average Payment])),"$#,##0"),
+			"> Payment Method",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Payment Method])),"#,0"),
+			"> Contact Info",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Contact Info])),"#,0"),
+			"> Other",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Other])),"#,0"),
+			
+			"pin_login_succeeded (B)",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM PIN Login])),"#,0"),
+			
+			">>prim_login_succeeded",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM PIN Prim])),"#,0"),
+			
+			">>comaker_login_succeeded (B)",FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM PIN Comaker])),"#,0"),
+			
+			FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([RegularSum])),"#,0"))
+		isHidden
+		lineageTag: 6bd27484-3512-4c4a-934d-ddd1d6da0610
+
+	measure 'Min M' = ```
+			
+			VAR varMinM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varMinM,"> Reference Number Entered (A)",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Hits])),"#,0"),
+			"> PIN Entered",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM PIN Entered])),"#,0"),
+			"Login Rate (B/A)",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Login %])),"0%;(0%)"),
+			"> Payments (C)",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Payments])),"#,0"),
+			"Conversion Rate (C/B)",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Conversion %])),"0%;(0%)"),
+			"Payment $",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Payment $])),"$#,##0"),
+			"Average Payment",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Average Payment])),"$#,##0"),
+			"> Payment Method",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Payment Method])),"#,0"),
+			"> Contact Info",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Contact Info])),"#,0"),
+			"> Other",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Other])),"#,0"),
+			
+			"pin_login_succeeded (B)",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM PIN Login])),"#,0"),
+			
+			">>prim_login_succeeded",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM PIN Prim])),"#,0"),
+			
+			">>comaker_login_succeeded (B)",FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM PIN Comaker])),"#,0"),
+			
+			FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([RegularSum])),"#,0"))	
+			```
+		isHidden
+		lineageTag: b62e873b-db49-4fe6-97e7-11217602f637
+
+	measure 'Max M' = ```
+			
+			VAR varMaxM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varMaxM,"> Reference Number Entered (A)",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Hits])),"#,0"),
+			"> PIN Entered",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM PIN Entered])),"#,0"),
+			"Login Rate (B/A)",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Login %])),"0%;(0%)"),
+			"> Payments (C)",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Payments])),"#,0"),
+			"Conversion Rate (C/B)",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Conversion %])),"0%;(0%)"),
+			"Payment $",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Payment $])),"$#,##0"),
+			"Average Payment",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Average Payment])),"$#,##0"),
+			"> Payment Method",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Payment Method])),"#,0"),
+			"> Contact Info",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Contact Info])),"#,0"),
+			"> Other",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM Other])),"#,0"),
+			
+			"pin_login_succeeded (B)",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM PIN Login])),"#,0"),
+			
+			">>prim_login_succeeded",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM PIN Prim])),"#,0"),
+			
+			">>comaker_login_succeeded (B)",FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([KM PIN Comaker])),"#,0"),
+			
+			FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Month])),
+				CALCULATE([RegularSum])),"#,0"))	
+			```
+		isHidden
+		lineageTag: 357db714-7332-48cb-b131-bfe576148470
+
+	measure 'Current Month #' =
+			
+			VAR varKM3 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentMTDHits = CALCULATE([Current MTD Hits],ALL(KM[KM],KM[Column1]))
+			VAR CurrentMTDLogins = CALCULATE([Current MTD Logins #],ALL(KM[KM],KM[Column1]))
+			VAR CurrentMTDConversion = CALCULATE([Current MTD Conversion #],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM3,
+			"Hits #",format(CurrentMTDHits,"#,0"),
+			"Conversion # / %",format(CurrentMTDConversion,"#,0"),
+			"Logins # / %",format(CurrentMTDLogins,"#,0")
+			--"> Reference Number Entered (A)",format([KM Hits],"#,0"),
+			--"> PIN Entered",format([KM PIN Entered],"#,0"),
+			--"Login Rate (B/A)",format([KM Login %],"0%;(0%)"),
+			--"> Payments (C)",format([KM Payments],"#,0"),
+			--"Conversion Rate (C/B)",format([KM Conversion %],"0%;(0%)"),
+			--"Payment $",format([KM Payment $],"$#,##0"),
+			--"Average Payment",format([KM Average Payment],"$#,##0"),
+			--"> Payment Method",format([KM Payment Method],"#,0"),
+			--"> Contact Info",format([KM Contact Info],"#,0"),
+			--"> Other",format([KM Other],"#,0"),
+			--format([RegularSum],"#,0")
+			)
+		isHidden
+		lineageTag: 71fb516d-cbfc-4630-bd52-83d68cbf1958
+
+	measure 'KM Current MTD Hits' = CALCULATE([Current MTD Hits],ALL(KM[KM],KM[Column1]))
+		formatString: 0
+		isHidden
+		lineageTag: 879a608f-b2f3-4725-b699-1f3755a5bd46
+
+	measure 'KM Previous MTD Hits' = ```
+			CALCULATE([Previous MTD Hits],ALL(KM[KM],KM[Column1]))
+			
+			```
+		formatString: 0
+		isHidden
+		lineageTag: 97a0cd79-aef9-4f3a-8590-0077f4a48377
+
+	measure 'Count of Ref Nos' = COUNTROWS('Metrics Data')
+		formatString: #,0
+		isHidden
+		lineageTag: 1b53b1d7-283d-47db-943f-ac5d97accca7
+
+	measure Date = ```
+			MAX('Metrics Data'[CapturedOn]) --DATE(right(LEFT(MAX('Metrics Data'[CapturedOn]),10),4),left(LEFT(MAX('Metrics Data'[CapturedOn]),10),1),9)
+			--LEFT(MAX('Metrics Data'[CapturedOn]),10)
+			
+			
+			```
+		formatString: Short Date
+		isHidden
+		lineageTag: 4f28c3fd-b7f9-4244-b49b-70f3daadba76
+
+		changedProperty = IsHidden
+
+	measure 'Current Month %' =
+			
+			VAR varKM4 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentMTDHits = CALCULATE([Current MTD Hits %],ALL(KM[KM],KM[Column1]))
+			VAR CurrentMTDLoginRate = CALCULATE([Current MTD Login%],ALL(KM[KM],KM[Column1]))
+			VAR CurrentMTDConversionRate = CALCULATE([Current MTD Conversion %],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM4,
+			"Hits #",format(CurrentMTDHits,"#,0"),
+			"Conversion # / %",format(CurrentMTDConversionRate,"0%;(0%)"),
+			"Logins # / %",format(CurrentMTDLoginRate,"0%;(0%)")
+			--"> Reference Number Entered (A)",format([KM Hits],"#,0"),
+			--"> PIN Entered",format([KM PIN Entered],"#,0"),
+			--"Login Rate (B/A)",format([KM Login %],"0%;(0%)"),
+			--"> Payments (C)",format([KM Payments],"#,0"),
+			--"Conversion Rate (C/B)",format([KM Conversion %],"0%;(0%)"),
+			--"Payment $",format([KM Payment $],"$#,##0"),
+			--"Average Payment",format([KM Average Payment],"$#,##0"),
+			--"> Payment Method",format([KM Payment Method],"#,0"),
+			--"> Contact Info",format([KM Contact Info],"#,0"),
+			--"> Other",format([KM Other],"#,0"),
+			--format([RegularSum],"#,0")
+			)
+		isHidden
+		lineageTag: 5d7af192-89d5-4d1c-8051-4b27a479b439
+
+	measure 'Previous Month %' =
+			
+			VAR varKM6 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR PreviousMTDHits = CALCULATE([Previous MTD Hits %],ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDLoginRate = CALCULATE([Previous MTD Login%],ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDConversionRate = CALCULATE([Previous MTD Conversion %],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM6,
+			"Hits #",format(PreviousMTDHits,"#,0"),
+			"Conversion # / %",format(PreviousMTDConversionRate,"0%;(0%)"),
+			"Logins # / %",format(PreviousMTDLoginRate,"0%;(0%)")
+			--"> Reference Number Entered (A)",format([KM Hits],"#,0"),
+			--"> PIN Entered",format([KM PIN Entered],"#,0"),
+			--"Login Rate (B/A)",format([KM Login %],"0%;(0%)"),
+			--"> Payments (C)",format([KM Payments],"#,0"),
+			--"Conversion Rate (C/B)",format([KM Conversion %],"0%;(0%)"),
+			--"Payment $",format([KM Payment $],"$#,##0"),
+			--"Average Payment",format([KM Average Payment],"$#,##0"),
+			--"> Payment Method",format([KM Payment Method],"#,0"),
+			--"> Contact Info",format([KM Contact Info],"#,0"),
+			--"> Other",format([KM Other],"#,0"),
+			--format([RegularSum],"#,0")
+			)
+		isHidden
+		lineageTag: 70fb844b-e7a4-45d1-b475-dd5cadff5b89
+
+	measure 'Previous Month #' =
+			
+			VAR varKM5 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR PreviousMTDHits = CALCULATE([Previous MTD Hits],ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDLogins = CALCULATE([Previous MTD Logins #],ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDConversion = CALCULATE([Previous MTD Conversion #],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM5,
+			"Hits #",format(PreviousMTDHits,"#,0"),
+			"Conversion # / %",format(PreviousMTDConversion,"#,0"),
+			"Logins # / %",format(PreviousMTDLogins,"#,0")
+			--"> Reference Number Entered (A)",format([KM Hits],"#,0"),
+			--"> PIN Entered",format([KM PIN Entered],"#,0"),
+			--"Login Rate (B/A)",format([KM Login %],"0%;(0%)"),
+			--"> Payments (C)",format([KM Payments],"#,0"),
+			--"Conversion Rate (C/B)",format([KM Conversion %],"0%;(0%)"),
+			--"Payment $",format([KM Payment $],"$#,##0"),
+			--"Average Payment",format([KM Average Payment],"$#,##0"),
+			--"> Payment Method",format([KM Payment Method],"#,0"),
+			--"> Contact Info",format([KM Contact Info],"#,0"),
+			--"> Other",format([KM Other],"#,0"),
+			--format([RegularSum],"#,0")
+			)
+		isHidden
+		lineageTag: 7d7483fe-a4db-42eb-b6c1-b7929a672c11
+
+	measure '# B/(W)' =
+			
+			VAR varKM7 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR MTDHitsBW = CALCULATE([# B/(W) Hits],ALL(KM[KM],KM[Column1]))
+			VAR MTDLoginsBW = CALCULATE([# B/(W) Logins #],ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionBW = CALCULATE([# B/(W) Conversion #],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM7,
+			"Hits #",format(MTDHitsBW,"#,0"),
+			"Conversion # / %",format(MTDConversionBW,"#,0"),
+			"Logins # / %",format(MTDLoginsBW,"#,0")
+			)
+		isHidden
+		lineageTag: 0cc8de08-036c-4111-a537-6aba89e4c840
+
+	measure '% B/(W) #' =
+			
+			VAR varKM8 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR MTDHitsDifferencePercentage = CALCULATE([% B/(W) Hits],ALL(KM[KM],KM[Column1]))
+			VAR MTDLoginsDifferencePercentage = CALCULATE([% B/(W) Logins #],ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionDifferencePercentage = CALCULATE([% B/(W) Conversion #],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM8,
+			"Hits #",format(MTDHitsDifferencePercentage,"#,0"),
+			"Conversion # / %",format(MTDConversionDifferencePercentage,"0%;(0%)"),
+			"Logins # / %",format(MTDLoginsDifferencePercentage,"0%;(0%)")
+			
+			)
+		isHidden
+		lineageTag: b6b257c4-59c7-4f3b-8158-d9c453b9f171
+
+	measure '% B/(W) %' =
+			
+			VAR varKM9 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR MTDHitsDifferencePercentage = CALCULATE([% B/(W) Hits %],ALL(KM[KM],KM[Column1]))
+			VAR MTDLoginRatesPercentageDifference = CALCULATE([% B/(W) Login%],ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionRatesPercentageDifference = CALCULATE([% B/(W) Conversion %],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM9,
+			"Hits #",format(MTDHitsDifferencePercentage,"#,0"),
+			"Conversion # / %",format(MTDConversionRatesPercentageDifference,"0%;(0%)"),
+			"Logins # / %",format(MTDLoginRatesPercentageDifference,"0%;(0%)")
+			
+			)
+		isHidden
+		lineageTag: 88c16f88-0b60-4fad-901a-d62b328c6662
+
+	measure DefaultSelection = ```
+			
+			COUNTROWS(DISTINCT(ALLSELECTED('Metrics Data'[Month-Year])))
+			--COUNTROWS(DISTINCT(ALLSELECTED('Metrics Data'[CapturedOn].[Month],'Metrics Data'[CapturedOn].[Year])))
+			
+			
+			```
+		formatString: 0
+		isHidden
+		lineageTag: 1b1a8e53-f3e4-43b3-af42-9c86d5711922
+
+	measure AllSelections = ```
+			
+			COUNTROWS(DISTINCT(ALL('Metrics Data'[Month-Year])))
+			--COUNTROWS(DISTINCT(ALL('Metrics Data'[CapturedOn].[Month],'Metrics Data'[CapturedOn].[Year])))
+			
+			
+			```
+		formatString: 0
+		isHidden
+		lineageTag: 8416eb58-5e85-4dc3-815e-3cefb6820835
+
+	measure Hits2 =
+			
+			---VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			---VAR selectedyear = ALLSELECTED('Metrics Data'[CapturedOn].[Year])
+			VAR selectedmonthyear = ALLSELECTED('Metrics Data'[Month-Year])
+			return
+			IF(
+			[DefaultSelection]=[AllSelections] ,
+			CALCULATE([Hits],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=FORMAT(today()-1,"MMM-YY"))),
+			---FILTER('Metrics Data',month('metrics data'[capturedon])=month(today()-1) && Year('metrics data'[capturedon])=Year(today()-1))),
+			--CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded")
+			CALCULATE([Hits],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=selectedmonthyear)))
+			---FILTER('Metrics Data','metrics data'[capturedon].[month]=selectedmonth && 'metrics data'[capturedon].[Year]=selectedyear)))
+		formatString: #,0
+		isHidden
+		lineageTag: 41ed818a-5fc0-4c3f-b4ee-7a8f4df8c3fb
+
+	measure 'Login % 2' =
+			
+			---VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			---VAR selectedyear = ALLSELECTED('Metrics Data'[CapturedOn].[Year])
+			VAR selectedmonthyear = ALLSELECTED('Metrics Data'[Month-Year])
+			return
+			IF(
+			[DefaultSelection]=[AllSelections] ,
+			CALCULATE([Login %],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=FORMAT(today()-1,"MMM-YY"))),
+			---FILTER('Metrics Data','Metrics Data'[Month-Year]=FORMAT(today()-1,"MMM-YY"))),
+			---FILTER('Metrics Data',month('metrics data'[capturedon])=month(today()-1) && Year('metrics data'[capturedon])=Year(today()-1))),
+			
+			CALCULATE([Login %],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=selectedmonthyear)))
+			--FILTER('Metrics Data','Metrics Data'[Month-Year]=selectedmonthyear)))
+			---FILTER('Metrics Data','metrics data'[capturedon].[month]=selectedmonth && 'metrics data'[capturedon].[Year]=selectedyear)))
+		formatString: 0\ %;-0\ %;0\ %
+		isHidden
+		lineageTag: ba945644-cbd4-41f6-afe7-77340afdfdd0
+
+	measure 'Conversion % 2' =
+			
+			---VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			---VAR selectedyear = ALLSELECTED('Metrics Data'[CapturedOn].[Year])
+			VAR selectedmonthyear = ALLSELECTED('Metrics Data'[Month-Year])
+			return
+			IF(
+			[DefaultSelection]=[AllSelections] ,
+			CALCULATE([Conversion %],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=FORMAT(today()-1,"MMM-YY"))),
+			--FILTER('Metrics Data','Metrics Data'[Month-Year]=FORMAT(today()-1,"MMM-YY"))),
+			---FILTER('Metrics Data',month('metrics data'[capturedon])=month(today()-1) && Year('metrics data'[capturedon])=Year(today()-1))),
+			
+			CALCULATE([Conversion %],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=selectedmonthyear)))
+			--FILTER('Metrics Data','Metrics Data'[Month-Year]=selectedmonthyear)))
+			---FILTER('Metrics Data','metrics data'[capturedon].[month]=selectedmonth && 'metrics data'[capturedon].[Year]=selectedyear)))
+		formatString: 0\ %;-0\ %;0\ %
+		isHidden
+		lineageTag: 03191281-f16c-4501-802a-fa9fb2d96cb3
+
+	measure 'Avg Payment 2' =
+			
+			---VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			---VAR selectedyear = ALLSELECTED('Metrics Data'[CapturedOn].[Year])
+			VAR selectedmonthyear = ALLSELECTED('Metrics Data'[Month-Year])
+			return
+			IF(
+			[DefaultSelection]=[AllSelections] ,
+			CALCULATE([Avg Payment],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=FORMAT(today()-1,"MMM-YY"))),
+			---FILTER('Metrics Data',month('metrics data'[capturedon])=month(today()-1) && Year('metrics data'[capturedon])=Year(today()-1))),
+			
+			CALCULATE([Avg Payment],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=selectedmonthyear)))
+			---FILTER('Metrics Data','metrics data'[capturedon].[month]=selectedmonth && 'metrics data'[capturedon].[Year]=selectedyear)))
+		formatString: \$#,0;(\$#,0);\$#,0
+		isHidden
+		lineageTag: c7d5640c-5b63-4956-aa98-71cb9a2b430e
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Count of Ref Nos 2' =
+			
+			---VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			---VAR selectedyear = ALLSELECTED('Metrics Data'[CapturedOn].[Year])
+			VAR selectedmonthyear = ALLSELECTED('Metrics Data'[Month-Year])
+			return
+			IF(
+			[DefaultSelection]=[AllSelections] ,
+			CALCULATE([Count of Ref Nos],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=FORMAT(today()-1,"MMM-YY"))),
+			---FILTER('Metrics Data',month('metrics data'[capturedon])=month(today()-1) && Year('metrics data'[capturedon])=Year(today()-1))),
+			
+			CALCULATE([Count of Ref Nos],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=selectedmonthyear)))
+			---FILTER('Metrics Data','metrics data'[capturedon].[month]=selectedmonth && 'metrics data'[capturedon].[Year]=selectedyear)))
+		formatString: #,0
+		isHidden
+		lineageTag: d59d0faa-74b2-4c78-891b-92f9f2f86f06
+
+	measure 'Count of Login Type' =
+			
+			---VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			---VAR selectedyear = ALLSELECTED('Metrics Data'[CapturedOn].[Year])
+			VAR selectedmonthyear = ALLSELECTED('Metrics Data'[Month-Year])
+			return
+			IF(
+			[DefaultSelection]=[AllSelections] ,
+			CALCULATE(count('Metrics Data'[Login Type]),
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=FORMAT(today()-1,"MMM-YY"))),
+			---FILTER('Metrics Data',month('metrics data'[capturedon])=month(today()-1) && Year('metrics data'[capturedon])=Year(today()-1))),
+			
+			CALCULATE(COUNT('Metrics Data'[Login Type]),
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=selectedmonthyear)))
+			---FILTER('Metrics Data','metrics data'[capturedon].[month]=selectedmonth && 'metrics data'[capturedon].[Year]=selectedyear)))
+		formatString: 0
+		isHidden
+		lineageTag: 4eab4d3f-fc2b-4019-b510-a993dc00c062
+
+	measure 'SumAndRatio D' = ```
+			
+			VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			VAR varKM2 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR KMHITS = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  )
+			VAR KMPINENTERED = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )
+			VAR KMLOGIN = Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login" ))
+			VAR KMPAYMENTS = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted")
+			VAR KMCONVERSION = Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			VAR KMPAYMENT = CALCULATE([Payment $ D],ALL(KM[KM],KM[Column1]))
+			VAR KMAVERAGEPAYMENT = DIVIDE(CALCULATE([Payment $ D],ALL(KM[KM],KM[Column1])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
+			VAR KMPAYMENTMETHOD = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="checking_account_used" || KM[KM]="debit_card_used" || KM[KM]="credit_card_used")
+			VAR KMCONTACTINFO = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="contact_information_updated" || KM[KM]="email_consent_provided" || KM[KM]="sms_consent_provided")
+			VAR KMOTHER = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent")
+			VAR PINLOGIN = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )
+			VAR PINLOGINPRIM = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"   )
+			VAR PINLOGINCOMAKER = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="comaker_login_succeeded"   )
+			RETURN
+			
+			SWITCH(varKM2,
+			"> Reference Number Entered (A)",format(KMHITS,"#,0"),
+			"> PIN Entered",format(KMPINENTERED,"#,0"),
+			"Login Rate (B/A)",format(KMLOGIN,"0%;(0%)"),
+			"> Payments (C)",format(KMPAYMENTS,"#,0"),
+			"Conversion Rate (C/B)",format(KMCONVERSION,"0%;(0%)"),
+			"Payment $",format(KMPAYMENT,"$#,##0"),
+			"Average Payment",format(KMAVERAGEPAYMENT,"$#,##0"),
+			"> Payment Method",format(KMPAYMENTMETHOD,"#,0"),
+			"> Contact Info",format(KMCONTACTINFO,"#,0"),
+			"> Other",format(KMOTHER,"#,0"),
+			"pin_login_succeeded (B)", FORMAT(PINLOGIN,"#,0"),
+			">>prim_login_succeeded", FORMAT(PINLOGINPRIM,"#,0"),
+			">>comaker_login_succeeded", FORMAT(PINLOGINCOMAKER,"#,0"),
+			format([RegularSumDefault],"#,0")
+			
+			)
+			
+			```
+		isHidden
+		lineageTag: b6e5080f-7bd7-4eeb-a78b-5fbda066d0b1
+
+	measure 'Selected Month Year' = ```
+			
+			VAR singleselection = 
+			SELECTEDVALUE('Metrics Data'[Month-Year])
+			---SELECTEDVALUE('Metrics Data'[CapturedOn].[Month]) & UNICHAR(10) & SELECTEDVALUE('Metrics Data'[CapturedOn].[Year])
+			VAR currentmonthyear = FORMAT(TODAY()-1,"MMM-YY")
+			---format(TODAY()-1,"mmmm") & UNICHAR(10) & year(today()-1)
+			RETURN
+			IF
+			(
+			[DefaultSelection]=[AllSelections] ,currentmonthyear,singleselection)
+			
+			```
+		isHidden
+		lineageTag: 16e48974-631e-454e-9644-830529b14035
+
+	measure 'Summary Hits2' =
+			
+			VAR varKM11 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentMTDHits = CALCULATE([Current MTD Hits],ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDHits = CALCULATE([Previous MTD Hits],ALL(KM[KM],KM[Column1]))
+			VAR MTDHitsBW = CALCULATE([# B/(W) Hits],ALL(KM[KM],KM[Column1]))
+			VAR MTDHitsDifferencePercentage = CALCULATE([% B/(W) Hits],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM11,
+			"Current Month",format(CurrentMTDHits,"#,0"),
+			"Previous Month",format(PreviousMTDHits,"#,0"),
+			"# Diff from Previous",format(MTDHitsBW,"#,0;(#,0)"),
+			"% Diff from Previous",format(MTDHitsDifferencePercentage,"0%;(0%)")
+			)
+		isHidden
+		lineageTag: a76ff699-d613-4347-b620-f14afba3c4c9
+
+	measure 'Summary Logins2' = ```
+			
+			VAR varKM12 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentMTDLogins = CALCULATE([Current MTD Logins #],ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDLogins = CALCULATE([Previous MTD Logins #],ALL(KM[KM],KM[Column1]))
+			VAR MTDLoginsBW = CALCULATE([# B/(W) Logins #],ALL(KM[KM],KM[Column1]))
+			VAR MTDLoginsDifferencePercentage = CALCULATE([% B/(W) Logins #],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM12,
+			"Current Month",format(CurrentMTDLogins,"#,0"),
+			"Previous Month",format(PreviousMTDLogins,"#,0"),
+			"# Diff from Previous",format(MTDLoginsBW,"#,0;(#,0)"),
+			"% Diff from Previous",format(MTDLoginsDifferencePercentage,"0%;(0%)")
+			)
+			
+			```
+		isHidden
+		lineageTag: 6a2cb0ba-3da7-4482-87a8-8569bc0b60e6
+
+	measure 'Summary Conversions2' = ```
+			
+			VAR varKM13 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentMTDConversion = CALCULATE([Current MTD Conversion #],ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDConversion = CALCULATE([Previous MTD Conversion #],ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionBW = CALCULATE([# B/(W) Conversion #],ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionDifferencePercentage = CALCULATE([% B/(W) Conversion #],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM13,
+			"Current Month",format(CurrentMTDConversion,"#,0"),
+			"Previous Month",format(PreviousMTDConversion,"#,0"),
+			"# Diff from Previous",format(MTDConversionBW,"#,0;(#,0)"),
+			"% Diff from Previous",format(MTDConversionDifferencePercentage,"0%;(0%)")
+			)
+			
+			
+			```
+		isHidden
+		lineageTag: 4a6d12a5-2521-4245-968a-2e8128a61472
+
+	measure 'Summary Login %' = ```
+			
+			VAR varKM14 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentMTDLoginRate = CALCULATE([Current MTD Login%],ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDLoginRate = CALCULATE([Previous MTD Login%],ALL(KM[KM],KM[Column1]))
+			VAR MTDLoginRatesPercentageDifference = CALCULATE([% B/(W) Login%],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM14,
+			"Current Month",format(CurrentMTDLoginRate,"0%;(0%)"),
+			"Previous Month",format(PreviousMTDLoginRate,"0%;(0%)"),
+			"# Diff from Previous","-",
+			"% Diff from Previous",format(MTDLoginRatesPercentageDifference,"0%;(0%)")
+			)
+			
+			```
+		isHidden
+		lineageTag: e155501f-453a-4014-93dd-b6cc067d229c
+
+	measure 'Summary Conversion %' = ```
+			
+			VAR varKM15 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentMTDConversionRate = CALCULATE([Current MTD Conversion %],ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDConversionRate = CALCULATE([Previous MTD Conversion %],ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionRatesPercentageDifference = CALCULATE([% B/(W) Conversion %],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM15,
+			"Current Month",format(CurrentMTDConversionRate,"0%;(0%)"),
+			"Previous Month",format(PreviousMTDConversionRate,"0%;(0%)"),
+			"# Diff from Previous","-",
+			"% Diff from Previous",format(MTDConversionRatesPercentageDifference,"0%;(0%)")
+			)
+			
+			```
+		isHidden
+		lineageTag: 80d2990c-8904-46c0-ab42-bed805186afa
+
+	measure RegularSumDefault = ```
+			CALCULATE([RegularSum], 
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=FORMAT(today()-1,"MMM-YY")))
+			---FILTER('Metrics Data',month('metrics data'[capturedon])=month(today()-1) && Year('metrics data'[capturedon])=Year(today()-1)))
+			```
+		formatString: 0
+		isHidden
+		lineageTag: 13306478-3f8f-4608-81a5-88a6388029f8
+
+	measure RegularSumSelection =
+			
+			---VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			---VAR selectedyear = ALLSELECTED('Metrics Data'[CapturedOn].[Year])
+			VAR selectedmonthyear = ALLSELECTED('Metrics Data'[Month-Year])
+			RETURN
+			CALCULATE([RegularSum],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=selectedmonthyear))
+			--FILTER('Metrics Data','metrics data'[capturedon].[month]=selectedmonth && 'metrics data'[capturedon].[Year]=selectedyear))
+		formatString: 0
+		isHidden
+		lineageTag: dc2d7c9c-b13c-4846-9906-2c1c87382a04
+
+	measure 'SumAndRatio S' =
+			
+			VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			VAR varKM2 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR KMHITS = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  )
+			VAR KMPINENTERED = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login" )
+			VAR KMLOGIN = Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			VAR KMPAYMENTS = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted")
+			VAR KMCONVERSION = Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			VAR KMPAYMENT = CALCULATE([KM Payment $])
+			VAR KMAVERAGEPAYMENT = DIVIDE(CALCULATE([KM Payment $]),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
+			VAR KMPAYMENTMETHOD = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="checking_account_used" || KM[KM]="debit_card_used" || KM[KM]="credit_card_used")
+			VAR KMCONTACTINFO = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="contact_information_updated" || KM[KM]="email_consent_provided" || KM[KM]="sms_consent_provided")
+			VAR KMOTHER = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent")
+			VAR PINLOGIN = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )
+			VAR PINLOGINPRIM = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"   )
+			VAR PINLOGINCOMAKER = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="comaker_login_succeeded"   )
+			
+			
+			RETURN
+			
+			SWITCH(varKM2,
+			"> Reference Number Entered (A)",format(KMHITS,"#,0"),
+			"> PIN Entered",format(KMPINENTERED,"#,0"),
+			"Login Rate (B/A)",format(KMLOGIN,"0%;(0%)"),
+			"> Payments (C)",format(KMPAYMENTS,"#,0"),
+			"Conversion Rate (C/B)",format(KMCONVERSION,"0%;(0%)"),
+			"Payment $",format(KMPAYMENT,"$#,##0"),
+			"Average Payment",format(KMAVERAGEPAYMENT,"$#,##0"),
+			"> Payment Method",format(KMPAYMENTMETHOD,"#,0"),
+			"> Contact Info",format(KMCONTACTINFO,"#,0"),
+			"> Other",format(KMOTHER,"#,0"),
+			"pin_login_succeeded (B)", FORMAT(PINLOGIN,"#,0"),
+			">>prim_login_succeeded", FORMAT(PINLOGINPRIM,"#,0"),
+			">>comaker_login_succeeded", FORMAT(PINLOGINCOMAKER,"#,0"),
+			format([RegularSumSelection],"#,0")
+			
+			)
+		isHidden
+		lineageTag: a0f39bbb-1116-46d1-9db5-cb76f4ece4b4
+
+	measure 'SumAndRatio Daily Table' =
+			IF
+			(
+			[AllSelections]= [DefaultSelection],
+			[SumAndRatio D],
+			[SumAndRatio S]
+			)
+		isHidden
+		lineageTag: 11f5f56a-ed58-4067-8150-4f1050e9bf12
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg D' =
+			
+			VAR varAvg = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR KMHITS = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded" || KM[KM]="frictionless_Login" ))
+			VAR KMPINENTERED = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			VAR KMLOGIN =AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])), Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_Login" )))
+			VAR KMPAYMENTS = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
+			VAR KMCONVERSION = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )))
+			VAR KMPAYMENT = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([Payment $ D],ALL(KM[KM],KM[Column1])))
+			VAR KMAVERAGEPAYMENT = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),DIVIDE(CALCULATE([Payment $ D],ALL(KM[KM],KM[Column1])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted")))
+			VAR KMPAYMENTMETHOD = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="checking_account_used" || KM[KM]="debit_card_used" || KM[KM]="credit_card_used"))
+			VAR KMCONTACTINFO = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="contact_information_updated" || KM[KM]="email_consent_provided" || KM[KM]="sms_consent_provided"))
+			VAR KMOTHER = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent"))
+			
+			VAR KMPINLOGIN = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			
+			VAR KMPINLOGINPRIM = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"  ))
+			
+			VAR KMPINLOGINCOMAKER = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="comaker_login_succeeded"  ))
+			
+			RETURN
+			SWITCH(varAvg,"> Reference Number Entered (A)",FORMAT(KMHITS,"#,0"),
+			"> PIN Entered",FORMAT(KMPINENTERED,"#,0"),
+			"Login Rate (B/A)",FORMAT(KMLOGIN,"0%;(0%)"),
+			"> Payments (C)",FORMAT(KMPAYMENTS,"#,0"),
+			"Conversion Rate (C/B)",FORMAT(KMCONVERSION,"0%;(0%)"),
+			"Payment $",FORMAT(KMPAYMENT,"$#,##0"),
+			"Average Payment",FORMAT(KMAVERAGEPAYMENT,"$#,##0"),
+			"> Payment Method",FORMAT(KMPAYMENTMETHOD,"#,0"),
+			"> Contact Info",FORMAT(KMCONTACTINFO,"#,0"),
+			"> Other",FORMAT(KMOTHER,"#,0"),
+			
+			"pin_login_succeeded (B)",FORMAT(KMPINLOGIN,"#,0"),
+			">>prim_login_succeeded",FORMAT(KMPINLOGINPRIM,"#,0"),
+			">>comaker_login_succeeded",FORMAT(KMPINLOGINCOMAKER,"#,0"),
+			
+			FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([RegularSumDefault])),"#,0"))
+		isHidden
+		lineageTag: a26c3f8c-7d2b-4354-a503-236d59d7314f
+
+	measure 'Max D' =
+			
+			VAR varMax = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR KMHITS = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_Login" ))
+			VAR KMPINENTERED = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			VAR KMLOGIN =MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])), Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_Login" )))
+			VAR KMPAYMENTS = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
+			VAR KMCONVERSION = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )))
+			VAR KMPAYMENT = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([Payment $ D],ALL(KM[KM],KM[Column1])))
+			VAR KMAVERAGEPAYMENT = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),DIVIDE(CALCULATE([Payment $ D],ALL(KM[KM],KM[Column1])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted")))
+			VAR KMPAYMENTMETHOD = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="checking_account_used" || KM[KM]="debit_card_used" || KM[KM]="credit_card_used"))
+			VAR KMCONTACTINFO = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="contact_information_updated" || KM[KM]="email_consent_provided" || KM[KM]="sms_consent_provided"))
+			VAR KMOTHER = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent"))
+			
+			VAR KMPINLOGIN = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			
+			VAR KMPINLOGINPRIM = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"  ))
+			
+			VAR KMPINLOGINCOMAKER = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="comaker_login_succeeded"  ))
+			
+			
+			RETURN
+			SWITCH(varMax,"> Reference Number Entered (A)",FORMAT(KMHITS,"#,0"),
+			"> PIN Entered",FORMAT(KMPINENTERED,"#,0"),
+			"Login Rate (B/A)",FORMAT(KMLOGIN,"0%;(0%)"),
+			"> Payments (C)",FORMAT(KMPAYMENTS,"#,0"),
+			"Conversion Rate (C/B)",FORMAT(KMCONVERSION,"0%;(0%)"),
+			"Payment $",FORMAT(KMPAYMENT,"$#,##0"),
+			"Average Payment",FORMAT(KMAVERAGEPAYMENT,"$#,##0"),
+			"> Payment Method",FORMAT(KMPAYMENTMETHOD,"#,0"),
+			"> Contact Info",FORMAT(KMCONTACTINFO,"#,0"),
+			"> Other",FORMAT(KMOTHER,"#,0"),
+			
+			"pin_login_succeeded (B)",FORMAT(KMPINLOGIN,"#,0"),
+			">>prim_login_succeeded",FORMAT(KMPINLOGINPRIM,"#,0"),
+			">>comaker_login_succeeded",FORMAT(KMPINLOGINCOMAKER,"#,0"),
+			FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([RegularSumDefault])),"#,0"))
+		isHidden
+		lineageTag: 620d8683-de5f-4d9a-b2c1-e49f555fca1f
+
+	measure 'Min D' = ```
+			
+			VAR varMin = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR KMHITS = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			VAR KMPINENTERED = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login" ))
+			VAR KMLOGIN =MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])), Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  )))
+			VAR KMPAYMENTS = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
+			VAR KMCONVERSION = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )))
+			VAR KMPAYMENT = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([Payment $ D],ALL(KM[KM],KM[Column1])))
+			VAR KMAVERAGEPAYMENT = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),DIVIDE(CALCULATE([Payment $ D],ALL(KM[KM],KM[Column1])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted")))
+			VAR KMPAYMENTMETHOD = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="checking_account_used" || KM[KM]="debit_card_used" || KM[KM]="credit_card_used"))
+			VAR KMCONTACTINFO = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="contact_information_updated" || KM[KM]="email_consent_provided" || KM[KM]="sms_consent_provided"))
+			VAR KMOTHER = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent"))
+			
+			VAR KMPINLOGIN = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			
+			VAR KMPINLOGINPRIM = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"  ))
+			
+			VAR KMPINLOGINCOMAKER = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="comaker_login_succeeded"  ))
+			
+			
+			RETURN
+			SWITCH(varMin,"> Reference Number Entered (A)",FORMAT(KMHITS,"#,0"),
+			"> PIN Entered",FORMAT(KMPINENTERED,"#,0"),
+			"Login Rate (B/A)",FORMAT(KMLOGIN,"0%;(0%)"),
+			"> Payments (C)",FORMAT(KMPAYMENTS,"#,0"),
+			"Conversion Rate (C/B)",FORMAT(KMCONVERSION,"0%;(0%)"),
+			"Payment $",FORMAT(KMPAYMENT,"$#,##0"),
+			"Average Payment",FORMAT(KMAVERAGEPAYMENT,"$#,##0"),
+			"> Payment Method",FORMAT(KMPAYMENTMETHOD,"#,0"),
+			"> Contact Info",FORMAT(KMCONTACTINFO,"#,0"),
+			"> Other",FORMAT(KMOTHER,"#,0"),
+			
+			"pin_login_succeeded (B)",FORMAT(KMPINLOGIN,"#,0"),
+			">>prim_login_succeeded",FORMAT(KMPINLOGINPRIM,"#,0"),
+			">>comaker_login_succeeded",FORMAT(KMPINLOGINCOMAKER,"#,0"),
+			
+			FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([RegularSumDefault])),"#,0"))
+			
+			```
+		isHidden
+		lineageTag: bb50e409-58c0-4b8f-a3c4-b25f52f6f18c
+
+	measure 'Max S' =
+			
+			VAR varMax = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR KMHITS = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			VAR KMPINENTERED = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			VAR KMLOGIN = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  )))
+			VAR KMPAYMENTS = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
+			VAR KMCONVERSION = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )))
+			VAR KMPAYMENT = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([KM Payment $]))
+			VAR KMAVERAGEPAYMENT = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),DIVIDE(CALCULATE([KM Payment $]),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted")))
+			VAR KMPAYMENTMETHOD = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="checking_account_used" || KM[KM]="debit_card_used" || KM[KM]="credit_card_used"))
+			VAR KMCONTACTINFO = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="contact_information_updated" || KM[KM]="email_consent_provided" || KM[KM]="sms_consent_provided"))
+			VAR KMOTHER = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent"))
+			
+			VAR KMPINLOGIN = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			
+			VAR KMPINLOGINPRIM = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"  ))
+			
+			VAR KMPINLOGINCOMAKER = MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="comaker_login_succeeded"  ))
+			
+			RETURN
+			SWITCH(varMax,"> Reference Number Entered (A)",FORMAT(KMHITS,"#,0"),
+			"> PIN Entered",FORMAT(KMPINENTERED,"#,0"),
+			"Login Rate (B/A)",FORMAT(KMLOGIN,"0%;(0%)"),
+			"> Payments (C)",FORMAT(KMPAYMENTS,"#,0"),
+			"Conversion Rate (C/B)",FORMAT(KMCONVERSION,"0%;(0%)"),
+			"Payment $",FORMAT(KMPAYMENT,"$#,##0"),
+			"Average Payment",FORMAT(KMAVERAGEPAYMENT,"$#,##0"),
+			"> Payment Method",FORMAT(KMPAYMENTMETHOD,"#,0"),
+			"> Contact Info",FORMAT(KMCONTACTINFO,"#,0"),
+			"> Other",FORMAT(KMOTHER,"#,0"),
+			
+			"pin_login_succeeded (B)",FORMAT(KMPINLOGIN,"#,0"),
+			">>prim_login_succeeded",FORMAT(KMPINLOGINPRIM,"#,0"),
+			">>comaker_login_succeeded",FORMAT(KMPINLOGINCOMAKER,"#,0"),
+			
+			FORMAT(MAXX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([RegularSumSelection])),"#,0"))
+		isHidden
+		lineageTag: 57a085ad-e1d6-4827-acd9-c01b675d1b0f
+
+	measure 'Max Final' =
+			IF
+			(
+			[AllSelections]= [DefaultSelection],
+			[Max D],
+			[Max S]
+			)
+		isHidden
+		lineageTag: ed8252c7-473c-4428-982e-d7a5c5d99fc0
+
+	measure 'Avg S' =
+			
+			VAR varAvg = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR KMHITS = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded" || KM[KM]="frictionless_Login" ))
+			VAR KMPINENTERED = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			VAR KMLOGIN = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded" || KM[KM]="frictionless_Login" )))
+			VAR KMPAYMENTS = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
+			VAR KMCONVERSION = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )))
+			VAR KMPAYMENT = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([KM Payment $]))
+			VAR KMAVERAGEPAYMENT = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),DIVIDE(CALCULATE([KM Payment $]),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted")))
+			VAR KMPAYMENTMETHOD = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="checking_account_used" || KM[KM]="debit_card_used" || KM[KM]="credit_card_used"))
+			VAR KMCONTACTINFO = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="contact_information_updated" || KM[KM]="email_consent_provided" || KM[KM]="sms_consent_provided"))
+			VAR KMOTHER = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent"))
+			
+			VAR KMPINLOGIN = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			
+			VAR KMPINLOGINPRIM = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"  ))
+			
+			VAR KMPINLOGINCOMAKER = AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="comaker_login_succeeded"  ))
+			
+			RETURN
+			SWITCH(varAvg,"> Reference Number Entered (A)",FORMAT(KMHITS,"#,0"),
+			"> PIN Entered",FORMAT(KMPINENTERED,"#,0"),
+			"Login Rate (B/A)",FORMAT(KMLOGIN,"0%;(0%)"),
+			"> Payments (C)",FORMAT(KMPAYMENTS,"#,0"),
+			"Conversion Rate (C/B)",FORMAT(KMCONVERSION,"0%;(0%)"),
+			"Payment $",FORMAT(KMPAYMENT,"$#,##0"),
+			"Average Payment",FORMAT(KMAVERAGEPAYMENT,"$#,##0"),
+			"> Payment Method",FORMAT(KMPAYMENTMETHOD,"#,0"),
+			"> Contact Info",FORMAT(KMCONTACTINFO,"#,0"),
+			"> Other",FORMAT(KMOTHER,"#,0"),
+			
+			"pin_login_succeeded (B)",FORMAT(KMPINLOGIN,"#,0"),
+			">>prim_login_succeeded",FORMAT(KMPINLOGINPRIM,"#,0"),
+			">>comaker_login_succeeded",FORMAT(KMPINLOGINCOMAKER,"#,0"),
+			
+			FORMAT(AVERAGEX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([RegularSumSelection])),"#,0"))
+		isHidden
+		lineageTag: b3de0fa0-ac9c-415b-9999-d407410c1e3d
+
+	measure 'Min S' =
+			
+			VAR varMin = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR KMHITS = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			VAR KMPINENTERED = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			VAR KMLOGIN = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  )))
+			VAR KMPAYMENTS = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
+			VAR KMCONVERSION = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )))
+			VAR KMPAYMENT = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([KM Payment $]))
+			VAR KMAVERAGEPAYMENT = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),DIVIDE(CALCULATE([KM Payment $]),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted")))
+			VAR KMPAYMENTMETHOD = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="checking_account_used" || KM[KM]="debit_card_used" || KM[KM]="credit_card_used"))
+			VAR KMCONTACTINFO = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="contact_information_updated" || KM[KM]="email_consent_provided" || KM[KM]="sms_consent_provided"))
+			VAR KMOTHER = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent"))
+			
+			VAR KMPINLOGIN = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			
+			VAR KMPINLOGINPRIM = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"  ))
+			
+			VAR KMPINLOGINCOMAKER = MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="comaker_login_succeeded"  ))
+			
+			
+			RETURN
+			SWITCH(varMin,"> Reference Number Entered (A)",FORMAT(KMHITS,"#,0"),
+			"> PIN Entered",FORMAT(KMPINENTERED,"#,0"),
+			"Login Rate (B/A)",FORMAT(KMLOGIN,"0%;(0%)"),
+			"> Payments (C)",FORMAT(KMPAYMENTS,"#,0"),
+			"Conversion Rate (C/B)",FORMAT(KMCONVERSION,"0%;(0%)"),
+			"Payment $",FORMAT(KMPAYMENT,"$#,##0"),
+			"Average Payment",FORMAT(KMAVERAGEPAYMENT,"$#,##0"),
+			"> Payment Method",FORMAT(KMPAYMENTMETHOD,"#,0"),
+			"> Contact Info",FORMAT(KMCONTACTINFO,"#,0"),
+			"> Other",FORMAT(KMOTHER,"#,0"),
+			
+			"pin_login_succeeded (B)",FORMAT(KMPINLOGIN,"#,0"),
+			">>prim_login_succeeded",FORMAT(KMPINLOGINPRIM,"#,0"),
+			">>comaker_login_succeeded",FORMAT(KMPINLOGINCOMAKER,"#,0"),
+			
+			FORMAT(MINX(
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),
+				CALCULATE([RegularSumSelection])),"#,0"))
+		isHidden
+		lineageTag: 06d9da07-9b47-40a2-90b0-b98618f906e5
+
+	measure 'Min Final' =
+			IF
+			(
+			[AllSelections]= [DefaultSelection],
+			[Min D],
+			[Min S]
+			)
+		isHidden
+		lineageTag: 0b2688d1-8b7b-4804-a332-3b387dbac5a1
+
+	measure 'Avg Final' =
+			IF
+			(
+			[AllSelections]= [DefaultSelection],
+			[Avg D],
+			[Avg S]
+			)
+		isHidden
+		lineageTag: c74140cb-42aa-4216-b5f8-f689c9a38e37
+
+	measure 'Selected Year' = ```
+			
+			VAR singleselection = "Year " & SELECTEDVALUE('Metrics Data'[CapturedOn].[Year])
+			VAR currentyear = "Year " & year(today())
+			RETURN
+			----IF
+			----(
+			----[DefaultSelection]=[AllSelections] ,"Year not Selected",singleselection)
+			singleselection
+			
+			```
+		isHidden
+		lineageTag: bba42dcc-c930-4532-8c3f-ea8a3eaa5963
+
+	measure 'MTD Comparison Months' = ```
+			
+			VAR currentmonthyear = format(TODAY()-1,"mmmm") & UNICHAR(10) & year(today()-1)
+			VAR day = format(today()-1,"dd")
+			
+			--VAR previousmonthyear =
+			RETURN
+			--currentmonthyear & UNICHAR(10) 
+			--& previousmonthyear & UNICHAR(10)
+			--& 
+			if(day="01"," day 01"," day 01 to day " & day) 
+			
+			
+			```
+		isHidden
+		lineageTag: 34b7eec8-dd5e-4245-8466-7f5d46b48d08
+
+	measure 'Client Summary Hits' =
+			
+			VAR varKM11 = UPPER(IF(HASONEVALUE(KM[Month]),VALUES(KM[Month]),BLANK()))
+			VAR CurrentMTDHits = CALCULATE([Current MTD Hits],ALL(KM[Month],KM[KM]))
+			VAR PreviousMTDHits = CALCULATE([Previous MTD Hits],ALL(KM[Month],KM[KM]))
+			----VAR MTDHitsBW = CALCULATE([# B/(W) Hits],ALL(KM[KM],KM[Column1]))
+			VAR MTDHitsDifferencePercentage = CALCULATE([% B/(W) Hits],ALL(KM[Month],KM[KM]))
+			VAR Currentmmmm=format(today()-1,"mmmm")
+			VAR Previousmmmm = format(Month((Today()-1)-1),"mmmm")
+			VAR Pctdiffmmmm =  "Percent diff from " & format(Month((Today()-1)-1),"mmmm")
+			RETURN
+			SWITCH(varKM11,
+			Currentmmmm,
+			format(
+			CurrentMTDHits,
+			"#,0"),
+			
+			Previousmmmm,
+			format(
+			PreviousMTDHits
+			,"#,0")
+			,
+			----"# Diff from Previous",format(MTDHitsBW,"0%;(0%)"),
+			Pctdiffmmmm,
+			format(
+			MTDHitsDifferencePercentage
+			,"0%;(0%)")
+			)
+		isHidden
+		lineageTag: c1a6df1c-4b25-4925-a991-3cd2c6ab8c4c
+
+	measure 'Client Summary Logins' =
+			
+			VAR varKM12 = UPPER(IF(HASONEVALUE(KM[month]),VALUES(KM[month]),BLANK()))
+			VAR CurrentMTDLogins = CALCULATE([Current MTD Logins #],ALL(KM[Month],KM[KM]))
+			VAR PreviousMTDLogins = CALCULATE([Previous MTD Logins #],ALL(KM[Month],KM[KM]))
+			----VAR MTDLoginsBW = CALCULATE([# B/(W) Logins #],ALL(KM[KM],KM[Column1]))
+			VAR MTDLoginsDifferencePercentage = CALCULATE([% B/(W) Logins #],ALL(KM[Month],KM[KM]))
+			VAR Currentmmmm=format(today()-1,"mmmm")
+			VAR Previousmmmm = format(Month((Today()-1)-1),"mmmm")
+			VAR Pctdiffmmmm =  "Percent diff from " & format(Month((Today()-1)-1),"mmmm")
+			RETURN
+			SWITCH(varKM12,
+			Currentmmmm,format(CurrentMTDLogins,"#,0"),
+			Previousmmmm,format(PreviousMTDLogins,"#,0")
+			,
+			----"# Diff from Previous",format(MTDLoginsBW,"0%;(0%)"),
+			Pctdiffmmmm,format(MTDLoginsDifferencePercentage,"0%;(0%)")
+			)
+		isHidden
+		lineageTag: 6a424470-27b1-4977-b7ba-667e109988cf
+
+	measure 'Client Summary Conversions' =
+			
+			VAR varKM13 = UPPER(IF(HASONEVALUE(KM[Month]),VALUES(KM[Month]),BLANK()))
+			VAR CurrentMTDConversion = CALCULATE([Current MTD Conversion #],ALL(KM[Month],KM[KM]))
+			VAR PreviousMTDConversion = CALCULATE([Previous MTD Conversion #],ALL(KM[Month],KM[KM]))
+			----VAR MTDConversionBW = CALCULATE([# B/(W) Conversion #],ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionDifferencePercentage = CALCULATE([% B/(W) Conversion #],ALL(KM[Month],KM[KM]))
+			VAR Currentmmmm=format(today()-1,"mmmm")
+			VAR Previousmmmm = format(Month((Today()-1)-1),"mmmm")
+			VAR Pctdiffmmmm =  "Percent diff from " & format(Month((Today()-1)-1),"mmmm")
+			RETURN
+			SWITCH(varKM13,
+			Currentmmmm,format(CurrentMTDConversion,"#,0"),
+			Previousmmmm,format(PreviousMTDConversion,"#,0")
+			,
+			----"# Diff from Previous",format(MTDConversionBW,"0%;(0%)"),
+			Pctdiffmmmm,format(MTDConversionDifferencePercentage,"0%;(0%)")
+			)
+		isHidden
+		lineageTag: dba5e2de-a702-459e-ac23-3e25343de9e8
+
+	measure 'Client Summary Login %' =
+			
+			VAR varKM14 = UPPER(IF(HASONEVALUE(KM[Month]),VALUES(KM[Month]),BLANK()))
+			VAR CurrentMTDLoginRate = CALCULATE([Current MTD Login%],ALL(KM[Month],KM[KM]))
+			VAR PreviousMTDLoginRate = CALCULATE([Previous MTD Login%],ALL(KM[Month],KM[KM]))
+			VAR MTDLoginRatesPercentageDifference = CALCULATE([% B/(W) Login%],ALL(KM[Month],KM[KM]))
+			VAR Currentmmmm=format(today()-1,"mmmm")
+			VAR Previousmmmm = format(Month((Today()-1)-1),"mmmm")
+			VAR Pctdiffmmmm =  "Percent diff from " & format(Month((Today()-1)-1),"mmmm")
+			RETURN
+			SWITCH(varKM14,
+			
+			Currentmmmm,format(CurrentMTDLoginRate,"0%;(0%)"),
+			Previousmmmm,format(PreviousMTDLoginRate,"0%;(0%)"),
+			----"# Diff from Previous","-",
+			Pctdiffmmmm,format(MTDLoginRatesPercentageDifference,"0%;(0%)")
+			)
+		isHidden
+		lineageTag: b0603d55-c3ae-452f-ac35-4d8003a14056
+
+	measure 'Client Summary Conversion %' = ```
+			
+			VAR varKM15 = UPPER(IF(HASONEVALUE(KM[month]),VALUES(KM[month]),BLANK()))
+			VAR CurrentMTDConversionRate = CALCULATE([Current MTD Conversion %],ALL(KM[Month],KM[KM]))
+			VAR PreviousMTDConversionRate = CALCULATE([Previous MTD Conversion %],ALL(KM[Month],KM[KM]))
+			VAR MTDConversionRatesPercentageDifference = CALCULATE([% B/(W) Conversion %],ALL(KM[Month],KM[KM]))
+			VAR Currentmmmm=format(today()-1,"mmmm")
+			VAR Previousmmmm = format(Month((Today()-1)-1),"mmmm")
+			VAR Pctdiffmmmm =  "Percent diff from " & format(Month((Today()-1)-1),"mmmm")
+			RETURN
+			SWITCH(varKM15,
+			Currentmmmm,
+			format(
+			CurrentMTDConversionRate 
+			,"0%;(0%)")
+			,
+			Previousmmmm,
+			format(
+			PreviousMTDConversionRate
+			,"0%;(0%)")
+			,
+			----"# Diff from Previous","-",
+			Pctdiffmmmm,
+			format(
+			MTDConversionRatesPercentageDifference
+			,"0%;(0%)")
+			)
+			```
+		isHidden
+		lineageTag: 2afb2dc0-0c27-493a-97b9-c2a909e8ff02
+
+	measure 'Client Summary Conversion %2' = ```
+			
+			VAR varKM15 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentMTDConversionRate = CALCULATE([Current MTD Conversion %],ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDConversionRate = CALCULATE([Previous MTD Conversion %],ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionRatesPercentageDifference = 
+			CALCULATE([% B/(W) Conversion %],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM15,
+			"Current Month",
+			--format(
+			CurrentMTDConversionRate
+			--,"0%;(0%)")
+			,
+			"Previous Month",
+			--format(
+			PreviousMTDConversionRate
+			--,"0%;(0%)")
+			,
+			----"# Diff from Previous","-",
+			"% Diff from Previous",
+			--format(
+			MTDConversionRatesPercentageDifference
+			--,"0%;(0%)")
+			)
+			```
+		isHidden
+		lineageTag: 44f0bf67-2a2d-4986-aa57-44bd525d911c
+
+	measure 'Background Color' =
+			
+			VAR bwconversion =CALCULATE([Current MTD Conversion %]- [Previous MTD Conversion %],ALL(KM[KM],KM[Column1]))
+			RETURN
+			--SWITCH(TRUE(), bwconversion>0,1, bwconversion < 0 , -1, 0)
+			SWITCH(TRUE(), bwconversion>0,"Green", bwconversion < 0 , "Red", "White")
+		isHidden
+		lineageTag: 5929849c-ccca-484a-b63a-6510a2de6b0a
+
+	measure 'Client Rank' =
+			
+			IF (
+			    ISINSCOPE( 'Metrics Data'[Client] ),
+			    RANKX (
+			        CALCULATETABLE (
+			            VALUES ( 'Metrics Data'[Client] ),
+			           ALLSELECTED ( 'Metrics Data'[Client] )
+			        ),
+			        [Current MTD Hits]
+			    )
+			)
+		formatString: 0
+		isHidden
+		lineageTag: 039807fd-22eb-450a-88fd-8f89ded6b056
+
+	measure TopN+Others =
+			
+			VAR ClientbyHits = RANKX(ALL('Metrics Data'[Client]),calculate([Current MTD Hits]),,DESC,Dense)
+			RETURN
+			IF(ClientbyHits <= 'Select Top N Clients'[Select Top N Clients Value] , calculate([Current MTD Hits]), BLANK())
+			--IF(ClientbyHits <= 10 , "top", "Others")
+		formatString: 0
+		isHidden
+		lineageTag: adf34514-1b89-4dc2-8d68-7f52619196e5
+
+	measure 'topn km' = CALCULATE([TopN+Others],ALL(KM[Month],KM[Column1]))
+		formatString: 0
+		isHidden
+		lineageTag: b366da20-2991-456e-8a1c-dbf68badbf3c
+
+	measure 'Login # 2' =
+			
+			---VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			---VAR selectedyear = ALLSELECTED('Metrics Data'[CapturedOn].[Year])
+			VAR selectedmonthyear = ALLSELECTED('Metrics Data'[Month-Year])
+			return
+			IF(
+			[DefaultSelection]=[AllSelections] ,
+			CALCULATE([Login #],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=FORMAT(today()-1,"MMM-YY"))),
+			---FILTER('Metrics Data',month('metrics data'[capturedon])=month(today()-1) && Year('metrics data'[capturedon])=Year(today()-1))),
+			
+			CALCULATE([Login #],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=selectedmonthyear)))
+			---FILTER('Metrics Data','metrics data'[capturedon].[month]=selectedmonth && 'metrics data'[capturedon].[Year]=selectedyear)))
+		formatString: #,0
+		isHidden
+		lineageTag: b0c19a5b-aca1-48a7-a62a-34a8ad881c0d
+
+	measure 'Conversion # 2' =
+			
+			---VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
+			---VAR selectedyear = ALLSELECTED('Metrics Data'[CapturedOn].[Year])
+			VAR selectedmonthyear = ALLSELECTED('Metrics Data'[Month-Year])
+			return
+			IF(
+			[DefaultSelection]=[AllSelections] ,
+			CALCULATE([Conversion #],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=FORMAT(today()-1,"MMM-YY"))),
+			---FILTER('Metrics Data',month('metrics data'[capturedon])=month(today()-1) && Year('metrics data'[capturedon])=Year(today()-1))),
+			
+			
+			CALCULATE([Conversion #],
+			FILTER('Metrics Data','Metrics Data'[Month-Year]=selectedmonthyear)))
+			---FILTER('Metrics Data','metrics data'[capturedon].[month]=selectedmonth && 'metrics data'[capturedon].[Year]=selectedyear)))
+		formatString: #,0
+		isHidden
+		lineageTag: fccaf45e-54c9-4d5b-a6a7-b1066af67e2a
+
+	measure 'Top 10 Clients by Hits' =
+			
+			VAR ClientbyHits = RANKX(ALL('Metrics Data'[Client]),calculate([Hits]),,DESC,Dense)
+			RETURN
+			IF(ClientbyHits <= 10 , calculate([Hits]), BLANK())
+		formatString: 0
+		isHidden
+		lineageTag: 7f4e7032-86b1-4b53-b620-cde410093345
+
+	measure January =
+			
+			VAR varKM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varKM,"> Reference Number Entered (A)",format(CALCULATE([KM Hits],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "January")),"#,0"),
+			"> PIN Entered",format(CALCULATE([KM PIN Entered],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "January")),"#,0"),
+			"Login Rate (B/A)",format(CALCULATE([KM Login %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "January")),"0%;(0%)"),
+			"> Payments (C)",format(CALCULATE([KM Payments],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "January")),"#,0"),
+			"Conversion Rate (C/B)",format(CALCULATE([KM Conversion %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "January")),"0%;(0%)"),
+			"Payment $",format(CALCULATE([KM Payment $],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "January")),"$#,##0"),
+			"Average Payment",format(CALCULATE([KM Average Payment],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "January")),"$#,##0"),
+			"> Payment Method",format(CALCULATE([KM Payment Method],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "January")),"#,0"),
+			"> Contact Info",format(CALCULATE([KM Contact Info],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "January")),"#,0"),
+			"> Other",format(CALCULATE([KM Other],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "January")),"#,0"),
+			
+			"pin_login_succeeded (B)",format(CALCULATE([KM PIN Login],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "January")),"#,0"),
+			">>prim_login_succeeded",format(CALCULATE([KM PIN Prim],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "January")),"#,0"),
+			">>comaker_login_succeeded",format(CALCULATE([KM PIN Comaker],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "January")),"#,0"),
+			
+			format(CALCULATE([RegularSum],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "January")),"#,0"))
+		isHidden
+		lineageTag: 13a5996b-0e39-4e9f-b3c8-d37ae6291330
+
+	measure Blank = ""
+		isHidden
+		lineageTag: 11e54f4c-0c38-4627-bf18-4cf7ca6e819e
+
+	measure February =
+			
+			VAR varKM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varKM,"> Reference Number Entered (A)",format(CALCULATE([KM Hits],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "February")),"#,0"),
+			"> PIN Entered",format(CALCULATE([KM PIN Entered],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "February")),"#,0"),
+			"Login Rate (B/A)",format(CALCULATE([KM Login %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "February")),"0%;(0%)"),
+			"> Payments (C)",format(CALCULATE([KM Payments],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "February")),"#,0"),
+			"Conversion Rate (C/B)",format(CALCULATE([KM Conversion %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "February")),"0%;(0%)"),
+			"Payment $",format(CALCULATE([KM Payment $],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "February")),"$#,##0"),
+			"Average Payment",format(CALCULATE([KM Average Payment],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "February")),"$#,##0"),
+			"> Payment Method",format(CALCULATE([KM Payment Method],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "February")),"#,0"),
+			"> Contact Info",format(CALCULATE([KM Contact Info],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "February")),"#,0"),
+			"> Other",format(CALCULATE([KM Other],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "February")),"#,0"),
+			
+			"pin_login_succeeded (B)",format(CALCULATE([KM PIN Login],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "February")),"#,0"),
+			">>prim_login_succeeded",format(CALCULATE([KM PIN Prim],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "February")),"#,0"),
+			">>comaker_login_succeeded",format(CALCULATE([KM PIN Comaker],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "February")),"#,0"),
+			
+			format(CALCULATE([RegularSum],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "February")),"#,0"))
+		isHidden
+		lineageTag: 2737f0e4-af9c-4d98-9c20-bf248f5403db
+
+	measure March =
+			
+			VAR varKM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varKM,"> Reference Number Entered (A)",format(CALCULATE([KM Hits],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "March")),"#,0"),
+			"> PIN Entered",format(CALCULATE([KM PIN Entered],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "March")),"#,0"),
+			"Login Rate (B/A)",format(CALCULATE([KM Login %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "March")),"0%;(0%)"),
+			"> Payments (C)",format(CALCULATE([KM Payments],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "March")),"#,0"),
+			"Conversion Rate (C/B)",format(CALCULATE([KM Conversion %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "March")),"0%;(0%)"),
+			"Payment $",format(CALCULATE([KM Payment $],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "March")),"$#,##0"),
+			"Average Payment",format(CALCULATE([KM Average Payment],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "March")),"$#,##0"),
+			"> Payment Method",format(CALCULATE([KM Payment Method],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "March")),"#,0"),
+			"> Contact Info",format(CALCULATE([KM Contact Info],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "March")),"#,0"),
+			"> Other",format(CALCULATE([KM Other],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "March")),"#,0"),
+			
+			"pin_login_succeeded (B)",format(CALCULATE([KM PIN Login],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "March")),"#,0"),
+			">>prim_login_succeeded",format(CALCULATE([KM PIN Prim],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "March")),"#,0"),
+			">>comaker_login_succeeded",format(CALCULATE([KM PIN Comaker],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "March")),"#,0"),
+			
+			format(CALCULATE([RegularSum],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "March")),"#,0"))
+		isHidden
+		lineageTag: 0e54667d-7ed8-4635-bd8a-808df3deac1a
+
+	measure April =
+			
+			VAR varKM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varKM,"> Reference Number Entered (A)",format(CALCULATE([KM Hits],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "April")),"#,0"),
+			"> PIN Entered",format(CALCULATE([KM PIN Entered],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "April")),"#,0"),
+			"Login Rate (B/A)",format(CALCULATE([KM Login %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "April")),"0%;(0%)"),
+			"> Payments (C)",format(CALCULATE([KM Payments],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "April")),"#,0"),
+			"Conversion Rate (C/B)",format(CALCULATE([KM Conversion %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "April")),"0%;(0%)"),
+			"Payment $",format(CALCULATE([KM Payment $],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "April")),"$#,##0"),
+			"Average Payment",format(CALCULATE([KM Average Payment],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "April")),"$#,##0"),
+			"> Payment Method",format(CALCULATE([KM Payment Method],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "April")),"#,0"),
+			"> Contact Info",format(CALCULATE([KM Contact Info],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "April")),"#,0"),
+			"> Other",format(CALCULATE([KM Other],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "April")),"#,0"),
+			
+			"pin_login_succeeded (B)",format(CALCULATE([KM PIN Login],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "April")),"#,0"),
+			">>prim_login_succeeded",format(CALCULATE([KM PIN Prim],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "April")),"#,0"),
+			">>comaker_login_succeeded",format(CALCULATE([KM PIN Comaker],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "April")),"#,0"),
+			format(CALCULATE([RegularSum],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "April")),"#,0"))
+		isHidden
+		lineageTag: 029a040f-e121-445c-a475-b50821f3dd45
+
+	measure May =
+			
+			VAR varKM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varKM,"> Reference Number Entered (A)",format(CALCULATE([KM Hits],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "May")),"#,0"),
+			"> PIN Entered",format(CALCULATE([KM PIN Entered],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "May")),"#,0"),
+			"Login Rate (B/A)",format(CALCULATE([KM Login %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "May")),"0%;(0%)"),
+			"> Payments (C)",format(CALCULATE([KM Payments],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "May")),"#,0"),
+			"Conversion Rate (C/B)",format(CALCULATE([KM Conversion %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "May")),"0%;(0%)"),
+			"Payment $",format(CALCULATE([KM Payment $],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "May")),"$#,##0"),
+			"Average Payment",format(CALCULATE([KM Average Payment],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "May")),"$#,##0"),
+			"> Payment Method",format(CALCULATE([KM Payment Method],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "May")),"#,0"),
+			"> Contact Info",format(CALCULATE([KM Contact Info],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "May")),"#,0"),
+			"> Other",format(CALCULATE([KM Other],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "May")),"#,0"),
+			
+			"pin_login_succeeded (B)",format(CALCULATE([KM PIN Login],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "May")),"#,0"),
+			">>prim_login_succeeded",format(CALCULATE([KM PIN Prim],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "May")),"#,0"),
+			">>comaker_login_succeeded",format(CALCULATE([KM PIN Comaker],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "May")),"#,0"),
+			
+			
+			format(CALCULATE([RegularSum],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "May")),"#,0"))
+		isHidden
+		lineageTag: 6f0b3631-246c-45d8-a3c5-e056d05edd00
+
+	measure June =
+			
+			VAR varKM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varKM,"> Reference Number Entered (A)",format(CALCULATE([KM Hits],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "June")),"#,0"),
+			"> PIN Entered",format(CALCULATE([KM PIN Entered],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "June")),"#,0"),
+			"Login Rate (B/A)",format(CALCULATE([KM Login %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "June")),"0%;(0%)"),
+			"> Payments (C)",format(CALCULATE([KM Payments],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "June")),"#,0"),
+			"Conversion Rate (C/B)",format(CALCULATE([KM Conversion %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "June")),"0%;(0%)"),
+			"Payment $",format(CALCULATE([KM Payment $],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "June")),"$#,##0"),
+			"Average Payment",format(CALCULATE([KM Average Payment],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "June")),"$#,##0"),
+			"> Payment Method",format(CALCULATE([KM Payment Method],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "June")),"#,0"),
+			"> Contact Info",format(CALCULATE([KM Contact Info],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "June")),"#,0"),
+			"> Other",format(CALCULATE([KM Other],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "June")),"#,0"),
+			
+			"pin_login_succeeded (B)",format(CALCULATE([KM PIN Login],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "June")),"#,0"),
+			">>prim_login_succeeded",format(CALCULATE([KM PIN Prim],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "June")),"#,0"),
+			">>comaker_login_succeeded",format(CALCULATE([KM PIN Comaker],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "June")),"#,0"),
+			
+			
+			
+			format(CALCULATE([RegularSum],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "June")),"#,0"))
+		isHidden
+		lineageTag: ee0a17d2-14d9-4e68-85da-7f155efcd7aa
+
+	measure July =
+			
+			VAR varKM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varKM,"> Reference Number Entered (A)",format(CALCULATE([KM Hits],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "July")),"#,0"),
+			"> PIN Entered",format(CALCULATE([KM PIN Entered],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "July")),"#,0"),
+			"Login Rate (B/A)",format(CALCULATE([KM Login %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "July")),"0%;(0%)"),
+			"> Payments (C)",format(CALCULATE([KM Payments],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "July")),"#,0"),
+			"Conversion Rate (C/B)",format(CALCULATE([KM Conversion %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "July")),"0%;(0%)"),
+			"Payment $",format(CALCULATE([KM Payment $],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "July")),"$#,##0"),
+			"Average Payment",format(CALCULATE([KM Average Payment],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "July")),"$#,##0"),
+			"> Payment Method",format(CALCULATE([KM Payment Method],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "July")),"#,0"),
+			"> Contact Info",format(CALCULATE([KM Contact Info],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "July")),"#,0"),
+			"> Other",format(CALCULATE([KM Other],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "July")),"#,0"),
+			
+			"pin_login_succeeded (B)",format(CALCULATE([KM PIN Login],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "July")),"#,0"),
+			">>prim_login_succeeded",format(CALCULATE([KM PIN Prim],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "July")),"#,0"),
+			">>comaker_login_succeeded",format(CALCULATE([KM PIN Comaker],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "July")),"#,0"),
+			
+			
+			
+			format(CALCULATE([RegularSum],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "July")),"#,0"))
+		isHidden
+		lineageTag: 95fcf352-d250-4b9a-9daf-5ad086a4d4c9
+
+	measure August =
+			
+			VAR varKM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varKM,"> Reference Number Entered (A)",format(CALCULATE([KM Hits],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "August")),"#,0"),
+			"> PIN Entered",format(CALCULATE([KM PIN Entered],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "August")),"#,0"),
+			"Login Rate (B/A)",format(CALCULATE([KM Login %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "August")),"0%;(0%)"),
+			"> Payments (C)",format(CALCULATE([KM Payments],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "August")),"#,0"),
+			"Conversion Rate (C/B)",format(CALCULATE([KM Conversion %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "August")),"0%;(0%)"),
+			"Payment $",format(CALCULATE([KM Payment $],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "August")),"$#,##0"),
+			"Average Payment",format(CALCULATE([KM Average Payment],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "August")),"$#,##0"),
+			"> Payment Method",format(CALCULATE([KM Payment Method],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "August")),"#,0"),
+			"> Contact Info",format(CALCULATE([KM Contact Info],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "August")),"#,0"),
+			"> Other",format(CALCULATE([KM Other],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "August")),"#,0"),
+			
+			"pin_login_succeeded (B)",format(CALCULATE([KM PIN Login],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "August")),"#,0"),
+			">>prim_login_succeeded",format(CALCULATE([KM PIN Prim],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "August")),"#,0"),
+			">>comaker_login_succeeded",format(CALCULATE([KM PIN Comaker],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "August")),"#,0"),
+			
+			
+			
+			format(CALCULATE([RegularSum],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "August")),"#,0"))
+		isHidden
+		lineageTag: 1cacdff8-5dc2-4646-ab95-cfb21f3cdd70
+
+	measure September =
+			
+			VAR varKM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varKM,"> Reference Number Entered (A)",format(CALCULATE([KM Hits],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "September")),"#,0"),
+			"> PIN Entered",format(CALCULATE([KM PIN Entered],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "September")),"#,0"),
+			"Login Rate (B/A)",format(CALCULATE([KM Login %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "September")),"0%;(0%)"),
+			"> Payments (C)",format(CALCULATE([KM Payments],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "September")),"#,0"),
+			"Conversion Rate (C/B)",format(CALCULATE([KM Conversion %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "September")),"0%;(0%)"),
+			"Payment $",format(CALCULATE([KM Payment $],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "September")),"$#,##0"),
+			"Average Payment",format(CALCULATE([KM Average Payment],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "September")),"$#,##0"),
+			"> Payment Method",format(CALCULATE([KM Payment Method],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "September")),"#,0"),
+			"> Contact Info",format(CALCULATE([KM Contact Info],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "September")),"#,0"),
+			"> Other",format(CALCULATE([KM Other],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "September")),"#,0"),
+			
+			"pin_login_succeeded (B)",format(CALCULATE([KM PIN Login],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "September")),"#,0"),
+			">>prim_login_succeeded",format(CALCULATE([KM PIN Prim],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "September")),"#,0"),
+			">>comaker_login_succeeded",format(CALCULATE([KM PIN Comaker],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "September")),"#,0"),
+			
+			
+			format(CALCULATE([RegularSum],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "September")),"#,0"))
+		isHidden
+		lineageTag: 4627dc13-4db9-400f-96ac-1d79b69ab0de
+
+	measure October =
+			
+			VAR varKM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varKM,"> Reference Number Entered (A)",format(CALCULATE([KM Hits],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "October")),"#,0"),
+			"> PIN Entered",format(CALCULATE([KM PIN Entered],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "October")),"#,0"),
+			"Login Rate (B/A)",format(CALCULATE([KM Login %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "October")),"0%;(0%)"),
+			"> Payments (C)",format(CALCULATE([KM Payments],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "October")),"#,0"),
+			"Conversion Rate (C/B)",format(CALCULATE([KM Conversion %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "October")),"0%;(0%)"),
+			"Payment $",format(CALCULATE([KM Payment $],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "October")),"$#,##0"),
+			"Average Payment",format(CALCULATE([KM Average Payment],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "October")),"$#,##0"),
+			"> Payment Method",format(CALCULATE([KM Payment Method],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "October")),"#,0"),
+			"> Contact Info",format(CALCULATE([KM Contact Info],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "October")),"#,0"),
+			"> Other",format(CALCULATE([KM Other],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "October")),"#,0"),
+			
+			"pin_login_succeeded (B)",format(CALCULATE([KM PIN Login],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "October")),"#,0"),
+			">>prim_login_succeeded",format(CALCULATE([KM PIN Prim],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "October")),"#,0"),
+			">>comaker_login_succeeded",format(CALCULATE([KM PIN Comaker],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "October")),"#,0"),
+			
+			
+			
+			format(CALCULATE([RegularSum],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "October")),"#,0"))
+		isHidden
+		lineageTag: dbe4a919-61da-4329-b292-76a2929e8dba
+
+	measure November =
+			
+			VAR varKM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			
+			RETURN
+			SWITCH(varKM,"> Reference Number Entered (A)",format(CALCULATE([KM Hits],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "November")),"#,0"),
+			"> PIN Entered",format(CALCULATE([KM PIN Entered],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "November")),"#,0"),
+			"Login Rate (B/A)",format(CALCULATE([KM Login %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "November")),"0%;(0%)"),
+			"> Payments (C)",format(CALCULATE([KM Payments],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "November")),"#,0"),
+			"Conversion Rate (C/B)",format(CALCULATE([KM Conversion %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "November")),"0%;(0%)"),
+			"Payment $",format(CALCULATE([KM Payment $],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "November")),"$#,##0"),
+			"Average Payment",format(CALCULATE([KM Average Payment],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "November")),"$#,##0"),
+			"> Payment Method",format(CALCULATE([KM Payment Method],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "November")),"#,0"),
+			"> Contact Info",format(CALCULATE([KM Contact Info],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "November")),"#,0"),
+			"> Other",format(CALCULATE([KM Other],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "November")),"#,0"),
+			
+			"pin_login_succeeded (B)",format(CALCULATE([KM PIN Login],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "November")),"#,0"),
+			">>prim_login_succeeded",format(CALCULATE([KM PIN Prim],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "November")),"#,0"),
+			">>comaker_login_succeeded",format(CALCULATE([KM PIN Comaker],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "November")),"#,0"),
+			
+			
+			
+			
+			format(CALCULATE([RegularSum],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "November")),"#,0"))
+		isHidden
+		lineageTag: c84f3389-ce2b-4a0d-aa93-63749d2a50ae
+
+	measure December =
+			
+			VAR varKM = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			RETURN
+			SWITCH(varKM,"> Reference Number Entered (A)",format(CALCULATE([KM Hits],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "December")),"#,0"),
+			"> PIN Entered",format(CALCULATE([KM PIN Entered],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "December")),"#,0"),
+			"Login Rate (B/A)",format(CALCULATE([KM Login %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "December")),"0%;(0%)"),
+			"> Payments (C)",format(CALCULATE([KM Payments],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "December")),"#,0"),
+			"Conversion Rate (C/B)",format(CALCULATE([KM Conversion %],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "December")),"0%;(0%)"),
+			"Payment $",format(CALCULATE([KM Payment $],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "December")),"$#,##0"),
+			"Average Payment",format(CALCULATE([KM Average Payment],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "December")),"$#,##0"),
+			"> Payment Method",format(CALCULATE([KM Payment Method],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "December")),"#,0"),
+			"> Contact Info",format(CALCULATE([KM Contact Info],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "December")),"#,0"),
+			"> Other",format(CALCULATE([KM Other],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "December")),"#,0"),
+			
+			"pin_login_succeeded (B)",format(CALCULATE([KM PIN Login],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "December")),"#,0"),
+			">>prim_login_succeeded",format(CALCULATE([KM PIN Prim],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "December")),"#,0"),
+			">>comaker_login_succeeded",format(CALCULATE([KM PIN Comaker],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "December")),"#,0"),
+			
+			
+			format(CALCULATE([RegularSum],KEEPFILTERS('Metrics Data'[CapturedOn].[month] = "December")),"#,0"))
+		isHidden
+		lineageTag: c0e808bb-3a6b-4c49-bd5f-794123682d99
+
+	measure 'KM PIN Login' = CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]), KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )
+		formatString: 0
+		isHidden
+		lineageTag: 1095fcef-43d1-403d-84d6-2ed3b9cd336d
+
+	measure 'MTD Comparison for Days' = ```
+			
+			VAR MaxDate = MAX('Metrics Data'[CapturedOn])
+			VAR MaxMonth = FORMAT(MaxDate, "MMMM")
+			VAR MaxYear = YEAR(MaxDate)
+			VAR MaxDay = FORMAT(MaxDate, "dd")
+			VAR CurrentMonthStart = DATE(YEAR(TODAY()), MONTH(TODAY()), 1)
+			VAR IsCurrentMonthDataAvailable = MaxDate >= CurrentMonthStart
+			
+			RETURN  IF( IsCurrentMonthDataAvailable,IF(MaxDay = "01",  "MTD Comparison for day 01", "MTD Comparison for day 01 to day " & MaxDay), IF(MaxDay = "01", "MTD Comparison for " & MaxMonth & " " & MaxYear & " day 01", "MTD Comparison for " & MaxMonth & " " & MaxYear & " day 01 to day " & MaxDay))
+			
+			
+			```
+		isHidden
+		lineageTag: 8bdd7734-db00-4045-be52-485392e2d4c8
+
+	measure 'Daily Graphs Selected Month Year' = ```
+			
+			VAR singleselection = 
+			SELECTEDVALUE('Metrics Data'[Month-Year])
+			---SELECTEDVALUE('Metrics Data'[CapturedOn].[Month]) & UNICHAR(10) & SELECTEDVALUE('Metrics Data'[CapturedOn].[Year])
+			VAR currentmonthyear = FORMAT(TODAY()-1,"MMM-YY")
+			---format(TODAY()-1,"mmmm") & UNICHAR(10) & year(today()-1)
+			RETURN
+			IF
+			(
+			[DefaultSelection]=[AllSelections] ,"Daily Graphs " & currentmonthyear,"Daily Graphs " & singleselection)
+			
+			```
+		isHidden
+		lineageTag: 7d8aa21b-2a66-42b3-9856-215461f11858
+
+	measure 'Daily Table Selected Month Year' = ```
+			
+			VAR singleselection = 
+			SELECTEDVALUE('Metrics Data'[Month-Year])
+			---SELECTEDVALUE('Metrics Data'[CapturedOn].[Month]) & UNICHAR(10) & SELECTEDVALUE('Metrics Data'[CapturedOn].[Year])
+			VAR currentmonthyear = FORMAT(TODAY()-1,"MMM-YY")
+			---format(TODAY()-1,"mmmm") & UNICHAR(10) & year(today()-1)
+			RETURN
+			IF
+			(
+			[DefaultSelection]=[AllSelections] ,"Daily Table " & currentmonthyear,"Daily Table " & singleselection)
+			
+			```
+		isHidden
+		lineageTag: 60765ce0-9aba-4e2b-8545-ea1209cfc383
+
+	measure 'Monthly Graphs Selected Year' = ```
+			
+			VAR singleselection = "Year " & SELECTEDVALUE('Metrics Data'[CapturedOn].[Year])
+			VAR currentyear = "Year " & year(today())
+			RETURN
+			----IF
+			----(
+			----[DefaultSelection]=[AllSelections] ,"Year not Selected",singleselection)
+			"Monthly Graphs " & singleselection
+			
+			```
+		isHidden
+		lineageTag: 1ae39f16-b55c-4faa-a293-9b9773b39cb4
+
+	measure 'Monthly Table Selected Year' = ```
+			
+			VAR singleselection = "Year " & SELECTEDVALUE('Metrics Data'[CapturedOn].[Year])
+			VAR currentyear = "Year " & year(today())
+			RETURN
+			----IF
+			----(
+			----[DefaultSelection]=[AllSelections] ,"Year not Selected",singleselection)
+			"Monthly Table " & singleselection
+			
+			```
+		isHidden
+		lineageTag: e067ddc9-7a56-443f-bc77-aafe910adde1
+
+	measure 'Client Summary DateRange' = ```
+			
+			VAR RangeStart = Min('Metrics Data'[CapturedOn]) 
+			VAR RangeEnd = Max('Metrics Data'[CapturedOn]) 
+			Return
+			"Client Summary " & CONCATENATE(CONCATENATE(RangeStart," - "),RangeEnd)
+			```
+		isHidden
+		lineageTag: fea4e8bd-b471-4ca3-a8b6-f5a2482e947b
+
+	measure 'Support Email Sent' = Calculate([Count_of_Recs])
+		formatString: #,0
+		isHidden
+		lineageTag: 6c3a590f-ffa3-41c1-96e4-dc656f4d3adb
+
+	measure 'Ref Num Details DateRange' = ```
+			
+			VAR RangeStart = Min('Metrics Data'[CapturedOn]) 
+			VAR RangeEnd = Max('Metrics Data'[CapturedOn]) 
+			Return
+			"Reference Number Details " & CONCATENATE(CONCATENATE(RangeStart," - "),RangeEnd)
+			```
+		isHidden
+		lineageTag: d0cf4ed6-eb64-45fd-a101-8e541ba0fbc8
+
+	measure 'Support Email Sent DateRange' = ```
+			
+			VAR RangeStart = Min('Metrics Data'[CapturedOn]) 
+			VAR RangeEnd = Max('Metrics Data'[CapturedOn]) 
+			Return
+			"Support Email Sent " & CONCATENATE(CONCATENATE(RangeStart," - "),RangeEnd)
+			```
+		isHidden
+		lineageTag: c6b8e7b8-c72b-4fa3-9592-0bf748c8c3fc
+
+	measure Test9 = CALCULATE([KM PIN Login])
+		formatString: 0
+		isHidden
+		lineageTag: dca66217-baa5-4c2c-9bc6-391d62efc312
+
+		changedProperty = IsHidden
+
+	measure 'Payment Errors #' = CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key]="payment_error" )
+		formatString: #,0
+		isHidden
+		lineageTag: af465055-3109-4b37-b338-b0a1b64f3d3b
+
+		changedProperty = IsHidden
+
+	measure 'Payment Error Rate' = CALCULATE(DIVIDE([Payment Errors #], [Login #]))
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		isHidden
+		lineageTag: af7ddafe-369e-47e7-8b41-d8714c55cb80
+
+		changedProperty = IsHidden
+
+	measure 'Daily Payment Errors DateRange' = ```
+			
+			VAR RangeStart = Min('Metrics Data'[CapturedOn]) 
+			VAR RangeEnd = Max('Metrics Data'[CapturedOn]) 
+			Return
+			"Daily Payment Errors " & CONCATENATE(CONCATENATE(RangeStart," - "),RangeEnd)
+			```
+		isHidden
+		lineageTag: cbea303d-12b3-4929-b912-5fe01373b5a1
+
+		changedProperty = IsHidden
+
+	measure 'KM PIN Prim' = CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded" )
+		formatString: 0
+		isHidden
+		lineageTag: 0e01275c-da14-498f-807e-bdf1ffa8da8d
+
+		changedProperty = IsHidden
+
+	measure 'KM PIN Comaker' = CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]), KM[KM]="comaker_login_succeeded"  )
+		formatString: 0
+		isHidden
+		lineageTag: 58d371e5-6e9d-4a8b-8fe1-99f32fccdb72
+
+		changedProperty = IsHidden
+
+	measure Hits-New = CALCULATE(DISTINCTCOUNT('Metrics Data'[SessionId]),ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Reference Number Entered (A)" || 'Metrics Data'[Key (groups)]= "frictionless_login" )
+		formatString: 0
+		isHidden
+		lineageTag: 201e3e08-504c-42c2-a150-abe6e31cb3fb
+
+		changedProperty = IsHidden
+
+	measure Count_of_Recs = CALCULATE(DISTINCTCOUNT('Metrics Data'[SessionId]))
+		formatString: 0
+		isHidden
+		lineageTag: 8dc040f1-bdc8-4587-bea0-3940a8477bef
+
+		changedProperty = IsHidden
+
+	measure 'Current Year MTD Hits' = ```
+			
+			CALCULATE(
+			    'Metrics Data'[Hits],
+			    DATESMTD('Metrics Data'[CapturedOn])
+			)
+			
+			```
+		formatString: 0
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: 96905a2c-f76e-497d-838b-1c46e67ea8d5
+
+		changedProperty = IsHidden
+
+	measure 'Previous Year MTD Hits' = ```
+			
+			CALCULATE(
+			    'Metrics Data'[Hits],
+			    SAMEPERIODLASTYEAR(DATESMTD('Metrics Data'[CapturedOn]))
+			)
+			
+			```
+		formatString: 0
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: 2f82a05f-9dfd-4fec-92f1-9ad4f964e26e
+
+		changedProperty = IsHidden
+
+	measure '# B/(W) Hits YoY' = ```
+			
+			CALCULATE([Current Year MTD Hits] - [Previous Year MTD Hits])
+			
+			```
+		formatString: 0
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: bcff4674-236b-400e-ab9b-53ba7ad5f92c
+
+		changedProperty = IsHidden
+
+	measure '% B/(W) Hits YoY' = ```
+			
+			FORMAT(
+			    DIVIDE([Current Year MTD Hits] - [Previous Year MTD Hits], [Previous Year MTD Hits]),
+			    "0%;(0%)"
+			)
+			
+			```
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: b52940af-88ad-4213-85a7-f10c7b136b0e
+
+		changedProperty = IsHidden
+
+	measure 'Summary Hits2 YoY' =
+			
+			VAR varKM11 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentYearMTDHits = CALCULATE([Current Year MTD Hits],ALL(KM[KM],KM[Column1]))
+			VAR PreviousYearMTDHits = CALCULATE([Previous Year MTD Hits],ALL(KM[KM],KM[Column1]))
+			VAR MTDHitsBW = CALCULATE([# B/(W) Hits YoY],ALL(KM[KM],KM[Column1]))
+			VAR MTDHitsDifferencePercentage = CALCULATE([% B/(W) Hits YoY],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM11,
+			"Current Year MTD",format(CurrentYearMTDHits,"#,0"),
+			"Previous Year MTD",format(PreviousYearMTDHits,"#,0"),
+			"# Diff from Previous",format(MTDHitsBW,"#,0;(#,0)"),
+			"% Diff from Previous",format(MTDHitsDifferencePercentage,"0%;(0%)")
+			)
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: ba083104-1cc6-4dea-a96d-378792d97aa7
+
+		changedProperty = IsHidden
+
+	measure 'Current MTD Logins # YoY' = CALCULATE('Metrics Data'[Login #],DATESMTD('Metrics Data'[CapturedOn]))
+		formatString: 0
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: 2d9546df-a9ca-4b1c-a9c5-01182997d484
+
+		changedProperty = IsHidden
+
+	measure 'Previous MTD Logins # YoY' =
+			
+			CALCULATE('Metrics Data'[Login #],
+			    SAMEPERIODLASTYEAR(DATESMTD('Metrics Data'[CapturedOn]))
+			    )
+		formatString: 0
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: 42aaa503-682e-4d67-9fca-491d3f99e71c
+
+		changedProperty = IsHidden
+
+	measure '# B/(W) Logins # YoY' =
+			
+			FORMAT(CALCULATE([Current MTD Logins # YoY]- [Previous MTD Logins # YoY]),"#,##;(#,##)")
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: 6e8f1ad3-0624-47ad-a537-f2c748c53f9d
+
+		changedProperty = IsHidden
+
+	measure '% B/(W) Logins # YoY' = ```
+			
+			 FORMAT(
+			    CALCULATE(divide(([Current MTD Logins # YoY] - [Previous MTD Logins # YoY]), [Previous MTD Logins # YoY])),"0%;(0%)")
+			```
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: 5b3c08a6-871b-41dc-bd18-1e6cf18d3cc8
+
+		changedProperty = IsHidden
+
+	measure 'Summary Logins2 YoY' = ```
+			
+			VAR varKM12 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentYearMTDLogins = CALCULATE([Current MTD Logins # YoY],ALL(KM[KM],KM[Column1]))
+			VAR PreviousYearMTDLogins = CALCULATE([Previous MTD Logins # YoY],ALL(KM[KM],KM[Column1]))
+			VAR MTDLoginsBW = CALCULATE([# B/(W) Logins # YoY],ALL(KM[KM],KM[Column1]))
+			VAR MTDLoginsDifferencePercentage = CALCULATE([% B/(W) Logins # YoY],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM12,
+			"Current Year MTD",format(CurrentYearMTDLogins,"#,0"),
+			"Previous Year MTD",format(PreviousYearMTDLogins,"#,0"),
+			"# Diff from Previous",format(MTDLoginsBW,"#,0;(#,0)"),
+			"% Diff from Previous",format(MTDLoginsDifferencePercentage,"0%;(0%)")
+			)
+			
+			```
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: e5f1f4d3-146d-41a6-a3c6-f7d602c7c290
+
+		changedProperty = IsHidden
+
+	measure 'Current MTD Conversion # YoY' = CALCULATE('Metrics Data'[Conversion #],DATESMTD('Metrics Data'[CapturedOn]))
+		formatString: 0
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: e808744b-3cf8-493b-ba8a-f747518c173c
+
+		changedProperty = IsHidden
+
+	measure 'Previous MTD Conversion # YoY' = ```
+			
+			 CALCULATE('Metrics Data'[Conversion #],
+			 SAMEPERIODLASTYEAR(DATESMTD('Metrics Data'[CapturedOn])))
+			```
+		formatString: 0
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: a8379986-96b0-4db3-8f24-8c4ba2d0e124
+
+		changedProperty = IsHidden
+
+	measure '# B/(W) Conversion # YoY' =
+			
+			FORMAT(CALCULATE([Current MTD Conversion # YoY]- [Previous MTD Conversion # YoY]),"#,##;(#,##)")
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: c56f4fc9-7daa-4358-9313-39c3f14cf513
+
+		changedProperty = IsHidden
+
+	measure '% B/(W) Conversion # YoY' = FORMAT(CALCULATE(divide(([Current MTD Conversion # YoY] - [Previous MTD Conversion # YoY]), [Previous MTD Conversion # YoY])),"0%;(0%)")
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: 6cf33ae6-cae7-4c12-9fec-e3c770064fdc
+
+		changedProperty = IsHidden
+
+	measure 'Summary Conversions2 YoY' = ```
+			
+			VAR varKM13 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentYearMTDConversion = CALCULATE([Current MTD Conversion # YoY],ALL(KM[KM],KM[Column1]))
+			VAR PreviousYearMTDConversion = CALCULATE([Previous MTD Conversion # YoY],ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionBW = CALCULATE([# B/(W) Conversion # YoY],ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionDifferencePercentage = CALCULATE([% B/(W) Conversion # YoY],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM13,
+			"Current Year MTD",format(CurrentYearMTDConversion,"#,0"),
+			"Previous Year MTD",format(PreviousYearMTDConversion,"#,0"),
+			"# Diff from Previous",format(MTDConversionBW,"#,0;(#,0)"),
+			"% Diff from Previous",format(MTDConversionDifferencePercentage,"0%;(0%)")
+			)
+			
+			
+			```
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: b542a584-2251-4bca-9b49-cb60f540f3fb
+
+		changedProperty = IsHidden
+
+	measure 'Current MTD Login% YoY' = CALCULATE('Metrics Data'[Login %],DATESMTD('Metrics Data'[CapturedOn]))
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: cd0e798f-6351-4a8f-afc2-1c95d9dabf37
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Previous MTD Login% YoY' =
+			CALCULATE('Metrics Data'[Login %],
+			SAMEPERIODLASTYEAR(DATESMTD('Metrics Data'[CapturedOn])))
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: f9ff5ebf-050f-4ed9-8134-77c3672e2637
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure '% B/(W) Login% YoY' = format(CALCULATE([Current MTD Login% YoY]- [Previous MTD Login% YoY]),"0%;(0%)")
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: 406bf5bb-f1da-42ae-aaef-a63079e45647
+
+		changedProperty = IsHidden
+
+	measure 'Summary Login % YoY' = ```
+			
+			VAR varKM14 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentYoYMTDLoginRate = CALCULATE([Current MTD Login% YoY],ALL(KM[KM],KM[Column1]))
+			VAR PreviousYoYMTDLoginRate = CALCULATE([Previous MTD Login% YoY],ALL(KM[KM],KM[Column1]))
+			VAR MTDLoginRatesPercentageDifference = CALCULATE([% B/(W) Login% YoY],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM14,
+			"Current Year MTD",format(CurrentYoYMTDLoginRate,"0%;(0%)"),
+			"Previous Year MTD",format(PreviousYoYMTDLoginRate,"0%;(0%)"),
+			"# Diff from Previous","-",
+			"% Diff from Previous",format(MTDLoginRatesPercentageDifference,"0%;(0%)")
+			)
+			
+			```
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: c412b26a-0495-4ea3-ac70-7a1b51becb3d
+
+		changedProperty = IsHidden
+
+	measure 'Current MTD Conversion % YoY' = CALCULATE('Metrics Data'[Conversion %],DATESMTD('Metrics Data'[CapturedOn]))
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: 3d11a9ed-133b-44e8-a736-e8d924d3f471
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Previous MTD Conversion % YoY' = CALCULATE('Metrics Data'[Conversion %],SAMEPERIODLASTYEAR(DATESMTD('Metrics Data'[CapturedOn])))
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: ca5989a9-eb03-42d5-b716-58dd852e4195
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure '% B/(W) Conversion % YoY' = FORMAT(CALCULATE([Current MTD Conversion % YoY]- [Previous MTD Conversion % YoY]),"0%;(0%)")
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: 5e2302b1-a021-4c74-a2f5-acb17910d215
+
+		changedProperty = IsHidden
+
+	measure 'Summary Conversion % YoY' = ```
+			
+			VAR varKM15 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
+			VAR CurrentMTDConversionRate = CALCULATE([Current MTD Conversion % YoY],ALL(KM[KM],KM[Column1]))
+			VAR PreviousMTDConversionRate = CALCULATE([Previous MTD Conversion % YoY],ALL(KM[KM],KM[Column1]))
+			VAR MTDConversionRatesPercentageDifference = CALCULATE([% B/(W) Conversion % YoY],ALL(KM[KM],KM[Column1]))
+			RETURN
+			SWITCH(varKM15,
+			"Current Year MTD",format(CurrentMTDConversionRate,"0%;(0%)"),
+			"Previous Year MTD",format(PreviousMTDConversionRate,"0%;(0%)"),
+			"# Diff from Previous","-",
+			"% Diff from Previous",format(MTDConversionRatesPercentageDifference,"0%;(0%)")
+			)
+			
+			```
+		isHidden
+		displayFolder: Summary Tab YoY Measures
+		lineageTag: 2c1c66cd-12bf-4329-82af-c29f45b32150
+
+		changedProperty = IsHidden
+
+	measure 'Title-CM Vs PM' =
+			
+			VAR CurrentMonthname = FORMAT(MAX('Metrics Data'[CapturedOn]),"MMM YYYY")
+			VAR PreviousMonthname = FORMAT(EDATE(MAX('Metrics Data'[CapturedOn]),-1),"MMM YYYY")
+			
+			RETURN CurrentMonthname & " vs " & PreviousMonthname
+		isHidden
+		lineageTag: 5e72eb48-8c22-4fa9-afff-97753611a8a0
+
+		changedProperty = IsHidden
+
+	measure 'Title Current Year vs Last Year' =
+			
+			VAR CurrentDate = MAX('Metrics Data'[CapturedOn])
+			VAR CurrentMonthYear = FORMAT(CurrentDate,"MMM YYYY")
+			VAR LastYearSameMonth = FORMAT (EDATE(CurrentDate,-12),"MMM YYYY")
+			
+			RETURN  CurrentMonthYear & " vs " & LastYearSameMonth
+		isHidden
+		lineageTag: ad39e834-4e08-486d-85d2-b48e06bf6f43
+
+		changedProperty = IsHidden
+
+	column MetricId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: fdab7e71-9194-4faf-93b6-16d3100c4c52
+		summarizeBy: none
+		sourceColumn: MetricId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Key
+		dataType: string
+		lineageTag: ddb532f9-d4cb-43ca-9b4c-d3714029cf34
+		summarizeBy: none
+		sourceColumn: Key
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation __PBI_SemanticLinks = [{"LinkTarget":{"TableName":"Metrics Data","TableItemName":"Key (groups)","ObjectType":4},"LinkType":"UsedInGroup"},{"LinkTarget":{"TableName":"Metrics Data","TableItemName":"Key (Funnel group)","ObjectType":4},"LinkType":"UsedInGroup"}]
+
+	column CapturedOn
+		dataType: dateTime
+		formatString: m/d/yyyy
+		lineageTag: b8afbd80-82f4-4deb-a741-1fad3c6d4ef4
+		summarizeBy: none
+		sourceColumn: CapturedOn
+
+		variation Variation
+			isDefault
+			relationship: 6f97f4d4-7d67-415a-a1e7-0dc5241a3cd0
+			defaultHierarchy: LocalDateTable_53482261-772e-487d-9b60-70f973df86c5.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Description
+		dataType: string
+		isHidden
+		lineageTag: fb684d7c-b44a-4157-83b6-b174a0765103
+		summarizeBy: none
+		sourceColumn: Description
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ReferenceNumber
+		dataType: string
+		lineageTag: 200cfeec-e1b1-43b0-87b0-7fe7d7ff0607
+		summarizeBy: none
+		sourceColumn: ReferenceNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column CRM
+		dataType: string
+		lineageTag: 5213dfac-6c7b-446a-82c1-6ac64989e84d
+		summarizeBy: none
+		sourceColumn: CRM
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Login Type'
+		dataType: string
+		isHidden
+		lineageTag: d2284e80-7aff-4853-a92f-066020bf2991
+		summarizeBy: none
+		sourceColumn: Login Type
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Authenticated/Unauthenticated
+		dataType: string
+		isHidden
+		lineageTag: 9065e8c3-ebe8-44b5-ad0c-2db80e68e02d
+		summarizeBy: none
+		sourceColumn: Authenticated/Unauthenticated
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Key (groups)' =
+			SWITCH(
+				TRUE,
+				ISBLANK('Metrics Data'[Key]),
+				"(Blank)",
+				'Metrics Data'[Key] IN {"contact_information_updated",
+					"email_consent_provided",
+					"sms_consent_provided"},
+				"Contact Info",
+				'Metrics Data'[Key] IN {"frictionless_login",
+					"spanish_portal_login"},
+				"frictionless_login",
+				'Metrics Data'[Key] IN {"oos_disclosure_accepted",
+					"oos_disclosure_skipped",
+					"state_disclosure_accepted",
+					"support_email_sent"},
+				"Other",
+				'Metrics Data'[Key] IN {"checking_account_used",
+					"credit_card_used",
+					"debit_card_used"},
+				"Payment Method",
+				'Metrics Data'[Key] IN {"custom_installment_submitted",
+					"installment_submitted",
+					"one_time_payment_submitted",
+					"pay_in_full_submitted",
+					"reocurring_submitted",
+					"settlement_submitted"},
+				"Payments (C)",
+				'Metrics Data'[Key] IN {"account_suppressed",
+					"alt_pin_login_failed",
+					"alt_pin_login_succeeded",
+					"pin_login_failed",
+					"pin_login_succeeded"},
+				"PIN Entered",
+				'Metrics Data'[Key] IN {"reference_number_locked",
+					"reference_number_login_failed",
+					"reference_number_login_succeeded"},
+				"Reference Number Entered (A)",
+				'Metrics Data'[Key]
+			)
+		isHidden
+		lineageTag: dcbfa373-3307-45d2-8894-d6c6f08ef731
+		summarizeBy: none
+
+		extendedProperty GroupingMetadata =
+				{
+				  "version": 0,
+				  "groupedColumns": [
+				    {
+				      "Column": {
+				        "Expression": {
+				          "SourceRef": {
+				            "Entity": "Metrics Data"
+				          }
+				        },
+				        "Property": "Key"
+				      }
+				    }
+				  ]
+				}
+
+		annotation GroupingDesignState = {"Version":0,"Sources":[{"Name":"m","Entity":"Metrics Data"}],"GroupedColumns":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"GroupItems":[{"DisplayName":"(Blank)","BlankDefaultPlaceholder":true},{"DisplayName":"Contact Info","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"Values":[[{"Literal":{"Value":"'contact_information_updated'"}}],[{"Literal":{"Value":"'email_consent_provided'"}}],[{"Literal":{"Value":"'sms_consent_provided'"}}]]}}},{"DisplayName":"frictionless_login","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"Values":[[{"Literal":{"Value":"'frictionless_login'"}}],[{"Literal":{"Value":"'spanish_portal_login'"}}]]}}},{"DisplayName":"Other","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"Values":[[{"Literal":{"Value":"'oos_disclosure_accepted'"}}],[{"Literal":{"Value":"'oos_disclosure_skipped'"}}],[{"Literal":{"Value":"'state_disclosure_accepted'"}}],[{"Literal":{"Value":"'support_email_sent'"}}]]}}},{"DisplayName":"Payment Method","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"Values":[[{"Literal":{"Value":"'checking_account_used'"}}],[{"Literal":{"Value":"'credit_card_used'"}}],[{"Literal":{"Value":"'debit_card_used'"}}]]}}},{"DisplayName":"Payments (C)","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"Values":[[{"Literal":{"Value":"'custom_installment_submitted'"}}],[{"Literal":{"Value":"'installment_submitted'"}}],[{"Literal":{"Value":"'one_time_payment_submitted'"}}],[{"Literal":{"Value":"'pay_in_full_submitted'"}}],[{"Literal":{"Value":"'reocurring_submitted'"}}],[{"Literal":{"Value":"'settlement_submitted'"}}]]}}},{"DisplayName":"PIN Entered","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"Values":[[{"Literal":{"Value":"'account_suppressed'"}}],[{"Literal":{"Value":"'alt_pin_login_failed'"}}],[{"Literal":{"Value":"'alt_pin_login_succeeded'"}}],[{"Literal":{"Value":"'pin_login_failed'"}}],[{"Literal":{"Value":"'pin_login_succeeded'"}}]]}}},{"DisplayName":"Reference Number Entered (A)","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"Values":[[{"Literal":{"Value":"'reference_number_locked'"}}],[{"Literal":{"Value":"'reference_number_login_failed'"}}],[{"Literal":{"Value":"'reference_number_login_succeeded'"}}]]}}}]}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Key (Funnel group)' =
+			SWITCH(
+				TRUE,
+				ISBLANK('Metrics Data'[Key]),
+				"(Blank)",
+				'Metrics Data'[Key] IN {"reference_number_locked",
+					"reference_number_login_failed",
+					"reference_number_login_succeeded"},
+				"Hits",
+				'Metrics Data'[Key] IN {"custom_installment_submitted",
+					"installment_submitted",
+					"one_time_payment_submitted",
+					"pay_in_full_submitted",
+					"reocurring_submitted",
+					"settlement_submitted"},
+				"Payments",
+				'Metrics Data'[Key] IN {"alt_pin_login_succeeded",
+					"frictionless_login",
+					"pin_login_succeeded",
+					"spanish_portal_login"},
+				"PIN Login Succeeded",
+				"Other"
+			)
+		isHidden
+		lineageTag: aab483b9-2b37-47e0-80bc-cf558ec7904d
+		summarizeBy: none
+
+		extendedProperty GroupingMetadata =
+				{
+				  "version": 0,
+				  "groupedColumns": [
+				    {
+				      "Column": {
+				        "Expression": {
+				          "SourceRef": {
+				            "Entity": "Metrics Data"
+				          }
+				        },
+				        "Property": "Key"
+				      }
+				    }
+				  ]
+				}
+
+		annotation GroupingDesignState = {"Version":0,"Sources":[{"Name":"m","Entity":"Metrics Data"}],"GroupedColumns":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"GroupItems":[{"DisplayName":"(Blank)","BlankDefaultPlaceholder":true},{"DisplayName":"Hits","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"Values":[[{"Literal":{"Value":"'reference_number_locked'"}}],[{"Literal":{"Value":"'reference_number_login_failed'"}}],[{"Literal":{"Value":"'reference_number_login_succeeded'"}}]]}}},{"DisplayName":"Payments","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"Values":[[{"Literal":{"Value":"'custom_installment_submitted'"}}],[{"Literal":{"Value":"'installment_submitted'"}}],[{"Literal":{"Value":"'one_time_payment_submitted'"}}],[{"Literal":{"Value":"'pay_in_full_submitted'"}}],[{"Literal":{"Value":"'reocurring_submitted'"}}],[{"Literal":{"Value":"'settlement_submitted'"}}]]}}},{"DisplayName":"PIN Login Succeeded","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"Values":[[{"Literal":{"Value":"'alt_pin_login_succeeded'"}}],[{"Literal":{"Value":"'frictionless_login'"}}],[{"Literal":{"Value":"'pin_login_succeeded'"}}],[{"Literal":{"Value":"'spanish_portal_login'"}}]]}}},{"DisplayName":"Other"}]}
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsMonth = ```
+			var currentrowmonth = MONTH('Metrics Data'[CapturedOn])
+			var ismonth = MONTH(now()-1)
+			var prevmonth = if(MONTH(now()-1) - 1 = 0 ,12,MONTH(now()-1) - 1)
+			
+			
+			return 
+			
+			IF(ismonth=currentrowmonth || prevmonth= currentrowmonth, "Yes",  "No")
+			```
+		isHidden
+		lineageTag: 9fa973a8-5dab-4778-b73c-2e6c96f635dc
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsDay = ```
+			
+			var Currentday = DAY(NOW()-1)
+			var EOMonth = DAY(format(EOMONTH(NOW(),-1),"mm/dd/yyyy"))
+			var EOMonthp = DAY(format(EOMONTH(NOW(),-2),"mm/dd/yyyy"))
+			var greaterEOM = IF(EOMonth < EOMonthp ,EOMonthp,EOMonth)
+			var dday = IF(DAY(NOW()) = 1 ,greaterEOM,currentday)
+			var Currentrowday = DAY('Metrics Data'[CapturedOn])
+			RETURN 
+			IF('Metrics Data'[IsMonth]="Yes" && Currentrowday IN GENERATESERIES(1,dday,1),"Yes", "No")
+			
+			```
+		isHidden
+		lineageTag: 129a7932-0133-45b6-a582-e3a2994d6692
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsWeekDay = ```
+			var Dayoftheweek = WEEKDAY('Metrics Data'[CapturedOn])
+			VAR Allselections = COUNTROWS(DISTINCT(ALL('Metrics Data'[CapturedOn].[Month])))
+			VAR DefaultSelection = COUNTROWS(DISTINCT(ALLSELECTED('Metrics Data'[CapturedOn].[Month])))
+			VAR Dayoftheweek2=IF(WEEKDAY('Metrics Data'[CapturedOn])=1 || WEEKDAY('Metrics Data'[CapturedOn])=7 ,0,1)
+			VAR DefaultDayofWeek = If(month('metrics data'[capturedon])=month(today()) && (WEEKDAY('Metrics Data'[CapturedOn])=1 || WEEKDAY('Metrics Data'[CapturedOn])=7) ,0,1)
+			VAR currentmonth = If(month('metrics data'[capturedon])=month(today()),1,0)
+			return
+			 
+			IF(Dayoftheweek = 1 || Dayoftheweek = 7,0,1)
+			--IF(currentmonth=1 ,  DefaultDayofWeek,Dayoftheweek2)
+			```
+		isHidden
+		formatString: 0
+		lineageTag: f58b1f82-59dc-4fc3-a6d4-b38d7d18ffe5
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column WeekDayC =
+			VAR currentmonth = If(month('metrics data'[capturedon])=month(today()-1),1,0)
+			RETURN
+			
+			IF(currentmonth=1,'Metrics Data'[IsWeekDay],0)
+			--month('Metrics Data'[CapturedOn]) & " " & day('Metrics Data'[CapturedOn])
+		isHidden
+		formatString: 0
+		lineageTag: fe15a755-e715-406f-8a5a-08152cc747fe
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientId
+		dataType: string
+		lineageTag: afb6ef24-3020-42fc-9274-75a1087f68cd
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientParent
+		dataType: string
+		isHidden
+		lineageTag: 9ac898b4-500b-453a-af5d-d269c66cfd2a
+		summarizeBy: none
+		sourceColumn: ClientParent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Client
+		dataType: string
+		lineageTag: 575cb242-8c45-4521-9f02-2eb807660497
+		summarizeBy: none
+		sourceColumn: Client
+
+		annotation SummarizationSetBy = Automatic
+
+	column Payments
+		dataType: double
+		isHidden
+		lineageTag: c60f91fd-5889-45de-a8ef-1976d08df68e
+		summarizeBy: sum
+		sourceColumn: Payments
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Month-Year = FORMAT('Metrics Data'[CapturedOn],"MMM-YY")
+		isHidden
+		lineageTag: e05915b9-17b5-4e2d-b5be-ab17b34af040
+		summarizeBy: none
+		sortByColumn: YYYYMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM =
+			
+			VAR YYYY= YEAR('Metrics Data'[CapturedOn])
+			VAR MM =  FORMAT('Metrics Data'[CapturedOn],"mm")
+			RETURN
+			YYYY & MM
+		isHidden
+		lineageTag: 45cacf9b-8be7-4bcd-9951-be073852b337
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column PDC
+		dataType: double
+		lineageTag: 33a86a8e-efa3-486e-8fa9-2b9973b77491
+		summarizeBy: sum
+		sourceColumn: PDC
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Posted
+		dataType: double
+		lineageTag: 6c9c2d8b-5eb1-4a24-a1e2-1865695212e9
+		summarizeBy: sum
+		sourceColumn: Posted
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ClientStreamId
+		dataType: string
+		lineageTag: 3003db21-6465-4da2-b17d-de805d785d7d
+		summarizeBy: none
+		sourceColumn: ClientStreamId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStream
+		dataType: string
+		lineageTag: a799bc62-8c64-44e4-a3ee-e5bf5ef1c227
+		summarizeBy: none
+		sourceColumn: ClientStream
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Id' = ```
+			
+			VAR FACS = RIGHT('Metrics Data'[ReferenceNumber],
+			LEN('Metrics Data'[ReferenceNumber]) 
+			-
+			 SEARCH("F",'Metrics Data'[ReferenceNumber],1,0)
+			)
+			
+			VAR Others = RIGHT('Metrics Data'[ReferenceNumber],
+			LEN('Metrics Data'[ReferenceNumber]) 
+			-
+			 SEARCH("-",'Metrics Data'[ReferenceNumber],1,0)
+			)
+			RETURN
+			IF('Metrics Data'[CRM] = "FACS" , FACS, Others)
+			```
+		lineageTag: 1af2ec50-085e-4be5-9385-1f599f3455d4
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductType
+		dataType: string
+		lineageTag: 78eb5871-ee53-4b82-ab25-9696d9f97589
+		summarizeBy: none
+		sourceColumn: ProductType
+
+		annotation SummarizationSetBy = Automatic
+
+	column Product
+		dataType: string
+		lineageTag: 12a55f39-ad79-48e8-afc0-25fab06b814f
+		summarizeBy: none
+		sourceColumn: Product
+
+		annotation SummarizationSetBy = Automatic
+
+	column test = if( 'Metrics Data'[CustomerID(Varchar)] = 'Metrics Data'[Customer Id], "Yes" , "No")
+		isHidden
+		lineageTag: 0f515b87-1093-4ab5-a761-271b5cd7d232
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Count
+		dataType: int64
+		isHidden
+		formatString: 0
+		sourceProviderType: smallint
+		lineageTag: 761aa4df-6e75-4489-901e-3077ad1dcf79
+		summarizeBy: sum
+		sourceColumn: Count
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column IpAddress
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(300)
+		lineageTag: 26faf62f-c9f2-4721-a2b2-1fac8d86cb55
+		summarizeBy: none
+		sourceColumn: IpAddress
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SessionId
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(1000)
+		lineageTag: 7b0e2a41-a885-4b6e-839d-b24971d4eb0d
+		summarizeBy: none
+		sourceColumn: SessionId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column QueryString
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(2000)
+		lineageTag: bf0c97e0-ac38-4aa0-8f1f-90e75be04486
+		summarizeBy: none
+		sourceColumn: QueryString
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column UTM_Source
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(300)
+		lineageTag: 9ff16109-b3aa-4180-9346-f3496959c281
+		summarizeBy: none
+		sourceColumn: UTM_Source
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column UTM_Campaign
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(300)
+		lineageTag: 35b27d8d-cb78-4622-be01-b7bb2a37b952
+		summarizeBy: none
+		sourceColumn: UTM_Campaign
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SourceSystem
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(50)
+		lineageTag: dd7dab9f-2654-4f58-ac2c-3ec96d99c1da
+		summarizeBy: none
+		sourceColumn: SourceSystem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerID
+		dataType: int64
+		isHidden
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: 89faedac-7e21-4155-8d24-74fe58f73700
+		summarizeBy: count
+		sourceColumn: CustomerID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column OneTimePaymentDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: ff537b91-b6b0-4b06-82ff-f28fa3eaee5d
+		summarizeBy: none
+		sourceColumn: OneTimePaymentDate
+
+		variation Variation
+			isDefault
+			relationship: 5348c167-749d-42d4-bca1-6b31fe95a966
+			defaultHierarchy: LocalDateTable_dfb4f2d7-95da-452c-84d2-7350019081b9.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column OneTimePaymentAmount
+		dataType: double
+		isHidden
+		lineageTag: 02426e31-514f-4cfc-85ab-5e898f0de880
+		summarizeBy: sum
+		sourceColumn: OneTimePaymentAmount
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column PaySeriesStart
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: e0ef122a-54ad-4f40-af45-7759595ed0c9
+		summarizeBy: none
+		sourceColumn: PaySeriesStart
+
+		variation Variation
+			isDefault
+			relationship: d7985e17-c7ab-4185-a71f-8213bd511277
+			defaultHierarchy: LocalDateTable_b53a55d2-3296-44a1-89c0-e97111cef474.'Date Hierarchy'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column PaySeriesFrequency
+		dataType: string
+		isHidden
+		lineageTag: fc69d062-9d78-4a33-80a4-a970b1128059
+		summarizeBy: none
+		sourceColumn: PaySeriesFrequency
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column PaySeriesAmount
+		dataType: double
+		isHidden
+		lineageTag: 74f7275b-086a-43fb-817e-51ea87bb0e5d
+		summarizeBy: sum
+		sourceColumn: PaySeriesAmount
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column PaySeriesCount
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d9f95782-6e61-4668-b6af-f795d5a61048
+		summarizeBy: sum
+		sourceColumn: PaySeriesCount
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column PaySumTotal
+		dataType: double
+		isHidden
+		lineageTag: 6a9a02d6-8a6f-4571-afb6-debbb1c651c4
+		summarizeBy: sum
+		sourceColumn: PaySumTotal
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DeviceCategory
+		dataType: string
+		isHidden
+		lineageTag: e8c50b09-c528-44c6-be89-8c9ded84d7c9
+		summarizeBy: none
+		sourceColumn: DeviceCategory
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column OS
+		dataType: string
+		isHidden
+		lineageTag: d3d88399-9a71-4d34-a405-52a1cf6bcfb4
+		summarizeBy: none
+		sourceColumn: OS
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Browser
+		dataType: string
+		isHidden
+		lineageTag: 083d7739-6503-49ea-b00e-49e7c5e761fc
+		summarizeBy: none
+		sourceColumn: Browser
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Captured DateTime'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b26c0496-11e7-4072-b511-4fe4e199c408
+		summarizeBy: none
+		sourceColumn: Captured DateTime
+
+		variation Variation
+			isDefault
+			relationship: 4489d6be-6bc6-4708-868e-91bfd218777e
+			defaultHierarchy: LocalDateTable_49ca26ca-1e32-4e94-9566-bdaa9313a2eb.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Parent
+		dataType: string
+		lineageTag: 920d4e87-5f20-4c8a-ba61-36a23f1e7b23
+		summarizeBy: none
+		sourceColumn: Parent
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerID(Varchar)
+		dataType: string
+		lineageTag: 0b978f02-d67c-49cc-b405-78df69d75997
+		summarizeBy: none
+		sourceColumn: CustomerID(Varchar)
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Key Hierarchy'
+		isHidden
+		lineageTag: fb1b0560-9918-49bf-9df9-9590a89295fc
+
+		level 'Key (groups)'
+			lineageTag: 0b0f9953-f127-44d3-baff-ccedf97274b4
+			column: 'Key (groups)'
+
+		level Key
+			lineageTag: bee5fb4e-cca7-477b-bdd6-5da2adad41fb
+			column: Key
+
+	hierarchy 'IsWeekDay Hierarchy'
+		isHidden
+		lineageTag: db76945d-92f3-4dd3-801e-4eb053684dc9
+
+		level IsWeekDay
+			lineageTag: 8ee6211c-e054-4b7c-87a9-84d6166156da
+			column: IsWeekDay
+
+		level IsMonth
+			lineageTag: a88d3536-5920-46ba-a392-b14baaea88ce
+			column: IsMonth
+
+	partition 'Metrics Data-3be68cf0-5ae0-42bd-896b-c38e51537210' = m
+		mode: import
+		source = ```
+				let
+				    Source = Sql.Databases("dfw2-bisql-001"),
+				    CLIENT_ANALYTICS = Source{[Name="CLIENT_ANALYTICS"]}[Data],
+				    dbo_RPT_Web_Waterfall_Metrics_Data_Client_Summary= CLIENT_ANALYTICS{[Schema="dbo",Item="RPT_Web_Waterfall_Metrics_Data_Client_Summary"]}[Data],
+				    #"Filtered Rows" = Table.SelectRows(dbo_RPT_Web_Waterfall_Metrics_Data_Client_Summary, each Date.IsInCurrentYear([CapturedOn]) or Date.IsInPreviousYear([CapturedOn]))
+				   
+				in
+				    #"Filtered Rows"
+				```
+
+	annotation PBI_QueryRelationships = {"columnCount":14,"keyColumnNames":[],"queryRelationships":[],"columnIdentities":["Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{MetricId,0}","Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{Key,1}","Section1/Metrics Data/Data Type to Date - CapturedOn.{CapturedOn,2}","Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{Cound,3}","Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{Description,4}","Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{ReferenceNumber,5}","Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{Payments,6}","Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{ClientId,7}","Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{ClientParent,8}","Section1/Metrics Data/Data Type to Numeric - Ref No. copy1.{ReferenceNumber - Copy.1,9}","Section1/Metrics Data/Added Conditional Column CRM.{CRM,10}","Section1/Metrics Data/Added Conditional Column Login Type.{Login Type,11}","Section1/Metrics Data/Added Conditional Column Auth\\/Unauth.{Authenticated/Unauthenticated,12}","Section1/Metrics Data/Added Conditional Column Clients.{Client,13}"],"ColumnCount":14,"KeyColumnNames":[],"ColumnIdentities":["Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{MetricId,0}","Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{Key,1}","Section1/Metrics Data/Data Type to Date - CapturedOn.{CapturedOn,2}","Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{Cound,3}","Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{Description,4}","Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{ReferenceNumber,5}","Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{Payments,6}","Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{ClientId,7}","Server.Database\\/2/SQL/dfw2-bisql-001;CLIENT_ANALYTICS/dbo/Web_Waterfall_Metrics_Data_Client.{ClientParent,8}","Section1/Metrics Data/Data Type to Numeric - Ref No. copy1.{ReferenceNumber - Copy.1,9}","Section1/Metrics Data/Added Conditional Column CRM.{CRM,10}","Section1/Metrics Data/Added Conditional Column Login Type.{Login Type,11}","Section1/Metrics Data/Added Conditional Column Auth\\/Unauth.{Authenticated/Unauthenticated,12}","Section1/Metrics Data/Added Conditional Column Clients.{Client,13}"],"RelationshipInfo":[]}
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

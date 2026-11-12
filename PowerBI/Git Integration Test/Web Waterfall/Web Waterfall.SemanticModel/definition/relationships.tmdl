@@ -1,0 +1,98 @@
+relationship c204526a-7266-4a9c-8ec5-b1655f9a9d8b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Payments Data'.capturedon
+	toColumn: LocalDateTable_cfa96e0b-4c26-44f1-92a4-a7408f3b4909.Date
+
+relationship 5d5a9f6f-7df1-44c7-ab77-541310c5386e
+	fromColumn: 'Metrics Data'.Key
+	toColumn: KM.KM
+
+relationship 6f97f4d4-7d67-415a-a1e7-0dc5241a3cd0
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Metrics Data'.CapturedOn
+	toColumn: LocalDateTable_53482261-772e-487d-9b60-70f973df86c5.Date
+
+relationship 2dcc0d90-8812-487f-9dce-0ad32283fac9
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Metrics Data'.MetricId
+	toColumn: 'Payments Data'.MetricId
+
+relationship 76a3a227-453d-4ac1-a8d6-6c5651066241
+	fromColumn: 'Metrics Data'.ClientId
+	toColumn: vw_Amex_ClientCodes_LookupTable.ClientCode
+
+relationship 5348c167-749d-42d4-bca1-6b31fe95a966
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Metrics Data'.OneTimePaymentDate
+	toColumn: LocalDateTable_dfb4f2d7-95da-452c-84d2-7350019081b9.Date
+
+relationship d7985e17-c7ab-4185-a71f-8213bd511277
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Metrics Data'.PaySeriesStart
+	toColumn: LocalDateTable_b53a55d2-3296-44a1-89c0-e97111cef474.Date
+
+relationship 321ab28c-4c36-429b-ae98-610e826f7a99
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Visits by Source'.CapturedDate
+	toColumn: LocalDateTable_9081d408-10cf-43fc-b131-ed9ad59fb0cb.Date
+
+relationship 5424f64e-ddfd-4b73-b347-21292e36a883
+	fromColumn: 'Visits by Source'.ClientId
+	toColumn: vw_Amex_ClientCodes_LookupTable.ClientCode
+
+relationship 61b94327-e475-4942-922c-a696f303e932
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimSourceSystem.InsertDate
+	toColumn: LocalDateTable_87ed8d94-c79a-46bb-bbbc-1d8d16154308.Date
+
+relationship a1da3654-1323-49c8-b96b-7efc2ee92379
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'AXP Payment Program Detail'.CapturedOn
+	toColumn: LocalDateTable_22bde93b-a13b-4c0b-88aa-fe36b39ce50d.Date
+
+relationship 96f7e88e-9a70-4fb6-b761-184a92340612
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'AXP Payment Program Detail'.InsertDate
+	toColumn: LocalDateTable_514188c9-c281-49be-8507-88320e738953.Date
+
+relationship c27341f4-c9c7-4955-b9ea-5c67b4809ae7
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'AXP Payment Program Detail'.UpdateDate
+	toColumn: LocalDateTable_d0ee4d2e-cbc6-4867-95ca-ef7fa569b8ba.Date
+
+relationship f386fc48-d5e1-415d-b80b-bc03e61719b0
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'AXP Payment Program Detail'.OneTimePaymentDate
+	toColumn: LocalDateTable_ac92f811-01cb-4c80-a8f2-d46ff028b44f.Date
+
+relationship 9c946779-7fec-4f40-8c5c-53e5e6e3ba44
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'AXP Payment Program Detail'.PaySeriesStart
+	toColumn: LocalDateTable_247b35f6-7e56-4e69-b766-3bdae1b992e3.Date
+
+relationship 4489d6be-6bc6-4708-868e-91bfd218777e
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Metrics Data'.'Captured DateTime'
+	toColumn: LocalDateTable_49ca26ca-1e32-4e94-9566-bdaa9313a2eb.Date
+
+relationship a5d5e7bb-9275-46c1-ab66-0df7e3f2b529
+	joinOnDateBehavior: datePartOnly
+	fromColumn: New_Monthly_Table.CapturedOn
+	toColumn: LocalDateTable_15e7e707-b51f-408b-86c7-c54c4360d140.Date
+
+relationship 7bcd2236-2011-a590-2677-a2ac7a1bdb85
+	fromColumn: New_Monthly_Table.Key
+	toColumn: 'KMS New'.KPI
+
+relationship 8aa32186-11a3-8bc2-856e-9bddff105e9e
+	fromColumn: New_Monthly_Table.ClientId
+	toColumn: vw_Amex_ClientCodes_LookupTable.ClientCode
+
+relationship 8baf7f09-7b1f-2a50-6afe-2fa2509aa2bd
+	fromColumn: New_Monthly_Table.SourceSystem
+	toColumn: DimSourceSystem.SourceSystem2
+
+relationship 19f6baca-ef09-af72-f792-b52d02d601d1
+	fromColumn: 'AXP Payment Program Detail'.SourceSystem
+	toColumn: DimSourceSystem.SourceSystem2
+
