@@ -189,6 +189,9 @@ def parse_tmdl(tmdl_path: Path):
                     expr_lines.append(stripped)
                 j += 1
             full_expr = "\n".join(expr_lines).strip()
+            # TMDL wraps some multi-line expressions in ``` fences; they are not DAX
+            if full_expr.startswith("```") and full_expr.endswith("```") and len(full_expr) >= 6:
+                full_expr = full_expr[3:-3].strip()
             measures.append({"TableName": table_name, "Measure": meas_name, "Expression": full_expr})
             i += 1
             continue
@@ -259,6 +262,9 @@ def get_tables_data(tables_folder: Path):
 
         if result["is_dax"] and result["dax_expr"]:
             dax_tables.append({"TableName": tn, "Expression": result["dax_expr"]})
+            # Measures can live on calculated tables (e.g. 'Select Top N Clients')
+            if not is_auto_date_table(tn):
+                all_measures.extend(result["measures"])
             continue
 
         # Include hidden tables; skip only Power BI's auto date/time tables
@@ -522,22 +528,22 @@ def get_pages(report_folder: Path):
 # ---------------------------------------------------------------------------
 
 def sanitize_cell(value):
-    return str(value).replace("\r\n", " ").replace("\n", " ")
+    # One line per row, and escape pipes (e.g. DAX "||") so they don't split cells
+    return (str(value).replace("\r\n", " ").replace("\n", " ")
+            .replace("|", "\\|"))
 
 
 def rows_to_markdown(headers, rows):
     if not rows:
         return "_No data available._"
     clean_rows = [[sanitize_cell(cell) for cell in row] for row in rows]
-    col_widths = [len(h) for h in headers]
-    for row in clean_rows:
-        for i, cell in enumerate(row):
-            col_widths[i] = max(col_widths[i], len(cell))
 
+    # No column padding: padding every cell to the longest value made pages
+    # with long DAX expressions several MB, and GitHub stops rendering around 500 KB.
     def fmt_row(cells):
-        return "| " + " | ".join(str(c).ljust(col_widths[i]) for i, c in enumerate(cells)) + " |"
+        return "| " + " | ".join(str(c) for c in cells) + " |"
 
-    sep = "| " + " | ".join("-" * w for w in col_widths) + " |"
+    sep = "| " + " | ".join("---" for _ in headers) + " |"
     return "\n".join([fmt_row(headers), sep] + [fmt_row(r) for r in clean_rows])
 
 
