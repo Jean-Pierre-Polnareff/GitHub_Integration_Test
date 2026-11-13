@@ -528,9 +528,12 @@ def get_pages(report_folder: Path):
 # ---------------------------------------------------------------------------
 
 def sanitize_cell(value):
-    # One line per row, and escape pipes (e.g. DAX "||") so they don't split cells
+    # One line per row, and escape pipes (e.g. DAX "||") so they don't split cells.
+    # Wrap "$" in <span> so GitHub doesn't treat text between two $ signs as a
+    # LaTeX math formula (e.g. "Payments $" ... "$#,##0") - GitHub's documented fix.
     return (str(value).replace("\r\n", " ").replace("\n", " ")
-            .replace("|", "\\|"))
+            .replace("|", "\\|")
+            .replace("$", "<span>$</span>"))
 
 
 def rows_to_markdown(headers, rows):
