@@ -75,6 +75,20 @@
               },
               "queryRef": "Web_Waterfall_Visits_by_Source.Portal",
               "nativeQueryRef": "Portal"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Web_Waterfall_Visits_by_Source"
+                    }
+                  },
+                  "Property": "SMS"
+                }
+              },
+              "queryRef": "Web_Waterfall_Visits_by_Source.SMS",
+              "nativeQueryRef": "SMS"
             }
           ]
         }
@@ -527,6 +541,21 @@
           }
         },
         "type": "Categorical",
+        "isHiddenInViewMode": true
+      },
+      {
+        "name": "156920ca85ec016082b2",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Web_Waterfall_Visits_by_Source"
+              }
+            },
+            "Property": "SMS"
+          }
+        },
+        "type": "Advanced",
         "isHiddenInViewMode": true
       }
     ]

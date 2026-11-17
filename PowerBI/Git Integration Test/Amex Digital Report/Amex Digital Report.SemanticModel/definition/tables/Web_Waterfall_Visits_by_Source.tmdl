@@ -44,6 +44,21 @@ table Web_Waterfall_Visits_by_Source
 
 		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
 
+	measure SMS =
+			
+			VAR SMS_Pay =
+			CALCULATE(
+			    SUM(Web_Waterfall_Visits_by_Source[Payments]),
+			    Web_Waterfall_Visits_by_Source[Campaign] = "SMS"
+			)
+			RETURN
+			DIVIDE(SMS_Pay,1000)
+		formatString: \$#,0.0;(\$#,0.0);\$#,0.0
+		isHidden
+		lineageTag: dee76f61-4d1d-4579-9576-3bcbc09072da
+
+		changedProperty = IsHidden
+
 	column CapturedDate
 		dataType: dateTime
 		isHidden
