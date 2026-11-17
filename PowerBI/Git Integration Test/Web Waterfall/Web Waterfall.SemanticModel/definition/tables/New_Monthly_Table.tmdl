@@ -9,14 +9,14 @@ table New_Monthly_Table
 
 		changedProperty = IsHidden
 
-	measure 'KMS PIN Entered New test' = CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI]IN {"account_suppressed","pin_login_failed","pin_login_succeeded","dob_login_succeeded","ssn_login_succeeded","dob_login_failed","ssn_login_failed","frictionless_login"} )
+	measure 'KMS PIN Entered New test' = CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI]IN {"account_suppressed","pin_login_failed","pin_login_succeeded","dob_login_succeeded","ssn_login_succeeded","dob_login_failed","ssn_login_failed","frictionless_login","zip_login_succeeded","zip_login_failed"} )
 		formatString: 0
 		isHidden
 		lineageTag: acd8d473-42d6-4e51-bb3b-16da12fbf23a
 
 		changedProperty = IsHidden
 
-	measure 'KMS PIN Login New test' = CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI] IN { "pin_login_succeeded","dob_login_succeeded","ssn_login_succeeded","frictionless_login"}  )
+	measure 'KMS PIN Login New test' = CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI] IN { "pin_login_succeeded","dob_login_succeeded","ssn_login_succeeded","frictionless_login","zip_login_succeeded"}  )
 		formatString: 0
 		isHidden
 		lineageTag: 5f760d2f-a3c3-4837-910f-7bbb10c9f09a
@@ -35,7 +35,7 @@ table New_Monthly_Table
 			"Reference Number Locked",format(CALCULATE([KMS Hits New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reference_number_locked" ),"#,0"),
 			"Reference Number Failed",format(CALCULATE([KMS Hits New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reference_number_login_failed" ),"#,0"),
 			"Reference Number Succeeded",format(CALCULATE([KMS Hits New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reference_number_login_succeeded" ),"#,0"),
-			"PIN Failed",format(CALCULATE([KMS PIN Entered New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "pin_login_failed" || 'New_Monthly_Table'[Key] = "ssn_login_failed" || 'New_Monthly_Table'[Key] ="dob_login_failed"),"#,0"),
+			"PIN Failed",format(CALCULATE([KMS PIN Entered New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "pin_login_failed" || 'New_Monthly_Table'[Key] = "ssn_login_failed" || 'New_Monthly_Table'[Key] ="dob_login_failed" || 'New_Monthly_Table'[Key] = "zip_login_failed"),"#,0"),
 			"Account Suppressed",format(CALCULATE([KMS PIN Entered New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "account_suppressed" ),"#,0"),
 			"Log In Rate",format(CALCULATE([KMS Login % New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil")),"0%;(0%)"),
 			--========================================Performance================================================
@@ -156,7 +156,7 @@ table New_Monthly_Table
 
 		changedProperty = IsHidden
 
-	measure 'KMS Login % New test' = Divide(CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI] IN {"pin_login_succeeded","dob_login_succeeded","ssn_login_succeeded","alt_pin_login_succeeded","frictionless_login" } ),CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI] IN {"reference_number_locked" ,"reference_number_login_failed","reference_number_login_succeeded","frictionless_login"} ))
+	measure 'KMS Login % New test' = Divide(CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI] IN {"pin_login_succeeded","dob_login_succeeded","ssn_login_succeeded","alt_pin_login_succeeded","frictionless_login","zip_login_succeeded" } ),CALCULATE([Count_of_Rows],ALL('KMS New'[KPI],'KMS New'[Column1],'KMS New'[Parent KPI],'KMS New'[Parent KPI-Sort Order]),'KMS New'[KPI] IN {"reference_number_locked" ,"reference_number_login_failed","reference_number_login_succeeded","frictionless_login"} ))
 		isHidden
 		lineageTag: df8404b6-b76a-46b1-8d5d-a7644c6089c7
 
@@ -199,7 +199,7 @@ table New_Monthly_Table
 			"Reference Number Locked",(CALCULATE([KMS Hits New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reference_number_locked" )),
 			"Reference Number Failed",(CALCULATE([KMS Hits New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reference_number_login_failed" )),
 			"Reference Number Succeeded",(CALCULATE([KMS Hits New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "reference_number_login_succeeded" )),
-			"PIN Failed",(CALCULATE([KMS PIN Entered New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"),  'New_Monthly_Table'[Key] = "pin_login_failed" || 'New_Monthly_Table'[Key] = "ssn_login_failed" || 'New_Monthly_Table'[Key] ="dob_login_failed" )),
+			"PIN Failed",(CALCULATE([KMS PIN Entered New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"),  'New_Monthly_Table'[Key] = "pin_login_failed" || 'New_Monthly_Table'[Key] = "ssn_login_failed" || 'New_Monthly_Table'[Key] ="dob_login_failed" || 'New_Monthly_Table'[Key] ="zip_login_failed" )),
 			"Account Suppressed",(CALCULATE([KMS PIN Entered New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"), 'New_Monthly_Table'[Key] = "account_suppressed" )),
 			"Log In Rate",(CALCULATE([KMS Login % New test],KEEPFILTERS('New_Monthly_Table'[CapturedOn].[month] <> "Nil"))),
 			--========================================Performance================================================

@@ -481,7 +481,7 @@ table 'Payments Data'
 
 	annotation PBI_QueryRelationships = {"columnCount":7,"keyColumnNames":[],"queryRelationships":[],"columnIdentities":["Section1/Payments Data/Source.{MetricId,0}","Section1/Payments Data/Source.{ReferenceNumber,1}","Section1/Payments Data/Source.{capturedon,2}","Section1/Payments Data/Source.{sourcesystem,3}","Section1/Payments Data/Source.{Key,4}","Section1/Payments Data/Source.{Payments,5}","Section1/Payments Data/Added Conditional Column.{Key2,6}"],"ColumnCount":7,"KeyColumnNames":[],"ColumnIdentities":["Section1/Payments Data/Source.{MetricId,0}","Section1/Payments Data/Source.{ReferenceNumber,1}","Section1/Payments Data/Source.{capturedon,2}","Section1/Payments Data/Source.{sourcesystem,3}","Section1/Payments Data/Source.{Key,4}","Section1/Payments Data/Source.{Payments,5}","Section1/Payments Data/Added Conditional Column.{Key2,6}"],"RelationshipInfo":[]}
 
-	annotation PBI_ResultType = Exception
+	annotation PBI_ResultType = Table
 
 	annotation PBI_NavigationStepName = Navigation
 

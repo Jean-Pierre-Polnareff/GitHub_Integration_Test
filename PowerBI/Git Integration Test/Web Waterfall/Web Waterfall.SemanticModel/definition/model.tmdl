@@ -10,8 +10,6 @@ annotation __PBI_TimeIntelligenceEnabled = 1
 
 annotation PBI_QueryOrder = ["Metrics Data","Payments Data","KM","ClientMapping","StartDate","EndDate","vw_Amex_ClientCodes_LookupTable","Visits by Source","DimSourceSystem","AXP Payment Program Detail","RangeStart","RangeEnd","KMS New","New_Monthly_Table"]
 
-annotation PBIDesktopVersion = 2.145.1105.0 (25.07)+decbc46fce458c5b8d5109d6f32a743f2ac949c8
-
 annotation PBI_ProTooling = ["DevMode"]
 
 ref table 'Metrics Data'

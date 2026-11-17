@@ -1,12 +1,12 @@
 table 'Metrics Data'
 	lineageTag: efd6efbe-c221-4dab-ad73-50d4d6679dc4
 
-	measure 'Login %' = DIVIDE(CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key]="pin_login_succeeded" || 'Metrics Data'[Key]="dob_login_succeeded"  || 'Metrics Data'[Key]="ssn_login_succeeded"  || 'Metrics Data'[Key]="alt_pin_login_succeeded"  || 'Metrics Data'[Key]="frictionless_login" ),CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Reference Number Entered (A)"  || 'Metrics Data'[Key (groups)]="frictionless_login"))
+	measure 'Login %' = DIVIDE(CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key]="pin_login_succeeded" || 'Metrics Data'[Key]="dob_login_succeeded"  || 'Metrics Data'[Key]="ssn_login_succeeded"  || 'Metrics Data'[Key]="alt_pin_login_succeeded"  || 'Metrics Data'[Key]="frictionless_login"  || 'Metrics Data'[Key]="zip_login_succeeded" ),CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Reference Number Entered (A)"  || 'Metrics Data'[Key (groups)]="frictionless_login"))
 		formatString: 0\ %;-0\ %;0\ %
 		isHidden
 		lineageTag: 607f0e14-773b-4b62-aa4f-ed219a577b64
 
-	measure 'Conversion %' = DIVIDE(CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Payments (C)"),CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key]="pin_login_succeeded" || 'Metrics Data'[Key]="dob_login_succeeded"  || 'Metrics Data'[Key]="ssn_login_succeeded"  || 'Metrics Data'[Key]="alt_pin_login_succeeded"  || 'Metrics Data'[Key]="frictionless_login"  ))
+	measure 'Conversion %' = DIVIDE(CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Payments (C)"),CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key]="pin_login_succeeded" || 'Metrics Data'[Key]="dob_login_succeeded"  || 'Metrics Data'[Key]="ssn_login_succeeded"  || 'Metrics Data'[Key]="alt_pin_login_succeeded"  || 'Metrics Data'[Key]="frictionless_login"  || 'Metrics Data'[Key]="zip_login_succeeded"  ))
 		formatString: 0\ %;-0\ %;0\ %
 		isHidden
 		lineageTag: d1a15b6b-5279-416d-9402-20c1c10f09a5
@@ -81,7 +81,7 @@ table 'Metrics Data'
 		isHidden
 		lineageTag: ff59d7e1-04d9-497b-adc3-04e118009446
 
-	measure 'Login #' = CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key]="pin_login_succeeded" || 'Metrics Data'[Key]="dob_login_succeeded"  || 'Metrics Data'[Key]="ssn_login_succeeded"  || 'Metrics Data'[Key]="alt_pin_login_succeeded"  || 'Metrics Data'[Key]="frictionless_login")
+	measure 'Login #' = CALCULATE([Count_of_Recs],ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key]="pin_login_succeeded" || 'Metrics Data'[Key]="dob_login_succeeded"  || 'Metrics Data'[Key]="ssn_login_succeeded"  || 'Metrics Data'[Key]="alt_pin_login_succeeded"  || 'Metrics Data'[Key]="frictionless_login"  || 'Metrics Data'[Key]="zip_login_succeeded")
 		formatString: #,0
 		isHidden
 		lineageTag: 04789383-da61-4514-b0d1-db42fa686da4
@@ -182,7 +182,7 @@ table 'Metrics Data'
 		isHidden
 		lineageTag: 3d1f8fc2-6491-47c2-a848-94100650ae1b
 
-	measure 'KM Login %' = Divide(CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded" || KM[KM]="frictionless_login" ))
+	measure 'KM Login %' = Divide(CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ),CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded" || KM[KM]="frictionless_login" ))
 		isHidden
 		lineageTag: 394d9222-308a-4db7-a88d-44eeac43f227
 
@@ -193,7 +193,7 @@ table 'Metrics Data'
 		isHidden
 		lineageTag: 2a44e0d8-08f1-4953-a844-9a09cae97ce1
 
-	measure 'KM Conversion %' = Divide(CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted" || KM[KM]="reocurring_submitted"),CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+	measure 'KM Conversion %' = Divide(CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted" || KM[KM]="reocurring_submitted"),CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ))
 		isHidden
 		lineageTag: 959c3237-ef4b-4a8e-9b20-0d1edfaa63bf
 
@@ -204,7 +204,7 @@ table 'Metrics Data'
 		isHidden
 		lineageTag: 6c35ea13-d174-4636-8a72-e6606ac27482
 
-	measure 'KM PIN Entered' = CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )
+	measure 'KM PIN Entered' = CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  )
 		formatString: 0
 		isHidden
 		lineageTag: 2a0c8466-45da-4d85-a444-8f58ecd2a629
@@ -915,16 +915,16 @@ table 'Metrics Data'
 			VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
 			VAR varKM2 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
 			VAR KMHITS = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  )
-			VAR KMPINENTERED = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )
-			VAR KMLOGIN = Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login" ))
+			VAR KMPINENTERED = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  )
+			VAR KMLOGIN = Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login" ))
 			VAR KMPAYMENTS = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted")
-			VAR KMCONVERSION = Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			VAR KMCONVERSION = Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ))
 			VAR KMPAYMENT = CALCULATE([Payment $ D],ALL(KM[KM],KM[Column1]))
 			VAR KMAVERAGEPAYMENT = DIVIDE(CALCULATE([Payment $ D],ALL(KM[KM],KM[Column1])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
 			VAR KMPAYMENTMETHOD = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="checking_account_used" || KM[KM]="debit_card_used" || KM[KM]="credit_card_used")
 			VAR KMCONTACTINFO = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="contact_information_updated" || KM[KM]="email_consent_provided" || KM[KM]="sms_consent_provided")
 			VAR KMOTHER = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent")
-			VAR PINLOGIN = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )
+			VAR PINLOGIN = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  )
 			VAR PINLOGINPRIM = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"   )
 			VAR PINLOGINCOMAKER = CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="comaker_login_succeeded"   )
 			RETURN
@@ -1086,16 +1086,16 @@ table 'Metrics Data'
 			VAR selectedmonth =ALLSELECTED('Metrics Data'[CapturedOn].[Month])
 			VAR varKM2 = UPPER(IF(HASONEVALUE(KM[KM]),VALUES(KM[KM]),BLANK()))
 			VAR KMHITS = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  )
-			VAR KMPINENTERED = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login" )
-			VAR KMLOGIN = Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			VAR KMPINENTERED = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded" )
+			VAR KMLOGIN = Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  ))
 			VAR KMPAYMENTS = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted")
-			VAR KMCONVERSION = Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+			VAR KMCONVERSION = Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ))
 			VAR KMPAYMENT = CALCULATE([KM Payment $])
 			VAR KMAVERAGEPAYMENT = DIVIDE(CALCULATE([KM Payment $]),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
 			VAR KMPAYMENTMETHOD = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="checking_account_used" || KM[KM]="debit_card_used" || KM[KM]="credit_card_used")
 			VAR KMCONTACTINFO = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="contact_information_updated" || KM[KM]="email_consent_provided" || KM[KM]="sms_consent_provided")
 			VAR KMOTHER = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent")
-			VAR PINLOGIN = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )
+			VAR PINLOGIN = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  )
 			VAR PINLOGINPRIM = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"   )
 			VAR PINLOGINCOMAKER = CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="comaker_login_succeeded"   )
 			
@@ -1140,13 +1140,13 @@ table 'Metrics Data'
 			VAR KMHITS = AVERAGEX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded" || KM[KM]="frictionless_Login" ))
 			VAR KMPINENTERED = AVERAGEX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ))
 			VAR KMLOGIN =AVERAGEX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])), Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_Login" )))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])), Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_Login" )))
 			VAR KMPAYMENTS = AVERAGEX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
 			VAR KMCONVERSION = AVERAGEX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  )))
 			VAR KMPAYMENT = AVERAGEX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([Payment $ D],ALL(KM[KM],KM[Column1])))
 			VAR KMAVERAGEPAYMENT = AVERAGEX(
@@ -1159,7 +1159,7 @@ table 'Metrics Data'
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent"))
 			
 			VAR KMPINLOGIN = AVERAGEX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded"  || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ))
 			
 			VAR KMPINLOGINPRIM = AVERAGEX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"  ))
@@ -1195,13 +1195,13 @@ table 'Metrics Data'
 			VAR KMHITS = MAXX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_Login" ))
 			VAR KMPINENTERED = MAXX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ))
 			VAR KMLOGIN =MAXX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])), Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_Login" )))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])), Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_Login" )))
 			VAR KMPAYMENTS = MAXX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
 			VAR KMCONVERSION = MAXX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  )))
 			VAR KMPAYMENT = MAXX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([Payment $ D],ALL(KM[KM],KM[Column1])))
 			VAR KMAVERAGEPAYMENT = MAXX(
@@ -1214,7 +1214,7 @@ table 'Metrics Data'
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent"))
 			
 			VAR KMPINLOGIN = MAXX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ))
 			
 			VAR KMPINLOGINPRIM = MAXX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"  ))
@@ -1250,13 +1250,13 @@ table 'Metrics Data'
 			VAR KMHITS = MINX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  ))
 			VAR KMPINENTERED = MINX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login" ))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded" ))
 			VAR KMLOGIN =MINX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])), Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  )))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])), Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  )))
 			VAR KMPAYMENTS = MINX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
 			VAR KMCONVERSION = MINX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  )))
 			VAR KMPAYMENT = MINX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([Payment $ D],ALL(KM[KM],KM[Column1])))
 			VAR KMAVERAGEPAYMENT = MINX(
@@ -1269,7 +1269,7 @@ table 'Metrics Data'
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent"))
 			
 			VAR KMPINLOGIN = MINX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ))
 			
 			VAR KMPINLOGINPRIM = MINX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumDefault],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"  ))
@@ -1308,13 +1308,13 @@ table 'Metrics Data'
 			VAR KMHITS = MAXX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  ))
 			VAR KMPINENTERED = MAXX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ))
 			VAR KMLOGIN = MAXX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  )))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  )))
 			VAR KMPAYMENTS = MAXX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
 			VAR KMCONVERSION = MAXX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  )))
 			VAR KMPAYMENT = MAXX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([KM Payment $]))
 			VAR KMAVERAGEPAYMENT = MAXX(
@@ -1327,7 +1327,7 @@ table 'Metrics Data'
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent"))
 			
 			VAR KMPINLOGIN = MAXX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ))
 			
 			VAR KMPINLOGINPRIM = MAXX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"  ))
@@ -1373,13 +1373,13 @@ table 'Metrics Data'
 			VAR KMHITS = AVERAGEX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded" || KM[KM]="frictionless_Login" ))
 			VAR KMPINENTERED = AVERAGEX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ))
 			VAR KMLOGIN = AVERAGEX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded" || KM[KM]="frictionless_Login" )))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded" || KM[KM]="frictionless_Login" )))
 			VAR KMPAYMENTS = AVERAGEX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
 			VAR KMCONVERSION = AVERAGEX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  )))
 			VAR KMPAYMENT = AVERAGEX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([KM Payment $]))
 			VAR KMAVERAGEPAYMENT = AVERAGEX(
@@ -1392,7 +1392,7 @@ table 'Metrics Data'
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent"))
 			
 			VAR KMPINLOGIN = AVERAGEX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ))
 			
 			VAR KMPINLOGINPRIM = AVERAGEX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"  ))
@@ -1428,13 +1428,13 @@ table 'Metrics Data'
 			VAR KMHITS = MINX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  ))
 			VAR KMPINENTERED = MINX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="account_suppressed" || KM[KM]="pin_login_failed" || KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ))
 			VAR KMLOGIN = MINX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  )))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="reference_number_locked" || KM[KM]="reference_number_login_failed" || KM[KM]="reference_number_login_succeeded"  || KM[KM]="frictionless_login"  )))
 			VAR KMPAYMENTS = MINX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]= "installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"))
 			VAR KMCONVERSION = MINX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),Divide(CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="one_time_payment_submitted" || KM[KM]="pay_in_full_submitted" || KM[KM]="settlement_submitted" || KM[KM]="installment_submitted" || KM[KM]="custom_installment_submitted"  || KM[KM]="reocurring_submitted"),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  )))
 			VAR KMPAYMENT = MINX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([KM Payment $]))
 			VAR KMAVERAGEPAYMENT = MINX(
@@ -1447,7 +1447,7 @@ table 'Metrics Data'
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="oos_disclosure_accepted" || KM[KM]="oos_disclosure_skipped" || KM[KM]="state_disclosure_accepted" || KM[KM]="support_email_sent"))
 			
 			VAR KMPINLOGIN = MINX(
-				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  ))
+				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  ))
 			
 			VAR KMPINLOGINPRIM = MINX(
 				KEEPFILTERS(VALUES('Metrics Data'[CapturedOn].[Day])),CALCULATE([RegularSumSelection],ALL(KM[KM],KM[Column1]),KM[KM]="prim_login_succeeded"  ))
@@ -2064,7 +2064,7 @@ table 'Metrics Data'
 		isHidden
 		lineageTag: c0e808bb-3a6b-4c49-bd5f-794123682d99
 
-	measure 'KM PIN Login' = CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]), KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  )
+	measure 'KM PIN Login' = CALCULATE([RegularSum],ALL(KM[KM],KM[Column1]), KM[KM]="pin_login_succeeded" || KM[KM]="dob_login_succeeded"  || KM[KM]="ssn_login_succeeded"  || KM[KM]="alt_pin_login_succeeded"  || KM[KM]="frictionless_login"  || KM[KM]="zip_login_succeeded"  )
 		formatString: 0
 		isHidden
 		lineageTag: 1095fcef-43d1-403d-84d6-2ed3b9cd336d
