@@ -1,0 +1,425 @@
+table 'Metrics Data'
+	lineageTag: baa0f46b-b411-4957-8e79-bb369419b999
+
+	measure Hits = CALCULATE(SUM('Metrics Data'[Count]),ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Reference Number Entered (A)" || 'Metrics Data'[Key]="frictionless_login" || 'Metrics Data'[Key]="Spanish_portal_login" )
+		formatString: #,0
+		lineageTag: 7f6d534a-9a6e-4dd4-b0d8-eba1673d8e5c
+
+		changedProperty = IsHidden
+
+	measure 'Login %' = DIVIDE(CALCULATE(SUM('Metrics Data'[Count]),ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key]="pin_login_succeeded" || 'Metrics Data'[Key]="frictionless_login" || 'Metrics Data'[Key]="alt_pin_login_succeeded"|| 'Metrics Data'[Key]="dob_login_succeeded"  || 'Metrics Data'[Key]="ssn_login_succeeded"   || 'Metrics Data'[Key]="Spanish_portal_login"),CALCULATE(SUM('Metrics Data'[Count]),ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Reference Number Entered (A)" || 'Metrics Data'[Key]="frictionless_login"   || 'Metrics Data'[Key]="Spanish_portal_login"))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 8d7f486e-5372-47b7-bc9f-71c3739b3453
+
+	measure 'Conversion %' = DIVIDE(CALCULATE(SUM('Metrics Data'[Count]),ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Payment Method"),CALCULATE(SUM('Metrics Data'[Count]),ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key]="pin_login_succeeded" || 'Metrics Data'[Key]="frictionless_login" || 'Metrics Data'[Key]="alt_pin_login_succeeded" || 'Metrics Data'[Key]="dob_login_succeeded"  || 'Metrics Data'[Key]="ssn_login_succeeded"   || 'Metrics Data'[Key]="Spanish_portal_login"))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 64081b14-58b6-4e55-af2e-45bb1a51002f
+
+	measure 'Average Payment' =
+			
+			VAR No_of_Payments = CALCULATE(SUM('Metrics Data'[Count]),ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Payment Method")
+			VAR Payment_dollars = CALCULATE(SUM('Metrics Data'[Payments]))
+			RETURN
+			CALCULATE(DIVIDE(Payment_dollars,No_of_Payments))
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 2701e980-33d8-4499-902d-5c3b56ac81e2
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Hits per Active' = CALCULATE(DIVIDE([Hits], [Accounts for single Key]))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: ab22d662-54ce-47d5-8d5a-b52127444cd4
+
+	measure 'Peer Group Average Payment' = CALCULATE([Average Payment], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "Peer Group")
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 8fc5a7a1-6990-474e-bc72-892c191d9515
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Peer Group Conversion %' = CALCULATE([Conversion %], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "Peer Group")
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: f61f64c8-391e-41a4-bc6e-0d943f7882ea
+
+	measure 'Peer Group Hits per Active' = CALCULATE([Hits per Active], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "Peer Group")
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 4de3d02c-a297-4285-9aec-56e65a5ae047
+
+	measure 'Peer Group Login %' = CALCULATE([Login %], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "Peer Group")
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 26cfd1e7-5f72-4524-ab85-daf7b8e7f5ac
+
+	measure 'AXP Average Payment' = CALCULATE([Average Payment], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "AXP")
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 6b53f1d8-32e4-4897-8296-af76353fd56a
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'AXP Conversion %' = CALCULATE([Conversion %], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "AXP")
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 9d72b6c5-fcd1-4893-be77-f738be5a2697
+
+	measure 'AXP Hits per Active' = CALCULATE([Hits per Active], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "AXP")
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 22e1e63d-6835-4f59-983b-f87dfee69e57
+
+	measure 'AXP Login %' = CALCULATE([Login %], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "AXP")
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: b765367d-e239-48e4-a93f-d1d52f3e1a3d
+
+	measure 'Accounts for single Key' = ```
+			CALCULATE(SUM('Metrics Data'[accounts]) 
+			---,ALL('Metrics Data' [key] ),'Metrics Data' [key] = "Reference Number Entered"
+			)
+			```
+		formatString: #,0
+		lineageTag: 832c2e9b-3cb3-42ae-ba82-9e8ebe4d0645
+
+		changedProperty = IsHidden
+
+	measure 'Login2 %' = DIVIDE(CALCULATE(SUM('Metrics Data'[Count]),ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key]="pin_login_succeeded" || 'Metrics Data'[Key]="frictionless_login" || 'Metrics Data'[Key]="alt_pin_login_succeeded"|| 'Metrics Data'[Key]="dob_login_succeeded"  || 'Metrics Data'[Key]="ssn_login_succeeded"   || 'Metrics Data'[Key]="Spanish_portal_login" ),CALCULATE(SUM('Metrics Data'[Count]),ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Reference Number Entered (A)" || 'Metrics Data'[Key]="frictionless_login"   || 'Metrics Data'[Key]="Spanish_portal_login"))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		isHidden
+		lineageTag: a15ee554-7cc1-4d06-86cf-dc2e112aeefc
+
+	measure Hits2 =
+			CALCULATE(SUM('Metrics Data'[Count]),ALL('Metrics Data'[Key (groups)]),
+			---'Metrics Data'[Key (groups)]="Reference Number Entered (A)" )
+			'Metrics Data'[Key (groups)]="Reference Number Entered (A)" || 'Metrics Data'[Key]="frictionless_login" || 'Metrics Data'[Key]="Spanish_portal_login" )
+		formatString: #,0
+		isHidden
+		lineageTag: eeda4b95-2258-44aa-973f-c7df5d08f344
+
+	measure 'Conversion2 %' = DIVIDE(CALCULATE(SUM('Metrics Data'[Count]),ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Payment Method"),CALCULATE(SUM('Metrics Data'[Count]),ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key]="pin_login_succeeded" || 'Metrics Data'[Key]="frictionless_login" || 'Metrics Data'[Key]="alt_pin_login_succeeded" || 'Metrics Data'[Key]="dob_login_succeeded"  || 'Metrics Data'[Key]="ssn_login_succeeded"   || 'Metrics Data'[Key]="Spanish_portal_login"))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		isHidden
+		lineageTag: 2f656820-4522-40f7-8457-799b92e21180
+
+	measure 'AXP Hits' = CALCULATE([Hits], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "AXP")
+		formatString: #,0
+		lineageTag: 31e30894-7378-4211-9217-cfde5c6225e0
+
+	measure 'AXP Accounts for single Key' = CALCULATE([Accounts for single Key], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "AXP")
+		formatString: #,0
+		lineageTag: d8272ada-1ebe-430a-b73e-dc3dfd5ac973
+
+	measure Logins = CALCULATE(SUM('Metrics Data'[Count]),ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key]="pin_login_succeeded" || 'Metrics Data'[Key]="frictionless_login" || 'Metrics Data'[Key]="alt_pin_login_succeeded"|| 'Metrics Data'[Key]="dob_login_succeeded"  || 'Metrics Data'[Key]="ssn_login_succeeded"   || 'Metrics Data'[Key]="Spanish_portal_login")
+		formatString: #,0
+		lineageTag: 1aad88d9-3042-4dd4-8a2c-6d757f9ea7ad
+
+	measure 'AXP Logins' = CALCULATE([Logins], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "AXP")
+		formatString: #,0
+		lineageTag: f3f198d8-f93c-49cd-9faf-4c8fabe2bcff
+
+	measure 'Payment #' = CALCULATE(SUM('Metrics Data'[Count]),ALL('Metrics Data'[Key (groups)]),'Metrics Data'[Key (groups)]="Payment Method")
+		formatString: #,0
+		lineageTag: 9c37fa70-3af2-4a20-9e2d-f71c61fda184
+
+	measure 'AXP Payment #' = CALCULATE([Payment #], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "AXP")
+		formatString: #,0
+		lineageTag: a954cf02-ce05-47f4-8ba1-ced3919613a8
+
+	measure 'AXP Payments $' = CALCULATE(SUM('Metrics Data'[Payments]), ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "AXP")
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 295ab1c7-fc9d-45bf-9080-31ff26d26bf1
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Peer Group Hits' = CALCULATE([Hits], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "Peer Group")
+		formatString: #,0
+		lineageTag: 1f738717-b28b-4f5c-b8fb-3e5bfac65fc6
+
+	measure 'Peer Group Logins' = CALCULATE([Logins], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "Peer Group")
+		formatString: #,0
+		lineageTag: f40e8ef5-8c49-4112-9cf7-e26f8c8f1256
+
+	measure 'Peer Group Payment #' = CALCULATE([Payment #], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "Peer Group")
+		formatString: #,0
+		lineageTag: d3df01fc-f686-4680-ac5b-a286d32081da
+
+	measure 'Peer Group Payments $' = CALCULATE(SUM('Metrics Data'[Payments]), ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "Peer Group")
+		formatString: \$#,0;(\$#,0);\$#,0
+		lineageTag: 4fcb572e-482e-4535-8111-ed8cc5cfe40b
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Peer Group Accounts for single Key' = CALCULATE([Accounts for single Key], ALL('Metrics Data'[peer group]),'Metrics Data'[peer group] = "Peer Group")
+		formatString: #,0
+		lineageTag: fb9f7c6c-fd82-433e-8df6-c266d85267de
+
+	column Key
+		dataType: string
+		isHidden
+		lineageTag: 0ede8201-cb91-4431-be2d-9e8955790a31
+		summarizeBy: none
+		sourceColumn: Key
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation __PBI_SemanticLinks = [{"LinkTarget":{"TableName":"Metrics Data","TableItemName":"Key (groups)","ObjectType":4},"LinkType":"UsedInGroup"}]
+
+	column Payments
+		dataType: double
+		lineageTag: 5fbe25d8-3e6b-4369-945d-6d4ec6a6470b
+		summarizeBy: sum
+		sourceColumn: Payments
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column CRM
+		dataType: string
+		isHidden
+		lineageTag: eee9610b-3d4b-4256-b33b-e907f00e58c0
+		summarizeBy: none
+		sourceColumn: CRM
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStreamId
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(max)
+		lineageTag: 997d3fef-8e77-4ec3-9ccd-a910f610e21b
+		summarizeBy: none
+		sourceColumn: ClientStreamId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStream
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(max)
+		lineageTag: 2041b7cb-cc33-46e0-9cbc-8b8492c5c30f
+		summarizeBy: none
+		sourceColumn: ClientStream
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Key (groups)' =
+			SWITCH(
+			  TRUE,
+			  ISBLANK('Metrics Data'[Key]),
+			  "(Blank)",
+			  'Metrics Data'[Key] IN {"checking_account_used",
+			    "credit_card_used",
+			    "debit_card_used"},
+			  "Payment Method",
+			  'Metrics Data'[Key] IN {"installment_submitted",
+			    "one_time_payment_submitted",
+			    "pay_in_full_submitted",
+			    "settlement_submitted"},
+			  "Payments (C)",
+			  'Metrics Data'[Key] IN {"account_suppressed",
+			    "pin_login_failed",
+			    "pin_login_succeeded"},
+			  "PIN Entered",
+			  'Metrics Data'[Key] IN {"reference_number_locked",
+			    "reference_number_login_failed",
+			    "reference_number_login_succeeded"},
+			  "Reference Number Entered (A)",
+			  'Metrics Data'[Key]
+			)
+		isHidden
+		lineageTag: 088640c4-b0e8-464c-bfeb-4c3b47ad8c24
+		summarizeBy: none
+
+		extendedProperty GroupingMetadata =
+				{
+				  "version": 0,
+				  "groupedColumns": [
+				    {
+				      "Column": {
+				        "Expression": {
+				          "SourceRef": {
+				            "Entity": "Metrics Data"
+				          }
+				        },
+				        "Property": "Key"
+				      }
+				    }
+				  ]
+				}
+
+		annotation GroupingDesignState = {"Version":0,"Sources":[{"Name":"m","Entity":"Metrics Data"}],"GroupedColumns":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"GroupItems":[{"DisplayName":"(Blank)","BlankDefaultPlaceholder":true},{"DisplayName":"Payment Method","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"Values":[[{"Literal":{"Value":"'checking_account_used'"}}],[{"Literal":{"Value":"'credit_card_used'"}}],[{"Literal":{"Value":"'debit_card_used'"}}]]}}},{"DisplayName":"Payments (C)","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"Values":[[{"Literal":{"Value":"'installment_submitted'"}}],[{"Literal":{"Value":"'one_time_payment_submitted'"}}],[{"Literal":{"Value":"'pay_in_full_submitted'"}}],[{"Literal":{"Value":"'settlement_submitted'"}}]]}}},{"DisplayName":"PIN Entered","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"Values":[[{"Literal":{"Value":"'account_suppressed'"}}],[{"Literal":{"Value":"'pin_login_failed'"}}],[{"Literal":{"Value":"'pin_login_succeeded'"}}]]}}},{"DisplayName":"Reference Number Entered (A)","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"Key"}}],"Values":[[{"Literal":{"Value":"'reference_number_locked'"}}],[{"Literal":{"Value":"'reference_number_login_failed'"}}],[{"Literal":{"Value":"'reference_number_login_succeeded'"}}]]}}}]}
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month-Year = FORMAT('Metrics Data'[Month Date],"MMM-YY")
+		lineageTag: f7d9c6cb-f6f3-4f74-aeb9-b7be1ffdfc5b
+		summarizeBy: none
+		sortByColumn: YYYYMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM =
+			
+			VAR YYYY= YEAR('Metrics Data'[Month Date])
+			VAR MM =  FORMAT('Metrics Data'[Month Date],"mm")
+			RETURN
+			YYYY & MM
+		isHidden
+		lineageTag: a5ccd245-c27d-4d16-8434-fff3534b4d38
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Date'
+		dataType: dateTime
+		isHidden
+		isNullable: false
+		formatString: Short Date
+		sourceProviderType: date
+		lineageTag: d0598a96-86cf-4452-8cd4-ee37c423ec56
+		summarizeBy: none
+		sourceColumn: Month Date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Count
+		dataType: int64
+		isHidden
+		isNullable: false
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 9d100e53-6948-442d-bbe0-401d7bbae79d
+		summarizeBy: sum
+		sourceColumn: Count
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientId
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(max)
+		lineageTag: afa22f74-810e-45c7-8caf-8768a79ae804
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientParent
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(max)
+		lineageTag: 60f312b1-1ff4-4fe5-8ff4-14cb44952433
+		summarizeBy: none
+		sourceColumn: ClientParent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation __PBI_SemanticLinks = [{"LinkTarget":{"TableName":"Metrics Data","TableItemName":"Peer Group","ObjectType":4},"LinkType":"UsedInGroup"}]
+
+	column 'Peer Group' =
+			SWITCH(
+			  TRUE,
+			  ISBLANK('Metrics Data'[ClientParent]),
+			  "(Blank)",
+			  'Metrics Data'[ClientParent] IN {"Amex - Other",
+			    "iCollect",
+			    "Legal",
+			    "Lending",
+			    "Recoveries"},
+			  "AXP",
+			  'Metrics Data'[ClientParent] IN {"CapitalOne",
+			    "Citibank",
+			    "Discover",
+			    "US Bank",
+			    "USBank",
+			    "Wells Fargo",
+			    "Wells Fargo Bank"},
+			  "Peer Group",
+			  'Metrics Data'[ClientParent]
+			)
+		isHidden
+		lineageTag: fadcc8d4-5863-40d9-8ce2-45496f9b4708
+		summarizeBy: none
+
+		extendedProperty GroupingMetadata =
+				{
+				  "version": 0,
+				  "groupedColumns": [
+				    {
+				      "Column": {
+				        "Expression": {
+				          "SourceRef": {
+				            "Entity": "Metrics Data"
+				          }
+				        },
+				        "Property": "ClientParent"
+				      }
+				    }
+				  ]
+				}
+
+		annotation GroupingDesignState = {"Version":0,"Sources":[{"Name":"m","Entity":"Metrics Data"}],"GroupedColumns":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"ClientParent"}}],"GroupItems":[{"DisplayName":"(Blank)","BlankDefaultPlaceholder":true},{"DisplayName":"AXP","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"ClientParent"}}],"Values":[[{"Literal":{"Value":"'Amex - Other'"}}],[{"Literal":{"Value":"'iCollect'"}}],[{"Literal":{"Value":"'Legal'"}}],[{"Literal":{"Value":"'Lending'"}}],[{"Literal":{"Value":"'Recoveries'"}}]]}}},{"DisplayName":"Peer Group","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"m"}},"Property":"ClientParent"}}],"Values":[[{"Literal":{"Value":"'CapitalOne'"}}],[{"Literal":{"Value":"'Citibank'"}}],[{"Literal":{"Value":"'Discover'"}}],[{"Literal":{"Value":"'US Bank'"}}],[{"Literal":{"Value":"'USBank'"}}],[{"Literal":{"Value":"'Wells Fargo'"}}],[{"Literal":{"Value":"'Wells Fargo Bank'"}}]]}}}]}
+
+		annotation SummarizationSetBy = Automatic
+
+	column accounts
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: cae37559-4736-414e-a8d5-e644e1f39861
+		summarizeBy: sum
+		sourceColumn: accounts
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	partition 'Metrics Data-cd4993cf-c498-47de-9782-f20467c47889' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Databases("dfw2-bisql-001"),
+				    DW_MSTR_DM = Source{[Name="DW_MSTR_DM"]}[Data],
+				    dbo_Web_Waterfall_Metrics_Data = DW_MSTR_DM{[Schema="dbo",Item="Web_Waterfall_Metrics_Data_Client"]}[Data],
+				    #"Filtered IP address" = Table.SelectRows(dbo_Web_Waterfall_Metrics_Data, each [IpAddress] <> "100.34.69.218"),
+				    #"Filtered Key" = Table.SelectRows(#"Filtered IP address", each [Key] = "account_suppressed" or [Key] = "checking_account_used" or [Key] = "credit_card_used" or [Key] = "debit_card_used" or [Key] = "installment_submitted" or [Key] = "one_time_payment_submitted" or [Key] = "pay_in_full_submitted" or [Key] = "pin_login_failed" or [Key] = "pin_login_succeeded" or [Key] = "reference_number_locked" or [Key] = "reference_number_login_failed" or [Key] = "reference_number_login_succeeded" or [Key] = "settlement_submitted" or [Key] = "frictionless_login" or [Key] = "alt_pin_login_succeeded" or [Key] = "Spanish_portal_login" or [Key] = "dob_login_succeeded" or [Key] = "ssn_login_succeeded"),
+				    #"Add a Duplicate Column ReferenceNumber" = Table.DuplicateColumn(#"Filtered Key", "ReferenceNumber", "ReferenceNumber - Copy"),
+				    #"Split Column Ref No. copy 1 by Delimiter" = Table.SplitColumn(#"Add a Duplicate Column ReferenceNumber", "ReferenceNumber - Copy", Splitter.SplitTextByDelimiter("-", QuoteStyle.Csv), {"ReferenceNumber - Copy.1", "ReferenceNumber - Copy.2"}),
+				    #"Data Type to Numeric - Ref No. copy1" = Table.TransformColumnTypes(#"Split Column Ref No. copy 1 by Delimiter",{{"ReferenceNumber - Copy.1", Int64.Type}}),
+				    #"Replaced Value F to blank from Ref No. Copy 2" = Table.ReplaceValue(#"Data Type to Numeric - Ref No. copy1","F","",Replacer.ReplaceText,{"ReferenceNumber - Copy.2"}),
+				    #"Replaced Value small f to blank from Ref No. Copy 2" = Table.ReplaceValue(#"Replaced Value F to blank from Ref No. Copy 2","f","",Replacer.ReplaceText,{"ReferenceNumber - Copy.2"}),
+				    #"Rename Column Ref No. copy 2 to CustomerId" = Table.RenameColumns(#"Replaced Value small f to blank from Ref No. Copy 2",{{"ReferenceNumber - Copy.2", "CustomerId"}}),
+				    #"Rename Column Ref No. copy 1 to Reference Code" = Table.RenameColumns(#"Rename Column Ref No. copy 2 to CustomerId",{{"ReferenceNumber - Copy.1", "Reference Code"}}),
+				    #"Added Conditional Column CRM" = Table.AddColumn(#"Rename Column Ref No. copy 1 to Reference Code", "CRM", each if [Reference Code] = 2 then "Medprod Artiva" else if [Reference Code] = 3 then "Thirdprod Artiva" else if [Reference Code] = 4 then "AMEX Latitude" else if [Reference Code] = 5 then "FACS" else if [Reference Code] = 6 then "FACS" else "Unknown"),
+				    #"Data Type to Date - CapturedOn" = Table.TransformColumnTypes(#"Added Conditional Column CRM",{{"CapturedOn", type date}}),
+				    #"Added Conditional Column Client" = Table.AddColumn(#"Data Type to Date - CapturedOn", "Client", each if Text.StartsWith([ClientParent], "PRT") then "Envision" else if [ClientParent] = null then null else if Text.StartsWith([ClientParent], "ALLY") then "ALLY" else [ClientParent]),
+				    #"Inserted Start of Month" = Table.AddColumn(#"Added Conditional Column Client", "Start of Month", each Date.StartOfMonth([CapturedOn]), type date),
+				    #"Renamed Start of Month to Month Date" = Table.RenameColumns(#"Inserted Start of Month",{{"Start of Month", "Month Date"}}),
+				    #"Grouped Rows" = Table.Group(#"Renamed Start of Month to Month Date", {"CRM", "ClientId", "Month Date", "Key"}, {{"Count", each Table.RowCount(_), Int64.Type}, {"Payments", each List.Sum([Payments]), type nullable number}}),
+				    #"Left Join ClientMapping" = Table.NestedJoin(#"Grouped Rows", {"ClientId", "CRM"}, ClientMapping, {"ClientId", "SourceSystem"}, "ClientMapping", JoinKind.LeftOuter),
+				    #"Expanded ClientMapping - ClientParent, ClientStreamId, ClientStream" = Table.ExpandTableColumn(#"Left Join ClientMapping", "ClientMapping", {"ClientParent", "ClientStreamId", "ClientStream"}, {"ClientParent", "ClientStreamId", "ClientStream"}),
+				    #"Left Join RPT_Active_Inv_Performance" = Table.NestedJoin(#"Expanded ClientMapping - ClientParent, ClientStreamId, ClientStream", {"ClientId", "CRM", "Month Date", "Key"}, RPT_Active_Inv_Performance, {"ClientId", "CRM", "rpt_month", "Pseudo_Key"}, "RPT_Active_Inv_Performance", JoinKind.LeftOuter),
+				    #"Expanded RPT_Active_Inv_Performance - accounts" = Table.ExpandTableColumn(#"Left Join RPT_Active_Inv_Performance", "RPT_Active_Inv_Performance", {"accounts"}, {"accounts"})
+				in
+				    #"Expanded RPT_Active_Inv_Performance - accounts"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

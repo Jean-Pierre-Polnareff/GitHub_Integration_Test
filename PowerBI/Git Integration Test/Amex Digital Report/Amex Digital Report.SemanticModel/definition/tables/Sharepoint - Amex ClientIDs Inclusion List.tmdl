@@ -1,0 +1,50 @@
+table 'Sharepoint - Amex ClientIDs Inclusion List'
+	lineageTag: 05180148-3a23-4924-a7f0-06404fefd30d
+
+	measure CommaSeparatedList =
+			"**Client IDs included into data: " &
+			CONCATENATEX (
+			    VALUES ( 'Sharepoint - Amex ClientIDs Inclusion List'[LP] ),  -- Get distinct values
+			    'Sharepoint - Amex ClientIDs Inclusion List'[LP],             -- Column to concatenate
+			    ", ",                            -- Separator
+			    'Sharepoint - Amex ClientIDs Inclusion List'[LP],              -- Optional: Order by column
+			    ASC
+			)
+			& "."
+		lineageTag: 45003122-da65-4d84-8235-b6d98a3d8213
+
+	column LP
+		dataType: string
+		lineageTag: 505c4621-fd61-4305-8aca-b7acab60e472
+		summarizeBy: none
+		sourceColumn: LP
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segment
+		dataType: string
+		lineageTag: 287aef2c-b5e2-43fe-ba49-4715217016b0
+		summarizeBy: none
+		sourceColumn: Segment
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Sharepoint - Amex ClientIDs Inclusion List' = m
+		mode: import
+		source =
+				let
+				    Source = SharePoint.Contents("https://radiusgs.sharepoint.com/sites/analytics/", [ApiVersion = 15]),
+				    #"Shared Documents" = Source{[Name="Shared Documents"]}[Content],
+				    projects = #"Shared Documents"{[Name="projects"]}[Content],
+				    reporting = projects{[Name="reporting"]}[Content],
+				    #"Amex Digital Report" = reporting{[Name="Amex Digital Report"]}[Content],
+				    #"Amex Client Codes to be included into Amex Digital report xlsx" = #"Amex Digital Report"{[Name="Amex Client Codes to be included into Amex Digital report.xlsx"]}[Content],
+				    #"Imported Excel Workbook" = Excel.Workbook(#"Amex Client Codes to be included into Amex Digital report xlsx"),
+				    Table1_Table = #"Imported Excel Workbook"{[Item="Table1",Kind="Table"]}[Data]
+				in
+				    Table1_Table
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

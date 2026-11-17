@@ -1,0 +1,36 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["EmailRPT_MonthClientLetter","Definitions","RangeStart","RangeEnd","ClientMapping","Letter Code Mapping","Metrics Data","DimCustomerProduct","RPT_Active_Inv_Performance","EmailRPT_MonthClientLetter (2)","Amex Letter Description","RPT_client_Amex_SMS_V2","DimClient","SMS_Hour_CT - Time Slot","vw_Amex_ClientCodes_LookupTable","DimDate","RPT_payment_detail","Web_Waterfall_Visits_by_Source","Collection Start Date","Collection End Date","Sharepoint - Amex ClientIDs Inclusion List"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table EmailRPT_MonthClientLetter
+ref table 'Select Top N Clients'
+ref table Definitions
+ref table ClientMapping
+ref table 'Letter Code Mapping'
+ref table 'Metrics Data'
+ref table DimCustomerProduct
+ref table RPT_Active_Inv_Performance
+ref table 'EmailRPT_MonthClientLetter (2)'
+ref table 'Amex Letter Description'
+ref table RPT_client_Amex_SMS_V2
+ref table DimClient
+ref table 'SMS_Hour_CT - Time Slot'
+ref table vw_Amex_ClientCodes_LookupTable
+ref table DimDate
+ref table RPT_payment_detail
+ref table Web_Waterfall_Visits_by_Source
+ref table Parameter
+ref table 'Sharepoint - Amex ClientIDs Inclusion List'
+
+ref cultureInfo en-US
+

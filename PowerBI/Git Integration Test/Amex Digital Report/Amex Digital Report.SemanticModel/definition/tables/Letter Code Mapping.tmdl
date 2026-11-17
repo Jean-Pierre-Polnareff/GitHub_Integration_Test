@@ -1,0 +1,82 @@
+table 'Letter Code Mapping'
+	isHidden
+	lineageTag: 1844f924-564f-40ed-a55c-9eb3f34ccc5b
+
+	column 'EMAIL CODE'
+		dataType: string
+		isHidden
+		lineageTag: ec8e7bbc-f587-44fc-a405-0599788fc067
+		summarizeBy: none
+		sourceColumn: EMAIL CODE
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)'
+		dataType: string
+		isHidden
+		lineageTag: 26d17eb1-75c1-4796-965b-08b98939da66
+		summarizeBy: none
+		sourceColumn: EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'EMAIL HEADER / SUBJECT LINE'
+		dataType: string
+		isHidden
+		lineageTag: 2cf67114-74cb-43a2-8e81-a58380d4e89a
+		summarizeBy: none
+		sourceColumn: EMAIL HEADER / SUBJECT LINE
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Client
+		dataType: string
+		isHidden
+		lineageTag: 18828e18-0915-4302-aed5-1076565b951b
+		summarizeBy: none
+		sourceColumn: Client
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		isHidden
+		lineageTag: afec3611-27e9-44e7-9699-6b523e27f421
+		summarizeBy: none
+		sourceColumn: Description
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Old/New Design'
+		dataType: string
+		lineageTag: 4bd612b7-839c-4763-94ba-b8a57d2c2327
+		summarizeBy: none
+		sourceColumn: Old/New Design
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Letter Code Mapping-f1b0d867-ad34-409d-a6af-d5018e039df2' = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("tVvbUuM4EP0VDc+zU76FhHmZyoTLQAGZIjDs1Ow8KI4gKmzLJTsJ2af9jf29/ZKV7CTYkp22sfIABPA5uvVRq1vtX7+ORjeWZR99PLo8vUa3DE0uz8Uv6DKMGU9xlKJhSDj1cYTOXmNOkgQNfZ8txD8uoyfGQ5xSFiEBUZ8Tfzr6/VHyu5YjfpkQvqQ+kU+ic05JNAvW6I6ENJoR/mE/g+fIHo6fngiXP2PZt0VE0zVKmeB4xjRCI8xn6IaEU8KTOY1BRqvAWDvG7IFkL9OV2ysw3ZElJSu0ZguObsWHcSznB+iMZVsZNJ8L8fGaPhE0x3FMogTE2mXsI0GYCzQR38TszEkAzYVlO2WKUzqTI0AvEVt9gbBuGftNtIdogvyAJYSjdC5Qkiud0+jlA8DllblGc+K/ILZI8/lk2VwmEEmvTDKJOY2eEY3EZGA/Ww2A4LhM8FP0fkbEYJZiZtGUEwyOo19muCPYn+djEE+yYJFpZkXTzR9T/Cr+8bSIZhDxoEx8tQjjJMU8FdNL0Jpg/i7WkzLrPV8jSUB89sfTVqnbbgNcjmrJJP3vn38TlOBs9lJOCMSg2bMgEOAQzwiiKSI4WUMUij0/JESdEoTFV7zIJy7GSYqmRFhoZvcQu6vZR97DZ5bubBRQjaNY+sZI/YDgSH5IxCihufasQdeNx3OPu1P0O1N4TncKrztF533c89zuFN1XxDOwIkV/+0MS7HeRANvAKNuJSbaeZZTNNcrmGWUr2vcQRYKOyd/kKSFzS8vNLqk1gvNGPgH8x0Z72zfKZtQCe0ULBM6OgNCOWxxDISrbHJVjjso1R+WZo+qZozo2R9U3RzUwR2XM2i1HOWk+MvlBHniGU3nM/ym3n9xDJV/2U7nKMfGbjHeG4qvIAZ3klHP6Bi4iSjxbA+07ylH8Hr8QdC8Ok7fkNUWTlMRQ40qcIuK2kXgwi59kJx45jgWhCKUeQColYrlM/1pYYnRiddCFiFdSdE550qRXbpYKeAvVRace2SKYoWv6koWTu+7dbTxGNt1bIwC4ewfj9izrgNxFLRlldnqHYnb76GDUg4NRWzY6oPmdIE1xxtgtVwl8T9kuhSI/5BHiJjpEeIlpgKcB2c+Z5c1KeTmTXb4qpcDaMQNzocTfJpOJVkmNZplPDsZcPCPIvdn18++FpCW6xSHJ/rr5/nFzGr85+3N7AkdznKApIZHMYhDOySxLgOIZXSToImBTHKDJJlGzP2tpWf0DDfZMccz3cxy9wGmVM8Vm8qwKl3mfF3lAeGZshmLOniUMoKpM0AgqHIQsyVI+HMhCnXmlfWiX4glpkohJxyjG65BEKcBSdnjDLSpbRk7SBY8IkJw7O1Y2xLwfnPiELsksN5FmnVEOO983fcGc4+iZZJ/5Nh2/n2mg90nM7grTVK5UlnTGHE2xDyVKXSUNdk1S9JDsth4IrazzaM5YstmnvhKx0M1Oga56KCXom8xWPs5xdiIVJzpolSzP0jh+4GBBmoxiUN38TscQvl+NPw/IKxUupuks9LSl2B4iL8SqjCN0z+EF9RytM7pXgXpyrHFsD8ZQ6/pVyKPc1O7fvNn+HIZtKeu4/fgZfRfRDYtwQP8WqmN5sCN2xC4ZE9sqRuwm92DbKgbwzR2O4GLly7VnkhbcUIaWuoYG1iLoB5haxPwAU4uQH2BqEfEDTC0CfoCpRbwPMLUI9/cz2aauWG27RWoLYGqR2QKYjNm47SFkjMuYldvGrNzumxueMTO3T4x1ylgpge0Ys3PHMTc8Y4bueOY6ZczOHWN27hjbzR1jZu4Y281dY1buGruosF1j27lr7J7Cdo3dU9iusXsK2zV2T2G7h8od2O5hkjsDp3TUbp9FG+GYpjgYR+SN0i7OwkSGXLdsVfNsSdCyNRkoy/wgTdBKxpkrgmasrqXSHVrWElvKe1sakhpEvyh7ObA5fks/VmMGauyDwDqgShYlBqspAKqEasFjdeVPJVbJBZQq6OowSvahVMhTiJorsfrtjVZ1VwdV4ttitV0tRgnywSq7ShIl01BfXleFVusMa8riqqxRufjJM4ICXycst/T490AsPEF5IUtdC+U0mSwJ5TOpsUzId8SX2a17jqMkLwGsa7kom3MWBGyFHmKZPxi/0YxYGIr42Mf1RCdqQWdVyatBGS5xwNfv0KCKayxAFQiqTwU0lp4KbKo7FQeKTgW0V5zK0EJuCrSx1sq498mgxOE4pdzNezylwrfXFVUiBt3uW7VZgXtAUzoVe1KbTiuQd+lW52goXB3YVLk6EpKujmiqXR3ZULw6EFKvjmgtX52iuX41bFMBq8C9rlJ/+B1y10xdbVHWsQzRNWMvlY+3OMlq2D3n2GpA153AgEgvcIBf2/tWDdZQoBoOkKf2fENxarhm0tRggDC159vKUiNoLEoV2VCSZVgDT6ACOvpPla6jBFQ6QILadLfWizjL3mAatRaMjmuoGB0ISEYHNNSMDmwmGh0HqEYHtJWNztBYNyrUyWwgq0Iav1UhrTIzDDZmKEeadYAX68jxrlZI4wRCPPV5t192UsWXGrbGPlmEIebrTzq8syY1PnBT0BDN3abeefPz/x4/yIJZKMxsgv15ctTaHdagm3rFGjjkHGtgTX1kDRzyeTWw1q6viqe7f6lmhfxCNaq5VdcQwN61CjcaFl5ZHht9ZXks5vKUJPQ5ylv6WtHSrqHPm9mtqf7IZkG+jonFQWOaIp8FAfFTxmuqJ+TrWcW2hwZfe9bGVebeeC4uX1SVaygdQ9b17RZQKHbZX9tSMYjOF0cVnS9yXhPMIxQyWeGXvUYwZytpeZJE7oyfauZE62rHwtWmFqW28vjW1U4vYqnjubk6WH35ldvtPqWS+ff/", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#"EMAIL CODE" = _t, #"EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)" = _t, #"EMAIL HEADER / SUBJECT LINE" = _t, Client = _t, #"Old/New Design" = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"EMAIL CODE", type text}, {"EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)", type text}, {"EMAIL HEADER / SUBJECT LINE", type text}, {"Client", type text}}),
+				    #"Merged Queries" = Table.NestedJoin(#"Changed Type", {"EMAIL CODE"}, #"Amex Letter Description", {"Letter Code"}, "Amex Letter Description", JoinKind.LeftOuter),
+				    #"Expanded Amex Letter Description" = Table.ExpandTableColumn(#"Merged Queries", "Amex Letter Description", {"Description"}, {"Description"})
+				in
+				    #"Expanded Amex Letter Description"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

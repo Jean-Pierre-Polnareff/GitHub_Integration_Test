@@ -1,0 +1,259 @@
+table Web_Waterfall_Visits_by_Source
+	isHidden
+	lineageTag: 134740a0-a666-426d-a969-126c2c9dadc6
+
+	measure Email =
+			
+			VAR Email_Pay =
+			CALCULATE(
+			    SUM(Web_Waterfall_Visits_by_Source[Payments]),
+			    Web_Waterfall_Visits_by_Source[Campaign] = "Email"
+			)
+			RETURN
+			DIVIDE(Email_Pay,1000)
+		formatString: \$#,0.0;(\$#,0.0);\$#,0.0
+		isHidden
+		lineageTag: 331cb034-5095-445c-afde-9a2a4c738625
+
+		changedProperty = IsHidden
+
+	measure Portal = ```
+			
+			VAR Generic_Pay = 
+			CALCULATE( 
+			
+			    SUM(Web_Waterfall_Visits_by_Source[Payments]),
+			    Web_Waterfall_Visits_by_Source[Campaign] = "Generic"
+			    
+			)
+			RETURN
+			DIVIDE (Generic_Pay,1000)    
+			```
+		formatString: \$#,0.0;(\$#,0.0);\$#,0.0
+		isHidden
+		lineageTag: 36ed31f6-2e9c-4b00-a6aa-27d459963cfc
+
+		changedProperty = IsHidden
+
+	measure Total = CALCULATE(DIVIDE(SUM(RPT_payment_detail[total_collections]),1000))
+		formatString: \$#,0.0;(\$#,0.0);\$#,0.0
+		isHidden
+		lineageTag: 63e1cb37-d1ca-4d01-9bdd-3e09b33d2887
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column CapturedDate
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: b3f1c410-f7f7-4965-8c01-54bd43cc4e68
+		summarizeBy: none
+		sourceColumn: CapturedDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column KeySourceSystem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 26b5fa85-c635-45d7-aa54-f759c4bf4a7f
+		summarizeBy: sum
+		sourceColumn: KeySourceSystem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientId
+		dataType: string
+		isHidden
+		lineageTag: 9b0a304e-d3eb-49e6-bd9e-0ac1747b1cf0
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Campaign
+		dataType: string
+		isHidden
+		lineageTag: d4103814-ea97-40b0-adae-f4622a29e127
+		summarizeBy: none
+		sourceColumn: Campaign
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Sessions_or_Visits
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 017594c0-235f-4214-932c-db3ceb84344e
+		summarizeBy: sum
+		sourceColumn: Sessions_or_Visits
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Payments
+		dataType: double
+		isHidden
+		lineageTag: f6a5745d-b4a9-4f8d-abb3-75b7efab2cf1
+		summarizeBy: sum
+		sourceColumn: Payments
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Campaign_Order
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 1e58839f-4081-4a02-aa3e-f159c3a421e1
+		summarizeBy: sum
+		sourceColumn: Campaign_Order
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CRM
+		dataType: string
+		isHidden
+		lineageTag: 42fb93fc-c9df-4615-82a1-e4b6bfddfb60
+		summarizeBy: none
+		sourceColumn: CRM
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientParent
+		dataType: string
+		isHidden
+		lineageTag: 35bc66ac-62fe-4e86-abdd-618d107c2284
+		summarizeBy: none
+		sourceColumn: ClientParent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStreamId
+		dataType: string
+		isHidden
+		lineageTag: 98cefa9c-48a4-4214-9956-789f0dc7184d
+		summarizeBy: none
+		sourceColumn: ClientStreamId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStream
+		dataType: string
+		isHidden
+		lineageTag: 074f4edb-ca9a-4e9b-be32-f10114b7cc98
+		summarizeBy: none
+		sourceColumn: ClientStream
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Logins
+		dataType: int64
+		formatString: 0
+		lineageTag: 1c7ecb19-64db-4cb4-a71f-8324c819343b
+		summarizeBy: sum
+		sourceColumn: Logins
+
+		annotation SummarizationSetBy = Automatic
+
+	column Logins_Failed
+		dataType: int64
+		formatString: 0
+		lineageTag: 4f2cd3d7-35f4-43e6-9f70-5850db641089
+		summarizeBy: sum
+		sourceColumn: Logins_Failed
+
+		annotation SummarizationSetBy = Automatic
+
+	column Payment_Succeed
+		dataType: int64
+		formatString: 0
+		lineageTag: fcfc2b6a-29e2-4f4f-b643-948f31dfcf45
+		summarizeBy: sum
+		sourceColumn: Payment_Succeed
+
+		annotation SummarizationSetBy = Automatic
+
+	column Payment_Processing
+		dataType: int64
+		formatString: 0
+		lineageTag: 83cf4b1c-0bd1-470d-bed7-6c40e546e9e8
+		summarizeBy: sum
+		sourceColumn: Payment_Processing
+
+		annotation SummarizationSetBy = Automatic
+
+	column LP
+		dataType: string
+		lineageTag: 88ce1549-06de-47c8-952b-de8fb1d2caf9
+		summarizeBy: none
+		sourceColumn: LP
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segment
+		dataType: string
+		lineageTag: 2a6a1300-f2a3-45d2-8966-2d23e3c8d387
+		summarizeBy: none
+		sourceColumn: Segment
+
+		annotation SummarizationSetBy = Automatic
+
+	column Custom
+		dataType: string
+		lineageTag: f24795ae-e795-4204-a0ae-34517f0484da
+		summarizeBy: none
+		sourceColumn: Custom
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Web_Waterfall_Visits_by_Source = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("DFW2-BISQL-001", "CLIENT_ANALYTICS"),
+				    dbo_Web_Waterfall_Visits_by_Source = Source{[Schema="dbo",Item="Web_Waterfall_Visits_by_Source"]}[Data],
+				    #"Changed Type" = Table.TransformColumnTypes(dbo_Web_Waterfall_Visits_by_Source,{{"CapturedDate", type date}}),
+				    #"Filtered Rows" = Table.SelectRows(#"Changed Type", each [CapturedDate] >= #"Collection Start Date" and [CapturedDate] <= #"Collection End Date"),
+				    #"Added Conditional Column" = Table.AddColumn(#"Filtered Rows", "CRM", each if [KeySourceSystem] = 3 then "AMEX Latitude" else if [KeySourceSystem] = 2 then "Thirdprod Artiva" else if [KeySourceSystem] = 1 then "Medprod Artiva" else if [KeySourceSystem] = 4 then "FACS" else "Other"),
+				    #"Merged Queries" = Table.NestedJoin(#"Added Conditional Column", {"CRM", "ClientId"}, ClientMapping, {"SourceSystem", "ClientId"}, "ClientMapping", JoinKind.LeftOuter),
+				    #"Expanded ClientMapping" = Table.ExpandTableColumn(#"Merged Queries", "ClientMapping", {"ClientParent", "ClientStreamId", "ClientStream"}, {"ClientParent", "ClientStreamId", "ClientStream"}),
+				    #"Merged Queries1" = Table.NestedJoin(#"Expanded ClientMapping", {"ClientId"}, #"Sharepoint - Amex ClientIDs Inclusion List", {"LP"}, "Query1", JoinKind.LeftOuter),
+				    #"Expanded Sharepoint - Amex 1st Party ClientIDs Exclusion List" = Table.ExpandTableColumn(#"Merged Queries1", "Query1", {"LP", "Segment"}, {"LP", "Segment"}),
+				    #"Added Custom" = Table.AddColumn(#"Expanded Sharepoint - Amex 1st Party ClientIDs Exclusion List", "Custom", each if( [KeySourceSystem] = 3 and [LP] <> null ) or [KeySourceSystem] <>3 then 1 else 0),
+				    #"Filtered Rows1" = Table.SelectRows(#"Added Custom", each ([Custom] = 1))
+				in
+				    #"Filtered Rows1"
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

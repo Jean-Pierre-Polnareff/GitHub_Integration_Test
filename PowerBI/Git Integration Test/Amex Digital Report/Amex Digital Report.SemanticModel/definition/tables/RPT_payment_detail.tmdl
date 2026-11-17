@@ -1,0 +1,156 @@
+table RPT_payment_detail
+	isHidden
+	lineageTag: 551d2220-b289-4db4-a825-4fd5f4848fa4
+
+	column crm
+		dataType: string
+		isHidden
+		lineageTag: 04d262bd-925a-4683-b18f-034d52981e88
+		summarizeBy: none
+		sourceColumn: crm
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column pymt_date
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 2cd8f9bc-a3c1-450b-be3a-ff2972ba967e
+		summarizeBy: none
+		sourceColumn: pymt_date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column client_parent
+		dataType: string
+		isHidden
+		lineageTag: 4f294946-ce47-44c3-a379-27aa9c2539f6
+		summarizeBy: none
+		sourceColumn: client_parent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Client_Stream
+		dataType: string
+		isHidden
+		lineageTag: 1f84d277-b1fa-41d1-98dd-999c3f92c08c
+		summarizeBy: none
+		sourceColumn: Client_Stream
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CLIENT_ID
+		dataType: string
+		isHidden
+		lineageTag: d4b5252f-a798-4e26-8783-c2d810d49ce8
+		summarizeBy: none
+		sourceColumn: CLIENT_ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column total_collections
+		dataType: double
+		isHidden
+		lineageTag: b7400d40-5d44-496c-a581-b7322eb96f6c
+		summarizeBy: sum
+		sourceColumn: total_collections
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ClientParent
+		dataType: string
+		isHidden
+		lineageTag: 4c8ecf79-4153-48ba-9a17-49d402d57965
+		summarizeBy: none
+		sourceColumn: ClientParent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStreamId
+		dataType: string
+		isHidden
+		lineageTag: 6e5ab51d-7370-4ef8-a3a4-7d8a634d02ea
+		summarizeBy: none
+		sourceColumn: ClientStreamId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStream
+		dataType: string
+		isHidden
+		lineageTag: cc925d82-9d39-4f90-b6cc-fc8cf3031be6
+		summarizeBy: none
+		sourceColumn: ClientStream
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column LP
+		dataType: string
+		lineageTag: 4d4d72b7-6a95-4ed2-87bb-6da557002668
+		summarizeBy: none
+		sourceColumn: LP
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segment
+		dataType: string
+		lineageTag: 50794625-c2db-402a-9e23-e813ee2b18dd
+		summarizeBy: none
+		sourceColumn: Segment
+
+		annotation SummarizationSetBy = Automatic
+
+	column Custom
+		dataType: string
+		lineageTag: bac9cebd-483f-4daf-8122-375ac04e06c9
+		summarizeBy: none
+		sourceColumn: Custom
+
+		annotation SummarizationSetBy = Automatic
+
+	partition RPT_payment_detail = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("DFW2-BISQL-001", "CLIENT_ANALYTICS"),
+				    dbo_RPT_payment_detail = Source{[Schema="dbo",Item="RPT_payment_detail"]}[Data],
+				    #"Changed Type" = Table.TransformColumnTypes(dbo_RPT_payment_detail,{{"pymt_date", type date}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"CUSTOMER_ID", "CUSTOMER_STATE", "PaperType", "Vertical", "PaperSource", "Location_Worked", "CLIENT_DESC", "CREDITED_EMPLOYEE_ID", "DEPARTMENT_ID", "JOB_CODE", "DESK", "PYMT_TYPE", "PYMT_TYPE_DSCR", "ChargeOffAge", "ListAgeAtPymt", "CHARGE_OFF_DATE", "LIST_DATE", "first_payment_flag", "total_fees", "usb_account_num", "usb_client_id", "usb_cust_type", "usb_pprtfolio_id", "usb_owner_id", "total_payments"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Removed Columns", each [pymt_date] >= #"Collection Start Date" and [pymt_date] <= #"Collection End Date"),
+				    #"Merged Queries" = Table.NestedJoin(#"Filtered Rows", {"CLIENT_ID", "crm"}, ClientMapping, {"ClientId", "SourceSystem"}, "ClientMapping", JoinKind.LeftOuter),
+				    #"Expanded ClientMapping" = Table.ExpandTableColumn(#"Merged Queries", "ClientMapping", {"ClientParent", "ClientStreamId", "ClientStream"}, {"ClientParent", "ClientStreamId", "ClientStream"}),
+				    #"Merged Queries1" = Table.NestedJoin(#"Expanded ClientMapping", {"CLIENT_ID"}, #"Sharepoint - Amex ClientIDs Inclusion List", {"LP"}, "Query1", JoinKind.LeftOuter),
+				    #"Expanded Sharepoint - Amex 1st Party ClientIDs Exclusion List" = Table.ExpandTableColumn(#"Merged Queries1", "Query1", {"LP", "Segment"}, {"LP", "Segment"}),
+				    #"Added Custom" = Table.AddColumn(#"Expanded Sharepoint - Amex 1st Party ClientIDs Exclusion List", "Custom", each if( [crm] = "AMEX Latitude" and [LP] <> null ) or [crm] <> "AMEX Latitude" then 1 else 0),
+				    #"Filtered Rows1" = Table.SelectRows(#"Added Custom", each ([Custom] = 0))
+				in
+				    #"Filtered Rows1"
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

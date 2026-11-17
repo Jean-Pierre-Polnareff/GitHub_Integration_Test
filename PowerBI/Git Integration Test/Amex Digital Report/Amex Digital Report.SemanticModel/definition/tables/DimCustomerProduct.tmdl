@@ -1,0 +1,71 @@
+table DimCustomerProduct
+	isHidden
+	lineageTag: 29e86dc1-696c-4fda-9829-9b141c27114a
+
+	column CustomerId
+		dataType: string
+		isHidden
+		lineageTag: 42de8076-01d4-4c24-922a-aeaf8d52589b
+		summarizeBy: none
+		sourceColumn: CustomerId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SourceSystem
+		dataType: string
+		isHidden
+		lineageTag: f7119514-83c8-4b13-b10c-09466d9178d0
+		summarizeBy: none
+		sourceColumn: SourceSystem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Clientid
+		dataType: string
+		isHidden
+		lineageTag: b889fb35-85f6-4258-928a-52fba413be66
+		summarizeBy: none
+		sourceColumn: Clientid
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductType
+		dataType: string
+		isHidden
+		lineageTag: c478014c-7dc9-40dd-ac34-541e6f1368e5
+		summarizeBy: none
+		sourceColumn: ProductType
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Product
+		dataType: string
+		isHidden
+		lineageTag: 99c7a021-518c-44a6-83ae-afcf6b4cbd3d
+		summarizeBy: none
+		sourceColumn: Product
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimCustomerProduct-9d2b85ef-351c-46f6-9f44-dcb95feb26a5 = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("DFW2-BISQL-001", "DW_MSTR_DM", [Query="SELECT #(lf)   CAST(a.CustomerId AS VARCHAR (10)) AS CustomerId#(lf)  , CASE WHEN a.KeySourceSystem = 1 THEN 'MedProd Artiva'#(lf)  WHEN a.KeySourceSystem = 2 THEN 'ThirdProd Artiva'#(lf)  WHEN a.KeySourceSystem = 3 THEN 'AMEX Latitude'#(lf)  WHEN a.KeySourceSystem = 4 THEN 'FACS'#(lf)  ELSE 'Unknown' #(lf)  END AS SourceSystem#(lf)  ,a.Clientid#(lf)  ,a.ProductType#(lf)  ,b.Product#(lf)  FROM [DW_MSTR_DM].[dbo].[DimCustomerProduct] (NOLOCK) a#(lf)  LEFT JOIN#(lf)  [CLIENT_ANALYTICS].[dbo].[RPT_Amex_ProductType-Product_Mapping] (NOLOCK) b#(lf)  ON a.ProductType = b.ProductType"])
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

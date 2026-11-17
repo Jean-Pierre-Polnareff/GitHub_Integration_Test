@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Amex Digital Report"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "aadec78c-f112-4b3e-a579-1c0e211c0317"
+  }
+}

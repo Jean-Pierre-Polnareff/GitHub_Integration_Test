@@ -1,0 +1,51 @@
+table Parameter
+	isHidden
+	lineageTag: 69254feb-5f27-4d6b-aa3d-b19ba1ba0b4a
+
+	column Parameter
+		isHidden
+		lineageTag: d6d1ef67-9cab-443d-989c-165c6473b66f
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parameter Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Parameter Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parameter Fields'
+		isHidden
+		lineageTag: 7a4d2bc4-4797-488f-bd4f-e3300a690249
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parameter Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parameter Order'
+		isHidden
+		formatString: 0
+		lineageTag: 3e453337-3d51-421f-826c-f00fe7038391
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Parameter = calculated
+		mode: import
+		source =
+				{
+				    ("Total", NAMEOF('Web_Waterfall_Visits_by_Source'[Total]), 0),
+				    ("Email", NAMEOF('Web_Waterfall_Visits_by_Source'[Email]), 1),
+				    ("Portal", NAMEOF('Web_Waterfall_Visits_by_Source'[Portal]), 2)
+				}
+
+	annotation PBI_Id = 2129b7f243fc4d52a42898d93e0b7342
+

@@ -1,0 +1,303 @@
+table DimDate
+	isHidden
+	lineageTag: 77b34ca1-5561-4dd1-b213-9b73bcfdcc26
+
+	column KeyDate
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 97936483-8953-4252-a5e0-b98335f866c1
+		summarizeBy: sum
+		sourceColumn: KeyDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CalendarDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 8797e889-f984-474e-bd7b-d578de54571f
+		summarizeBy: none
+		sourceColumn: CalendarDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WeekId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 522215f8-3919-43a8-9ec3-14ab7cc7734c
+		summarizeBy: count
+		sourceColumn: WeekId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 18c31b7e-6c6d-47cc-a5c5-a56a89872918
+		summarizeBy: count
+		sourceColumn: MonthId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column QuarterId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 92faec3c-bb45-4ccb-86c8-e75e60d4c052
+		summarizeBy: count
+		sourceColumn: QuarterId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column YearId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: aef0f676-cffd-41b8-9e6a-13a0fe511bce
+		summarizeBy: count
+		sourceColumn: YearId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthYear
+		dataType: string
+		isHidden
+		lineageTag: 5031e672-054e-4327-9343-cc3eb288c790
+		summarizeBy: none
+		sourceColumn: MonthYear
+		sortByColumn: MonthDate
+
+		changedProperty = SortByColumn
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column WeekNumber
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4276d9db-5443-469e-8e8d-af525e18447d
+		summarizeBy: sum
+		sourceColumn: WeekNumber
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column WeekDay
+		dataType: string
+		isHidden
+		lineageTag: 70d60ef8-7ed9-4e81-ac2e-34ca9fa58587
+		summarizeBy: none
+		sourceColumn: WeekDay
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column WeekDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 00c5e17a-2c34-4abf-803b-a12096d2048d
+		summarizeBy: none
+		sourceColumn: WeekDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WeekEndDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 25817367-3c51-44bb-890a-07fe846b2bb9
+		summarizeBy: none
+		sourceColumn: WeekEndDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column MonthDate
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: 9f1441aa-a27f-47e2-889b-88400abc6f0d
+		summarizeBy: none
+		sourceColumn: MonthDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column MonthEndDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 2d714f0c-1c0d-46be-9ece-48a020b8bdca
+		summarizeBy: none
+		sourceColumn: MonthEndDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column QuarterDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 22b77da2-7167-4b26-ad45-43fcdd131c58
+		summarizeBy: none
+		sourceColumn: QuarterDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column QuarterEndDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: a499a5a4-1bde-4f70-817c-c6ed4ecaefdd
+		summarizeBy: none
+		sourceColumn: QuarterEndDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column YearDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 47c3eff4-facf-49c3-9ad2-c670fd57319a
+		summarizeBy: none
+		sourceColumn: YearDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column YearEndDate
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: b1dd5ded-491c-41b2-8b95-88e9dd77a9dc
+		summarizeBy: none
+		sourceColumn: YearEndDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column HolidayName
+		dataType: string
+		isHidden
+		lineageTag: c8bf4642-7fb7-41b2-ac69-e965a2459532
+		summarizeBy: none
+		sourceColumn: HolidayName
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsMajorHoliday
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: aae49f92-adb4-4760-bef8-d627653a9325
+		summarizeBy: sum
+		sourceColumn: IsMajorHoliday
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsWeekday
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 3b0892ef-75b0-4c28-8b43-5b2fff151bd4
+		summarizeBy: sum
+		sourceColumn: IsWeekday
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsBusinessDay
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: db30d881-537d-4fe4-bfe9-e2048cfe9a88
+		summarizeBy: sum
+		sourceColumn: IsBusinessDay
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month-Year = FORMAT(DimDate[MonthDate],"MMM-YY")
+		isHidden
+		lineageTag: 9203a5e7-f309-44eb-bb3e-bf8976e118ef
+		summarizeBy: none
+		sortByColumn: MonthDate
+
+		changedProperty = SortByColumn
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimDate = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("DFW2-BISQL-001", "DW_MSTR_DM"),
+				    dbo_DimDate = Source{[Schema="dbo",Item="DimDate"]}[Data],
+				    #"Filtered Rows" = Table.SelectRows(dbo_DimDate, each ([CalendarDate] <> null)),
+				    #"Filtered Rows1" = Table.SelectRows(#"Filtered Rows", each [CalendarDate] >= #"Collection Start Date" and [CalendarDate] <= #"Collection End Date")
+				in
+				    #"Filtered Rows1"
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

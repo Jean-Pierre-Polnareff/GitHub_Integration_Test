@@ -1,0 +1,40 @@
+table 'SMS_Hour_CT - Time Slot'
+	isHidden
+	lineageTag: 292298f9-870e-4521-80ab-60ddad3ee9e1
+
+	column SMS_Hour_CT
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 81882a4e-2873-4acf-be19-9349a5ae9850
+		summarizeBy: none
+		sourceColumn: SMS_Hour_CT
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Time Slot'
+		dataType: string
+		isHidden
+		lineageTag: 094ff057-8bc6-4b57-9ad9-3a35f8a6d695
+		summarizeBy: none
+		sourceColumn: Time Slot
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'SMS_Hour_CT - Time Slot-28f14492-e2fe-449f-b820-da0b01c47000' = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("bZC5DcQwDAR7UWwelvJfi+HABRyg/qMz5eWZASNBMxCE2eMoKEPR+gGur2z9KOdwFM1xzfGY4ynHc46XHK853m6M5y7YX74bf+6iCEE9FBQaRE9VCvuoUfxj2/2FBmG5BIL4woLhL8YgLJlAMAVh0QSCOQjLJhAsQfTwhWINopevFNsrKnyqxqlcqG/VuJWL6ls1buVi9K0at7IRzx8=", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [SMS_Hour_CT = _t, #"Time Slot" = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"SMS_Hour_CT", Int64.Type}, {"Time Slot", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

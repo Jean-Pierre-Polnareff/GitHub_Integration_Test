@@ -1,0 +1,66 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "35c26fdd7158c1232bc0",
+  "position": {
+    "x": 321.53110047846894,
+    "y": 145.45454545454547,
+    "z": 0,
+    "height": 502.20095693779911,
+    "width": 669.09090909090912
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "EmailRPT_MonthClientLetter"
+                    }
+                  },
+                  "Property": "LTR"
+                }
+              },
+              "queryRef": "EmailRPT_MonthClientLetter.LTR"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "EmailRPT_MonthClientLetter"
+                    }
+                  },
+                  "Property": "IsAverage 100 sends per month"
+                }
+              },
+              "queryRef": "EmailRPT_MonthClientLetter.100+ sends"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "EmailRPT_MonthClientLetter"
+                  }
+                },
+                "Property": "IsAverage 100 sends per month"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

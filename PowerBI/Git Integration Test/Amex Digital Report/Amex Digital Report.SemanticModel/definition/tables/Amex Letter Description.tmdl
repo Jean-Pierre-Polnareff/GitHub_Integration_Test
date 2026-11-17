@@ -1,0 +1,39 @@
+table 'Amex Letter Description'
+	isHidden
+	lineageTag: 62e4709f-1df1-4e69-8ace-74590a951383
+
+	column 'Letter Code'
+		dataType: string
+		isHidden
+		lineageTag: e95d3348-6053-43ef-89f2-87d2e946ba44
+		summarizeBy: none
+		sourceColumn: Letter Code
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		isHidden
+		lineageTag: 2821abc7-4b98-4828-917e-4a5f1ce8cb83
+		summarizeBy: none
+		sourceColumn: Description
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Amex Letter Description-f65d3ebe-715c-4ce1-906b-5dbcd419c5c8' = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("hVXbbtpAEP2VCRJPtct6fUnIS5MSqiaKCwpRoyqKqi0sYGG8yGta8ZZ/6FN/L1/S2bW9NvGmfQHsndmZOefM4fGxN4rHQc/p3fFtki14DjxmSSpdiBMp+QKm7LDlWQF5dd57cnROZMmpY9l8k4lfKV9xa6rfTQV3yrNFkq3qevJ11g0lmHazX1SXUtIHmSwd8ChsRVasqzjPDzFuwmQiISJ916NOFPZdGjin+ORHwLdYsA4mHgZf7kSaChi3DoJQzYf5A8BsWIocongAeIX+7dHYlPNMuTDsO6pkpCtiX+1SQTDEwBAvmF1/ArFcmslIoCabrUVeQMylZCsOLjxw+MrSPYdvYn9SRxLV1fXVLbwDsSsSkYGnhsTw6pGe634vohhenn/Xb/1z3flF0zbxfUvN0VoIqSvm8JHLAiY6X5r61LN2+vL85yeHLVtwSArgTB5MRmDPgAeGHN4L+MzTnSr43jBCDZ7HhChaEeGBHrgmpCanNRm1oXnLC2xSgmTYKIMi57wB1StBrZ89arngKlnAQexBCfsDmNRhlw/s8ZgPYuNDs9SW0RneNGI5/96d3SNqpImSDDR70wogvmp5mnMXJZMsmCpipoks0yDgsOCS5xqNHzlnGwOH9wZj2BusOX4UAr/T3QkYak5LZQ/07IaaZlcMXp5NdVoCOPI8RfHlUKxZpqEu1knWastKa7LEpthux1GkTZWhJfQ+P4DSNZ8Ld5kn6DbpAaRI9wqsRuC2BhGtUuErUVQUtqqRs44GSnrbItDrB92tVCpoiTcISWk7HZMItKxHl3dj80Ibz+XsegaTVuCY2twV7hHVjfJXRcmWbVpWayRIGicjfQe5VE5GOk7m+bRteSao8tlXsUE5kDFFbcM0qM9p2Bjw/+3aP623xOLZnkYEqpN/m3FU4aw5cctt1Ep1S6ZoEHcpCIelBdVJxCSV+bYkjwbHA76FA23CLKCaMNIKe02S+adROKiWOhNEerfxrRodO3fKybFxR0n0wo9qJfraFadXI/giimSZzI9NJbD+e/D5BnesUNubm0XpPT39BQ==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#"Letter Code" = _t, Description = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Letter Code", type text}, {"Description", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

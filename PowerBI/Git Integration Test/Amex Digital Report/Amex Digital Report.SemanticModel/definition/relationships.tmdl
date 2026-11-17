@@ -1,0 +1,42 @@
+relationship dea6fe29-fb31-4b53-a1c6-18549c125f7c
+	fromColumn: RPT_client_Amex_SMS_V2.KeyClient
+	toColumn: DimClient.KeyClient
+
+relationship 6c41c52c-19be-49ea-8300-f1c542afcdfc
+	fromColumn: RPT_client_Amex_SMS_V2.sms_hour_CT
+	toColumn: 'SMS_Hour_CT - Time Slot'.SMS_Hour_CT
+
+relationship 044f53a2-a037-4223-9bac-f192133ce056
+	fromColumn: EmailRPT_MonthClientLetter.clientid
+	toColumn: vw_Amex_ClientCodes_LookupTable.ClientCode
+
+relationship b68921f3-75a4-4f05-8b37-bdab07367d1e
+	fromColumn: 'EmailRPT_MonthClientLetter (2)'.clientid
+	toColumn: vw_Amex_ClientCodes_LookupTable.ClientCode
+
+relationship 213b2b2c-0fc8-487a-9510-c9cb1cea787d
+	fromColumn: 'Metrics Data'.ClientId
+	toColumn: vw_Amex_ClientCodes_LookupTable.ClientCode
+
+relationship da2d6081-3469-4731-9ec4-ba693a4720e5
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: DimClient.ClientId
+	toColumn: vw_Amex_ClientCodes_LookupTable.ClientCode
+
+relationship ec62dc57-9988-4c5c-b1c5-d6ecefd92dd4
+	fromColumn: Web_Waterfall_Visits_by_Source.CapturedDate
+	toColumn: DimDate.CalendarDate
+
+relationship 33457958-c473-45fa-9ded-15ab5ed3790c
+	fromColumn: RPT_payment_detail.pymt_date
+	toColumn: DimDate.CalendarDate
+
+relationship 607a0e68-0d8f-435c-a373-51e883e1c6aa
+	fromColumn: RPT_payment_detail.CLIENT_ID
+	toColumn: vw_Amex_ClientCodes_LookupTable.ClientCode
+
+relationship bb7815b2-7cb1-42eb-9c2d-44a63459dd72
+	fromColumn: Web_Waterfall_Visits_by_Source.ClientId
+	toColumn: vw_Amex_ClientCodes_LookupTable.ClientCode
+

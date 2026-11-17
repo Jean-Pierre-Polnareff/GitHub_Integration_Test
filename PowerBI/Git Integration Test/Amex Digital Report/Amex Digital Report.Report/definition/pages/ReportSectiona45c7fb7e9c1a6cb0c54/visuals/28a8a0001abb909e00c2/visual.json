@@ -1,0 +1,52 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "28a8a0001abb909e00c2",
+  "position": {
+    "x": 670.15197568389056,
+    "y": 124.4984802431611,
+    "z": 1000,
+    "height": 522.31003039513678,
+    "width": 418.23708206686933,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sharepoint - Amex ClientIDs Inclusion List"
+                    }
+                  },
+                  "Property": "LP"
+                }
+              },
+              "queryRef": "Query1.LP",
+              "nativeQueryRef": "LP"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Sharepoint - Amex ClientIDs Inclusion List"
+                    }
+                  },
+                  "Property": "Segment"
+                }
+              },
+              "queryRef": "Query1.Segment",
+              "nativeQueryRef": "Segment"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,344 @@
+table RPT_client_Amex_SMS_V2
+	isHidden
+	lineageTag: df9f0a16-d7bf-475d-b1e7-9130cf8f7ef9
+
+	measure 'Connect %' = Calculate(DIVIDE(SUM(RPT_client_Amex_SMS_V2[call_connects]), SUM(RPT_client_Amex_SMS_V2[sms_delivered])))
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		isHidden
+		lineageTag: 2f4fa705-9cc3-466d-aa00-9430847e3509
+
+	measure 'Conversion % (SMS)' = CALCULATE(DIVIDE(SUM(RPT_client_Amex_SMS_V2[conversions]), SUM(RPT_client_Amex_SMS_V2[call_rpcs])))
+		formatString: 0\ %;-0\ %;0\ %
+		isHidden
+		lineageTag: 59726fc0-7638-40a2-9bd3-0bfc028de76a
+
+	measure 'Delivered %' = Calculate(DIVIDE(SUM(RPT_client_Amex_SMS_V2[sms_delivered]), SUM(RPT_client_Amex_SMS_V2[sms_delivered]) + SUM(RPT_client_Amex_SMS_V2[sms_failed])))
+		formatString: 0\ %;-0\ %;0\ %
+		isHidden
+		lineageTag: 661f4d13-67d8-4e6a-ab2c-9bb6e165aa31
+
+	measure 'Failed %' = Calculate(DIVIDE(SUM(RPT_client_Amex_SMS_V2[sms_failed]), SUM(RPT_client_Amex_SMS_V2[sms_delivered]) + SUM(RPT_client_Amex_SMS_V2[sms_failed])))
+		formatString: 0\ %;-0\ %;0\ %
+		isHidden
+		lineageTag: aa6cb194-a1ef-4820-9b90-70873df50db0
+
+	measure 'Opt Out %' = CALCULATE(DIVIDE(SUM(RPT_client_Amex_SMS_V2[sms_stopped]), SUM(RPT_client_Amex_SMS_V2[sms_delivered])))
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		isHidden
+		lineageTag: 8f9902a1-5ccf-4816-8886-8e397c9e7a3e
+
+	measure 'Promise %' = Calculate(DIVIDE(SUM(RPT_client_Amex_SMS_V2[call_promises]), SUM(RPT_client_Amex_SMS_V2[call_rpcs])))
+		formatString: 0\ %;-0\ %;0\ %
+		isHidden
+		lineageTag: 2014d109-e143-4e08-8862-96ea391740c7
+
+	measure 'RPC %' = CALCULATE(DIVIDE(SUM(RPT_client_Amex_SMS_V2[call_rpcs]), SUM(RPT_client_Amex_SMS_V2[call_connects])))
+		formatString: 0\ %;-0\ %;0\ %
+		isHidden
+		lineageTag: 5a11eb62-30e3-4338-9c2e-076f2575a1f5
+
+	measure Sent = CALCULATE(SUM(RPT_client_Amex_SMS_V2[sms_failed]) + SUM(RPT_client_Amex_SMS_V2[sms_delivered]))
+		formatString: #,0
+		isHidden
+		lineageTag: 8c0f9520-5a83-45a5-b214-df96abb13822
+
+	column 'Day Name'
+		dataType: string
+		isHidden
+		lineageTag: 6df37eea-9a01-48f6-9118-a029eb719d56
+		summarizeBy: none
+		sourceColumn: Day Name
+		sortByColumn: 'Day of Week'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month-Year = FORMAT(RPT_client_Amex_SMS_V2[sms_date],"MMM-YY")
+		isHidden
+		lineageTag: 1e1ba6b2-98d4-4ff2-989c-d4cd9d0e3b30
+		summarizeBy: none
+		sortByColumn: YYYYMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYYMM =
+			
+			VAR YYYY= YEAR(RPT_client_Amex_SMS_V2[sms_date])
+			VAR MM =  FORMAT(RPT_client_Amex_SMS_V2[sms_date],"mm")
+			RETURN
+			YYYY & MM
+		isHidden
+		lineageTag: ab09239c-38df-4e59-aa97-314576026559
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column sms_date
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: 5ed04111-e2f8-432a-bb2e-d72798721b47
+		summarizeBy: none
+		sourceColumn: sms_date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column sms_delivered
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 73790d34-1ab4-4000-83f5-0ce1ba814e6b
+		summarizeBy: sum
+		sourceColumn: sms_delivered
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column sms_failed
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f4cdd4d2-e578-4636-9b1a-93d436ea4d2a
+		summarizeBy: sum
+		sourceColumn: sms_failed
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column sms_stopped
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d5a46ae9-5212-4c6f-93e2-799c2a8ee4fc
+		summarizeBy: sum
+		sourceColumn: sms_stopped
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column call_connects
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c3d2a5c9-1c50-4ba4-a3a3-c8d8645b0ac6
+		summarizeBy: sum
+		sourceColumn: call_connects
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column call_rpcs
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 72de44f6-111d-4119-bbe1-539dfaaa485b
+		summarizeBy: sum
+		sourceColumn: call_rpcs
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column call_promises
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 26b83e3f-40e3-4558-80fb-b32607adf35f
+		summarizeBy: sum
+		sourceColumn: call_promises
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column conversions
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e8248ddb-d514-49e9-bcab-6adf90b30ed9
+		summarizeBy: sum
+		sourceColumn: conversions
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column conversion_dollars
+		dataType: double
+		isHidden
+		lineageTag: a9393170-47c2-4c25-a12d-d98304b5b7a1
+		summarizeBy: sum
+		sourceColumn: conversion_dollars
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column future_promise_dollars
+		dataType: double
+		isHidden
+		lineageTag: d1138e13-d43d-4c56-b930-1d6307010598
+		summarizeBy: sum
+		sourceColumn: future_promise_dollars
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column InsertDate
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: 408ac58e-11bc-4368-b73a-65642372adb5
+		summarizeBy: none
+		sourceColumn: InsertDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column KeyClient
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: cb91130e-4156-4ea9-8479-fac8a1f52b73
+		summarizeBy: none
+		sourceColumn: KeyClient
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column KeySourceSystem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 150e4905-e81f-403f-be8f-13a87739274b
+		summarizeBy: sum
+		sourceColumn: KeySourceSystem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column sms_hour_CT
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ab483015-097c-4ee9-9d4c-125ede80a898
+		summarizeBy: none
+		sourceColumn: sms_hour_CT
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientId
+		dataType: string
+		isHidden
+		lineageTag: b09c3239-49ad-4db3-be25-50aa10ea5037
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SourceSystem
+		dataType: string
+		isHidden
+		lineageTag: 69653f68-0a33-479d-9297-28f4f57ef6f1
+		summarizeBy: none
+		sourceColumn: SourceSystem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientParent
+		dataType: string
+		isHidden
+		lineageTag: 7b2a5dd2-654d-4c9a-9b99-ef030e829f98
+		summarizeBy: none
+		sourceColumn: ClientParent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStreamId
+		dataType: string
+		isHidden
+		lineageTag: 9f1afe36-d214-4f0e-8ed5-3a1457c95639
+		summarizeBy: none
+		sourceColumn: ClientStreamId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStream
+		dataType: string
+		isHidden
+		lineageTag: 651991f6-7e31-4a23-8e34-20f3a34bd6ae
+		summarizeBy: none
+		sourceColumn: ClientStream
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day of Week'
+		dataType: string
+		isHidden
+		lineageTag: 030aa605-2973-4a80-b65b-cb448bc6e8e3
+		summarizeBy: none
+		sourceColumn: Day of Week
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Time Slot'
+		dataType: string
+		isHidden
+		lineageTag: 2106ecc4-0d7b-415b-bd17-e942cf557387
+		summarizeBy: none
+		sourceColumn: Time Slot
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition RPT_client_Amex_SMS_V2-8f2c2eb2-19e2-48ba-9632-df6dc3310200 = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("DFW2-BISQL-001", "CLIENT_ANALYTICS"),
+				    dbo_RPT_client_Amex_SMS_V2 = Source{[Schema="dbo",Item="RPT_client_Amex_SMS_V2"]}[Data],
+				    #"Inserted Day Name" = Table.AddColumn(dbo_RPT_client_Amex_SMS_V2, "Day Name", each Date.DayOfWeekName([sms_date]), type text),
+				    #"Inserted Day of Week" = Table.AddColumn(#"Inserted Day Name", "Day of Week", each Date.DayOfWeek([sms_date],Day.Monday)),
+				    #"Merged Queries DimClient" = Table.NestedJoin(#"Inserted Day of Week", {"KeyClient"}, DimClient, {"KeyClient"}, "DimClient", JoinKind.LeftOuter),
+				    #"Expanded DimClient" = Table.ExpandTableColumn(#"Merged Queries DimClient", "DimClient", {"ClientId", "SourceSystem", "ClientParent", "ClientStreamId", "ClientStream"}, {"ClientId", "SourceSystem", "ClientParent", "ClientStreamId", "ClientStream"}),
+				    #"Merged Queries SMS_Hour_CT - Time Slot" = Table.NestedJoin(#"Expanded DimClient", {"sms_hour_CT"}, #"SMS_Hour_CT - Time Slot", {"SMS_Hour_CT"}, "SMS_Hour_CT - Time Slot", JoinKind.LeftOuter),
+				    #"Expanded SMS_Hour_CT - Time Slot" = Table.ExpandTableColumn(#"Merged Queries SMS_Hour_CT - Time Slot", "SMS_Hour_CT - Time Slot", {"Time Slot"}, {"Time Slot"})
+				in
+				    #"Expanded SMS_Hour_CT - Time Slot"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

@@ -1,0 +1,352 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/2.1.0/schema.json",
+  "displayName": "Clicks",
+  "name": "Bookmark8475a4707e505d8ec472",
+  "options": {
+    "applyOnlyToTargetVisuals": true,
+    "targetVisualNames": [
+      "eafdcc8d4160778218a5",
+      "b3b0208cc58bb43522ec",
+      "91e336d00b1eed89ee47",
+      "52c2819fc485cbed9ab3",
+      "6fcf641069bd6d48ab3e",
+      "ce05e34c0d75ac483ad4",
+      "498d724d89497a8c381a",
+      "e95d295ed7388c59010b",
+      "d9181cea8a130b20507b",
+      "410e46a607e0cb9bbb92",
+      "a1c1d2e917a03550d5a0",
+      "afd7b24751ea352837e7",
+      "46413017db9e91bd0780",
+      "ad1589fd39bbc5e1c3dd",
+      "2f75f8fc8eed11232144",
+      "01d66af00800043c1cba"
+    ],
+    "suppressData": true
+  },
+  "explorationState": {
+    "version": "1.3",
+    "activeSection": "ReportSection5642882b8ba14e005e7e",
+    "sections": {
+      "ReportSection5642882b8ba14e005e7e": {
+        "filters": {
+          "byExpr": [
+            {
+              "name": "Filter048d6683795909b53146",
+              "type": "Categorical",
+              "expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RPT_email_hourly"
+                    }
+                  },
+                  "Property": "crm"
+                }
+              },
+              "howCreated": 1
+            },
+            {
+              "name": "Filter8bdad3cc97dea60aa097",
+              "type": "Categorical",
+              "expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RPT_email_hourly"
+                    }
+                  },
+                  "Property": "ClientParent"
+                }
+              },
+              "howCreated": 1
+            },
+            {
+              "name": "Filterf3827f02740a48c32014",
+              "type": "Categorical",
+              "expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RPT_email_hourly"
+                    }
+                  },
+                  "Property": "ClientStream"
+                }
+              },
+              "howCreated": 1
+            },
+            {
+              "name": "Filterd3a657910b68708053ba",
+              "type": "Categorical",
+              "expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RPT_email_hourly"
+                    }
+                  },
+                  "Property": "ClientStreamId"
+                }
+              },
+              "howCreated": 1
+            },
+            {
+              "name": "Filter897d7e5ad931c3c50c5d",
+              "type": "Categorical",
+              "expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RPT_email_hourly"
+                    }
+                  },
+                  "Property": "clientsclientid"
+                }
+              },
+              "howCreated": 1
+            },
+            {
+              "name": "Filter7b51d5720bb8a07487c1",
+              "type": "Categorical",
+              "expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RPT_email_hourly"
+                    }
+                  },
+                  "Property": "CustomerState"
+                }
+              },
+              "howCreated": 1
+            },
+            {
+              "name": "Filter6995ceaedb48e9228830",
+              "type": "Categorical",
+              "expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RPT_email_hourly"
+                    }
+                  },
+                  "Property": "LTR"
+                }
+              },
+              "howCreated": 1
+            },
+            {
+              "name": "Filterb5386810598bc3983985",
+              "type": "Categorical",
+              "expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RPT_email_hourly"
+                    }
+                  },
+                  "Property": "Month-Year"
+                }
+              },
+              "howCreated": 1
+            },
+            {
+              "name": "Filter923cf13067e05d1a41bc",
+              "type": "RelativeDate",
+              "filter": {
+                "Version": 2,
+                "From": [
+                  {
+                    "Name": "r",
+                    "Entity": "RPT_email_hourly",
+                    "Type": 0
+                  }
+                ],
+                "Where": [
+                  {
+                    "Condition": {
+                      "Between": {
+                        "Expression": {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "r"
+                              }
+                            },
+                            "Property": "event_date"
+                          }
+                        },
+                        "LowerBound": {
+                          "DateSpan": {
+                            "Expression": {
+                              "DateAdd": {
+                                "Expression": {
+                                  "DateAdd": {
+                                    "Expression": {
+                                      "DateAdd": {
+                                        "Expression": {
+                                          "Now": {}
+                                        },
+                                        "Amount": -1,
+                                        "TimeUnit": 0
+                                      }
+                                    },
+                                    "Amount": 1,
+                                    "TimeUnit": 0
+                                  }
+                                },
+                                "Amount": -30,
+                                "TimeUnit": 0
+                              }
+                            },
+                            "TimeUnit": 0
+                          }
+                        },
+                        "UpperBound": {
+                          "DateSpan": {
+                            "Expression": {
+                              "DateAdd": {
+                                "Expression": {
+                                  "Now": {}
+                                },
+                                "Amount": -1,
+                                "TimeUnit": 0
+                              }
+                            },
+                            "TimeUnit": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RPT_email_hourly"
+                    }
+                  },
+                  "Property": "event_date"
+                }
+              },
+              "howCreated": 1
+            }
+          ]
+        },
+        "visualContainers": {
+          "eafdcc8d4160778218a5": {
+            "singleVisual": {
+              "visualType": "pivotTable",
+              "objects": {},
+              "activeProjections": {
+                "Rows": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "RPT_email_hourly"
+                        }
+                      },
+                      "Property": "hour_send_CT"
+                    }
+                  }
+                ],
+                "Columns": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "RPT_email_hourly"
+                        }
+                      },
+                      "Property": "DoW"
+                    }
+                  }
+                ]
+              },
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "b3b0208cc58bb43522ec": {
+            "singleVisual": {
+              "visualType": "image",
+              "objects": {}
+            }
+          },
+          "91e336d00b1eed89ee47": {
+            "singleVisual": {
+              "visualType": "image",
+              "objects": {}
+            }
+          },
+          "52c2819fc485cbed9ab3": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "6fcf641069bd6d48ab3e": {
+            "singleVisual": {
+              "visualType": "lineClusteredColumnComboChart",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 1,
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "RPT_email_hourly"
+                        }
+                      },
+                      "Property": "hour_send_CT"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Category": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "RPT_email_hourly"
+                        }
+                      },
+                      "Property": "hour_send_CT"
+                    }
+                  }
+                ]
+              },
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          }
+        }
+      }
+    },
+    "objects": {
+      "merge": {
+        "outspacePane": [
+          {
+            "properties": {
+              "expanded": {
+                "expr": {
+                  "Literal": {
+                    "Value": "true"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

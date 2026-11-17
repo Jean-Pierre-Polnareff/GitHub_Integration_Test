@@ -1,0 +1,71 @@
+table ClientMapping
+	isHidden
+	lineageTag: 0575c249-86c1-45e7-8791-4becb78c8dcc
+
+	column ClientId
+		dataType: string
+		isHidden
+		lineageTag: 40cae871-3cc8-4f21-aaba-022389ed9d09
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientParent
+		dataType: string
+		isHidden
+		lineageTag: d5915f00-0648-490c-888f-a9973a75736d
+		summarizeBy: none
+		sourceColumn: ClientParent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStreamId
+		dataType: string
+		isHidden
+		lineageTag: 078787ef-d679-4756-b4f3-de8515a37599
+		summarizeBy: none
+		sourceColumn: ClientStreamId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStream
+		dataType: string
+		isHidden
+		lineageTag: ae4c58c2-1cb1-4413-9ac5-d1c8e589641f
+		summarizeBy: none
+		sourceColumn: ClientStream
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SourceSystem
+		dataType: string
+		isHidden
+		lineageTag: f7d9e59e-a34f-4c21-b584-f574c30bfc39
+		summarizeBy: none
+		sourceColumn: SourceSystem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ClientMapping-eb276a06-36be-4e77-82c6-c3ba94177311 = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("DFW2-BISQL-001", "DW_MSTR_DM", [Query=" SELECT DISTINCT d.[ClientId]#(lf)               , CASE WHEN d.SourceSystem='AMEX Latitude' THEN ISNULL(a.amex_segment_Group,'Amex - Other')#(lf)#(tab)#(tab)#(tab)#(tab)       ELSE d.ClientParent#(lf)#(tab)#(tab)#(tab)#(tab)#(tab)   END AS ClientParent#(lf)#(tab)#(tab)#(tab)#(tab), d.[ClientStreamId]#(lf)#(tab)#(tab)#(tab)#(tab), d.[ClientStream]#(lf)#(tab)#(tab)#(tab)#(tab), CASE WHEN d.SourceSystem = 'MEDPROD' THEN 'Medprod Artiva'#(lf)#(tab)#(tab)#(tab)#(tab)       WHEN d.SourceSystem = 'THIRDPROD' THEN 'Thirdprod Artiva'#(lf)#(tab)#(tab)#(tab)#(tab)#(tab)   ELSE d.SourceSystem#(lf)#(tab)#(tab)#(tab)#(tab)#(tab)   END AS SourceSystem#(lf)FROM [DW_MSTR_DM].[dbo].[DimClient] d (NOLOCK)#(lf)         LEFT JOIN#(lf)     CLIENT_ANALYTICS.dbo.vw_Amex_ClientCodes_LookupTable a ON d.ClientId=a.clientcode#(lf)#(tab)#(lf)WHERE LEN(d.ClientId)>0 AND d.ClientId IS NOT null#(lf)#(lf)UNION #(lf)SELECT DISTINCT [Client_ID] AS ClientId#(lf)                , [Parent] AS ClientParent#(lf)#(tab)#(tab)#(tab)#(tab), CONVERT( VARCHAR(50), [Client_Stream_ID]) AS ClientStreamId#(lf)#(tab)#(tab)#(tab)#(tab), [Client_Stream] AS ClientStream#(lf)#(tab)#(tab)#(tab)#(tab), [SourceSystem] = 'FACS'#(lf)FROM [DW_MSTR_DM].[dbo].[TblClientStreams] (NOLOCK)#(lf)WHERE LEN(client_id)>0 AND client_id IS NOT null"])
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

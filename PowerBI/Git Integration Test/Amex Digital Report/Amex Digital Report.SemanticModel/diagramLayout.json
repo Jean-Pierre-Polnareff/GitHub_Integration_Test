@@ -1,0 +1,268 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 2297.1428571428573,
+        "y": 95.714285714285722
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 11.666666666666671,
+            "y": 0
+          },
+          "nodeIndex": "Amex Letter Description",
+          "nodeLineageTag": "62e4709f-1df1-4e69-8ace-74590a951383",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 173.36666666666667
+          },
+          "nodeIndex": "ClientMapping",
+          "nodeLineageTag": "0575c249-86c1-45e7-8791-4becb78c8dcc",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 29.933333333333167,
+            "y": 417.0333333333333
+          },
+          "nodeIndex": "Definitions",
+          "nodeLineageTag": "b42facfc-04a4-4ce5-ac41-2bc61610ef12",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 1177.0333333333335,
+            "y": 0
+          },
+          "nodeIndex": "DimClient",
+          "nodeLineageTag": "41f6fef2-8cab-485f-921f-843e46b485bd",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 40.299999999999955,
+            "y": 648.36666666666656
+          },
+          "nodeIndex": "DimCustomerProduct",
+          "nodeLineageTag": "29e86dc1-696c-4fda-9829-9b141c27114a",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 2189.1666666666665,
+            "y": 925.0333333333333
+          },
+          "nodeIndex": "EmailRPT_MonthClientLetter",
+          "nodeLineageTag": "642589f0-d9b1-4e42-b2b0-8ec7aa47af06",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 13
+        },
+        {
+          "location": {
+            "x": 2444.6999999999994,
+            "y": 926.70000000000016
+          },
+          "nodeIndex": "EmailRPT_MonthClientLetter (2)",
+          "nodeLineageTag": "50c274e7-79b9-4c8d-92df-e9f7f94154e2",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 14
+        },
+        {
+          "location": {
+            "x": 534.533333333333,
+            "y": 0
+          },
+          "nodeIndex": "Letter Code Mapping",
+          "nodeLineageTag": "1844f924-564f-40ed-a55c-9eb3f34ccc5b",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 16
+        },
+        {
+          "location": {
+            "x": 1773.4000000000003,
+            "y": 923.36666666666667
+          },
+          "nodeIndex": "Metrics Data",
+          "nodeLineageTag": "baa0f46b-b411-4957-8e79-bb369419b999",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 15
+        },
+        {
+          "location": {
+            "x": 123.93333333333339,
+            "y": 960.03333333333342
+          },
+          "nodeIndex": "RPT_Active_Inv_Performance",
+          "nodeLineageTag": "75a3d429-e10f-45a8-a309-64eb1194e4d4",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 1192.5666666666666,
+            "y": 485
+          },
+          "nodeIndex": "RPT_client_Amex_SMS_V2",
+          "nodeLineageTag": "df9f0a16-d7bf-475d-b1e7-9130cf8f7ef9",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 12
+        },
+        {
+          "location": {
+            "x": 596.13333333333276,
+            "y": 291.36666666666679
+          },
+          "nodeIndex": "Select Top N Clients",
+          "nodeLineageTag": "99b3a69b-2caf-45f3-a556-303ef386fb04",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 9
+        },
+        {
+          "location": {
+            "x": 1178.1000000000001,
+            "y": 1000.8666666666667
+          },
+          "nodeIndex": "SMS_Hour_CT - Time Slot",
+          "nodeLineageTag": "292298f9-870e-4521-80ab-60ddad3ee9e1",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 10
+        },
+        {
+          "location": {
+            "x": 2038.0333333333324,
+            "y": 20
+          },
+          "nodeIndex": "vw_Amex_ClientCodes_LookupTable",
+          "nodeLineageTag": "ad290044-396f-4b81-9522-1ba29fbf1cb3",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 11
+        },
+        {
+          "location": {
+            "x": 3355.3666666666663,
+            "y": 586.68333333333362
+          },
+          "nodeIndex": "DimDate",
+          "nodeLineageTag": "77b34ca1-5561-4dd1-b213-9b73bcfdcc26",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 2807.7,
+            "y": 338.35000000000014
+          },
+          "nodeIndex": "RPT_payment_detail",
+          "nodeLineageTag": "551d2220-b289-4db4-a825-4fd5f4848fa4",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 17
+        },
+        {
+          "location": {
+            "x": 3118.3666666666659,
+            "y": 317.68333333333345
+          },
+          "nodeIndex": "Web_Waterfall_Visits_by_Source",
+          "nodeLineageTag": "134740a0-a666-426d-a969-126c2c9dadc6",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 18
+        },
+        {
+          "location": {
+            "x": 3639.3666666666663,
+            "y": 537.35000000000014
+          },
+          "nodeIndex": "Parameter",
+          "nodeLineageTag": "69254feb-5f27-4d6b-aa3d-b19ba1ba0b4a",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 3923.3666666666663,
+            "y": 549.35000000000014
+          },
+          "nodeIndex": "Sharepoint - Amex ClientIDs Inclusion List",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 70,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

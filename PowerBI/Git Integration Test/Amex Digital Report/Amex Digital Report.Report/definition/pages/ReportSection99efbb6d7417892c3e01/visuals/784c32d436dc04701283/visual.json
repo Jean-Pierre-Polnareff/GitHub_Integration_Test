@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "784c32d436dc04701283",
+  "position": {
+    "x": 684.4019138755981,
+    "y": 376.6507177033493,
+    "z": 5000,
+    "height": 309.28229665071774,
+    "width": 387.36842105263162
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics Data"
+                    }
+                  },
+                  "Property": "Conversion2 %"
+                }
+              },
+              "queryRef": "Metrics Data.Conversion2 %"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

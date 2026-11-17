@@ -1,0 +1,105 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
+  "themeCollection": {
+    "baseTheme": {
+      "name": "CY19SU06",
+      "reportVersionAtImport": {
+        "visual": "1.8.41",
+        "report": "2.0.41",
+        "page": "1.3.41"
+      },
+      "type": "SharedResources"
+    }
+  },
+  "objects": {
+    "section": [
+      {
+        "properties": {
+          "verticalAlignment": {
+            "expr": {
+              "Literal": {
+                "Value": "'Top'"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "true"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "publicCustomVisuals": [
+    "powerKPI462CE5C2666F4EC8A8BDD7E5587320A3"
+  ],
+  "resourcePackages": [
+    {
+      "name": "SharedResources",
+      "type": "SharedResources",
+      "items": [
+        {
+          "name": "CY19SU06",
+          "path": "BaseThemes/CY19SU06.json",
+          "type": "BaseTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "Analytics_logo_final4624966472898224.PNG",
+          "path": "Analytics_logo_final4624966472898224.PNG",
+          "type": "Image"
+        },
+        {
+          "name": "Grey-Abstract-Lines-PNG-Free-D23917839621206172.png",
+          "path": "Grey-Abstract-Lines-PNG-Free-D23917839621206172.png",
+          "type": "Image"
+        },
+        {
+          "name": "line-chart-computer-icons-png-06879550239787635.png",
+          "path": "line-chart-computer-icons-png-06879550239787635.png",
+          "type": "Image"
+        },
+        {
+          "name": "png-clipart-orange-dots-and-li5668752076819952.png",
+          "path": "png-clipart-orange-dots-and-li5668752076819952.png",
+          "type": "Image"
+        },
+        {
+          "name": "Radius_Logo6889793881654658.jpg",
+          "path": "Radius_Logo6889793881654658.jpg",
+          "type": "Image"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "isPersistentUserStateDisabled": true,
+    "useStylableVisualContainerHeader": true,
+    "exportDataMode": "AllowSummarized",
+    "defaultDrillFilterOtherVisuals": true,
+    "allowChangeFilterTypes": true,
+    "allowInlineExploration": true,
+    "useEnhancedTooltips": true
+  },
+  "slowDataSourceSettings": {
+    "isCrossHighlightingDisabled": false,
+    "isSlicerSelectionsButtonEnabled": false,
+    "isFilterSelectionsButtonEnabled": false,
+    "isFieldWellButtonEnabled": false,
+    "isApplyAllButtonEnabled": false
+  }
+}

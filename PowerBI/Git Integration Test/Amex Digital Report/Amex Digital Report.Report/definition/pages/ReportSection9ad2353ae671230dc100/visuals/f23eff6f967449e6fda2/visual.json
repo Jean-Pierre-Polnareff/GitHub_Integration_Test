@@ -1,0 +1,63 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "f23eff6f967449e6fda2",
+  "position": {
+    "x": 0,
+    "y": 719.15789473684208,
+    "z": 0,
+    "height": 50.526315789473685,
+    "width": 476.63157894736844,
+    "tabOrder": 9000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Date Range: 1st Jan ‘21 to 31st Jul’21.",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "color": "#118dff"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Threshold for Top Calculation: Average 100 emails sent per month.",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "color": "#118dff"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

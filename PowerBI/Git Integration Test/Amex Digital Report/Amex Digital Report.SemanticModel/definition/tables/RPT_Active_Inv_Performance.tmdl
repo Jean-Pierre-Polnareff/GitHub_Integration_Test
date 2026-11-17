@@ -1,0 +1,80 @@
+table RPT_Active_Inv_Performance
+	isHidden
+	lineageTag: 75a3d429-e10f-45a8-a309-64eb1194e4d4
+
+	column rpt_month
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: eb71eca5-1923-46da-b2a0-f2dea5577e9e
+		summarizeBy: none
+		sourceColumn: rpt_month
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ClientId
+		dataType: string
+		isHidden
+		lineageTag: f2aaae10-0563-462f-87f8-9e3fa9140aea
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column accounts
+		dataType: double
+		isHidden
+		formatString: 0
+		lineageTag: 7387bfc5-4dc1-41a7-997c-a0a48b26064b
+		summarizeBy: sum
+		sourceColumn: accounts
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CRM
+		dataType: string
+		isHidden
+		lineageTag: 653f1b42-0a7f-447e-b749-df53f3d0cb80
+		summarizeBy: none
+		sourceColumn: CRM
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pseudo_Key
+		dataType: string
+		isHidden
+		lineageTag: 30e53725-d006-40fa-89c4-e10af8726f62
+		summarizeBy: none
+		sourceColumn: Pseudo_Key
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition RPT_Active_Inv_Performance-4bfc4b3c-dd02-4a3e-8843-78abe6e67ea0 = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("DFW2-BISQL-001", "CLIENT_ANALYTICS"),
+				    dbo_RPT_Active_Inv_Performance = Source{[Schema="dbo",Item="RPT_Active_Inv_Performance"]}[Data],
+				    #"Added Conditional Column - CRM" = Table.AddColumn(dbo_RPT_Active_Inv_Performance, "CRM", each if [KeySourceSystem] = 1 then "MedProd Artiva" else if [KeySourceSystem] = 2 then "ThirdProd Artiva" else if [KeySourceSystem] = 3 then "AMEX Latitude" else if [KeySourceSystem] = 4 then "FACS" else "Unknown"),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Added Conditional Column - CRM",{"rpt_month", "KeySourceSystem", "ClientId", "accounts", "CRM"}),
+				    #"Grouped Rows" = Table.Group(#"Removed Other Columns", {"rpt_month", "CRM", "ClientId"}, {{"accounts", each List.Sum([accounts]), type nullable number}}),
+				    #"Added Pseudo_Key" = Table.AddColumn(#"Grouped Rows", "Pseudo_Key", each "reference_number_login_succeeded")
+				in
+				    #"Added Pseudo_Key"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

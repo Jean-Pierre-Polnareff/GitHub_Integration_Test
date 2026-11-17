@@ -1,0 +1,665 @@
+table EmailRPT_MonthClientLetter
+	lineageTag: 642589f0-d9b1-4e42-b2b0-8ec7aa47af06
+
+	measure 'Bounce Rate' = DIVIDE(CALCULATE(SUM(EmailRPT_MonthClientLetter[bounced])),CALCULATE(SUM(EmailRPT_MonthClientLetter[sent])))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		isHidden
+		lineageTag: 6b9d877a-274e-4803-84ad-e5f70852da18
+
+	measure 'Delivered Rate' = DIVIDE(CALCULATE(SUM(EmailRPT_MonthClientLetter[delivered])),CALCULATE(SUM(EmailRPT_MonthClientLetter[sent])))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		isHidden
+		lineageTag: 77bfd0c6-89dd-45a9-9073-258bdbdae7fd
+
+	measure 'Open Rate' = DIVIDE(CALCULATE(SUM(EmailRPT_MonthClientLetter[unq_opens])),CALCULATE(SUM(EmailRPT_MonthClientLetter[delivered])))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 6c14d8f7-5c1f-4d7f-9244-11c783d85b70
+
+	measure 'Optout Rate' = DIVIDE(CALCULATE(SUM(EmailRPT_MonthClientLetter[optouts])),CALCULATE(SUM(EmailRPT_MonthClientLetter[delivered])))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		isHidden
+		lineageTag: 5fc8933c-063b-4e7a-9e42-ed1083fe941f
+
+	measure 'Spam Rate' = DIVIDE(CALCULATE(SUM(EmailRPT_MonthClientLetter[marked_as_spam])),CALCULATE(SUM(EmailRPT_MonthClientLetter[delivered])))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		isHidden
+		lineageTag: 4c184835-a6b6-406b-9444-a160c6181e24
+
+	measure 'Click Rate' = DIVIDE(CALCULATE(SUM(EmailRPT_MonthClientLetter[clicks])),CALCULATE(SUM(EmailRPT_MonthClientLetter[delivered])))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		isHidden
+		lineageTag: 586a9a29-59d7-4914-9fb0-f3cf39e399c3
+
+	measure 'Pay Rate' = DIVIDE(CALCULATE(SUM(EmailRPT_MonthClientLetter[payers])),CALCULATE(SUM(EmailRPT_MonthClientLetter[delivered])))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		isHidden
+		lineageTag: 7e73cbe3-62e6-4953-b21a-d73e8d47d73a
+
+	measure '$ per Delivered' = DIVIDE(CALCULATE(SUM(EmailRPT_MonthClientLetter[payments])),CALCULATE(SUM(EmailRPT_MonthClientLetter[delivered])))
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		isHidden
+		lineageTag: c29bd086-78ce-456b-a200-b8bbd651658b
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Scrub Rate' =
+			
+			VAR invalidemailscrubbed = Calculate(sum(EmailRPT_MonthClientLetter[invalid_email_scrubbed]))
+			VAR optoutscrubbed = CALCULATE(SUM(EmailRPT_MonthClientLetter[optout_scrubbed]))
+			VAR whitelistscrubbed = CALCULATE(SUM(EmailRPT_MonthClientLetter[whitelist_scrubbed]))
+			VAR requested = CALCULATE(SUM(EmailRPT_MonthClientLetter[requested]))
+			RETURN
+			CALCULATE((invalidemailscrubbed + optoutscrubbed + whitelistscrubbed)/requested)
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		isHidden
+		lineageTag: b047fa11-260c-4aec-955b-ede75d6faa97
+
+	measure TopN+Others = ```
+			
+			VAR ClientbySent = RANKX(ALL(EmailRPT_MonthClientLetter[client]),calculate(SUM(EmailRPT_MonthClientLetter[sent])),,DESC,Dense)
+			RETURN
+			IF(ClientbySent <= 'Select Top N Clients'[Select Top N Clients Value] , calculate(SUM(EmailRPT_MonthClientLetter[sent])), BLANK())
+			
+			```
+		formatString: 0
+		isHidden
+		lineageTag: ad5d519c-e9a7-4c75-9c9c-308b8b8580d5
+
+	measure 'Top10+Other Click Rate by Email Subject' =
+			
+			VAR EmailSubjectsbyClickRate = CALCULATE(RANKX(ALL(EmailRPT_MonthClientLetter[LTR]),calculate([Click Rate]),,DESC,Dense))
+			RETURN
+			IF( EmailSubjectsbyClickRate <= 3 , calculate([Click Rate]), BLANK())
+			----IF(EmailSubjectsbyClickRate <= 'Select Top N Clients'[Select Top N Clients Value] , calculate([Click Rate]), BLANK())
+		formatString: 0
+		isHidden
+		lineageTag: 0ab2ab65-2ca0-4e91-b84b-88c95f92284a
+
+	measure 'Top10+Other Opened by Email Subject' =
+			
+			VAR EmailSubjectsbyOpened = CALCULATE(RANKX(ALL(EmailRPT_MonthClientLetter[LTR]),calculate([Open Rate]),,DESC,Dense))
+			RETURN
+			IF(EmailSubjectsbyOpened <= 3 , calculate([Open Rate]), BLANK())
+			----IF(EmailSubjectsbyOpened <= 'Select Top N Clients'[Select Top N Clients Value] , calculate([Open Rate]), BLANK())
+		formatString: 0
+		isHidden
+		lineageTag: 4269ba26-e665-4e17-afc8-0a72d874afa5
+
+	measure 'Email DateRange' = ```
+			
+			VAR RangeStart = Min(EmailRPT_MonthClientLetter[send_date]) 
+			VAR RangeEnd = Max(EmailRPT_MonthClientLetter[send_date]) 
+			Return
+			CONCATENATE(CONCATENATE(RangeStart," - "),RangeEnd)
+			```
+		isHidden
+		lineageTag: ba4925d5-fe86-4321-b16e-aba1d728b357
+
+	measure 'Top10+Other Open Rate by Email Type Offer' =
+			
+			VAR EmailSubjectsbyOpenRate = CALCULATE(RANKX(ALL(EmailRPT_MonthClientLetter[EMAIL HEADER / SUBJECT LINE]),calculate([Open Rate],ALL(EmailRPT_MonthClientLetter[EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)]),EmailRPT_MonthClientLetter[EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)]= "Offer"),,DESC,Dense))
+			RETURN
+			IF(EmailSubjectsbyOpenRate <= 3 , calculate([Open Rate],ALL(EmailRPT_MonthClientLetter[EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)]),EmailRPT_MonthClientLetter[EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)]= "Offer"), BLANK())
+			----IF(EmailSubjectsbyOpenRate <= 'Select Top N Clients'[Select Top N Clients Value] , calculate([Open Rate]), BLANK())
+		isHidden
+		lineageTag: 4048d4db-623e-4e75-aca1-9a69d73a58a9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Top10+Other Open Rate by Email Type Reminder' =
+			
+			VAR EmailSubjectsbyOpenRate = CALCULATE(RANKX(ALL(EmailRPT_MonthClientLetter[EMAIL HEADER / SUBJECT LINE]),calculate([Open Rate],ALL(EmailRPT_MonthClientLetter[EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)]),EmailRPT_MonthClientLetter[EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)]= "Reminder"),,DESC,Dense))
+			RETURN
+			IF(EmailSubjectsbyOpenRate <= 3 , calculate([Open Rate],ALL(EmailRPT_MonthClientLetter[EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)]),EmailRPT_MonthClientLetter[EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)]= "Reminder"), BLANK())
+			----IF(EmailSubjectsbyOpenRate <= 'Select Top N Clients'[Select Top N Clients Value] , calculate([Open Rate]), BLANK())
+		isHidden
+		lineageTag: 4a9a5ebc-61b7-4fbb-81ac-56fc253a6f04
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Top10+Other Open Rate by Email Type Service' =
+			
+			VAR EmailSubjectsbyOpenRate = CALCULATE(RANKX(ALL(EmailRPT_MonthClientLetter[EMAIL HEADER / SUBJECT LINE]),calculate([Open Rate],ALL(EmailRPT_MonthClientLetter[EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)]),EmailRPT_MonthClientLetter[EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)]= "Service"),,DESC,Dense))
+			RETURN
+			IF(EmailSubjectsbyOpenRate <= 2 , calculate([Open Rate],ALL(EmailRPT_MonthClientLetter[EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)]),EmailRPT_MonthClientLetter[EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)]= "Service"), BLANK())
+			----IF(EmailSubjectsbyOpenRate <= 'Select Top N Clients'[Select Top N Clients Value] , calculate([Open Rate]), BLANK())
+		isHidden
+		lineageTag: b4aed2cd-ecf5-447c-84ff-3ce6d6e83aea
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Click through Rate' = DIVIDE(CALCULATE(SUM(EmailRPT_MonthClientLetter[clicks])),CALCULATE(SUM(EmailRPT_MonthClientLetter[unq_opens])))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: d6faeb94-38d4-4fbe-95d8-f361cc966cce
+
+	measure 'Conversion % (Payers per Clicked)' = DIVIDE(CALCULATE(SUM(EmailRPT_MonthClientLetter[payers])),CALCULATE(SUM(EmailRPT_MonthClientLetter[clicks])))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 2e4470e5-3de1-4c66-a992-8b8f2ef16639
+
+	measure 'Average Payment (Payment$ per Payers)' = DIVIDE(CALCULATE(SUM(EmailRPT_MonthClientLetter[payments])),CALCULATE(SUM(EmailRPT_MonthClientLetter[payers])))
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 31f480b8-107d-4d57-866e-d1eb379e4de5
+
+	measure 'IsAverage 100 sends per month' =
+			
+			VAR countofmonths = CALCULATE(DISTINCTCOUNT(EmailRPT_MonthClientLetter[Month-Year]))
+			VAR NumberofSends = CALCULATE(SUM(EmailRPT_MonthClientLetter[sent]))
+			RETURN
+			IF(CALCULATE(DIVIDE(NumberofSends,countofmonths ), ALLEXCEPT(EmailRPT_MonthClientLetter,EmailRPT_MonthClientLetter[LTR])) >= 100 , "Yes","No")
+		isHidden
+		lineageTag: 1fa89cf1-4f26-460e-ab6b-6e59e58e594d
+
+	measure 'No. of Months Selected' = DISTINCTCOUNT(EmailRPT_MonthClientLetter[Month-Year])
+		formatString: 0
+		isHidden
+		lineageTag: 52665e7a-f37a-41cf-89ca-d50ca6612146
+
+	measure 'Peer Group Open Rate' = CALCULATE([Open Rate], ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "Peer Group")
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: d77beb4e-1d88-44c1-a984-890b3196dee4
+
+	measure 'Peer Group Click through Rate' = CALCULATE([Click through Rate], ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "Peer Group")
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: bad2f6fc-6f6a-4b4b-8ca7-f0003133f726
+
+	measure 'Peer Group Conversion % (Payers per Clicked)' = CALCULATE([Conversion % (Payers per Clicked)], ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "Peer Group")
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 0c6edc64-a109-4e80-9815-7f053c6bc91f
+
+	measure 'Peer Group Average Payment (Payment$ per Payers)' = CALCULATE([Average Payment (Payment$ per Payers)], ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "Peer Group")
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 16421360-c2ca-44da-8934-2aa00b626faf
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'AXP Average Payment (Payment$ per Payers)' = CALCULATE([Average Payment (Payment$ per Payers)], ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "AXP")
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 9d9629f1-f6b8-4641-9b05-e3376b1f63a8
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'AXP Click through Rate' = CALCULATE([Click through Rate], ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "AXP")
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 372a2ad7-4a8c-465f-8644-b340363e53be
+
+	measure 'AXP Conversion % (Payers per Clicked)' = CALCULATE([Conversion % (Payers per Clicked)], ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "AXP")
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 3ad7ed2f-bb3f-4c09-9a7e-b4dcf6edc7b2
+
+	measure 'AXP Open Rate' = CALCULATE([Open Rate], ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "AXP")
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 53c80875-8e08-43fd-b741-7a9274a0d3c9
+
+	measure 'AXP Opened' = CALCULATE(SUM(EmailRPT_MonthClientLetter[unq_opens]), ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "AXP")
+		formatString: #,0
+		lineageTag: c4d611aa-92c5-493d-adb7-8b8d76cfb017
+
+	measure 'AXP Delivered' = CALCULATE(SUM(EmailRPT_MonthClientLetter[delivered]), ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "AXP")
+		formatString: #,0
+		lineageTag: 6fd14247-74eb-40f0-9946-7d9aec980edc
+
+	measure 'AXP Clicks' = CALCULATE(SUM(EmailRPT_MonthClientLetter[clicks]), ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "AXP")
+		formatString: #,0
+		lineageTag: a5890999-3968-4b00-a8e4-30309c5ed8e7
+
+	measure 'AXP Payers' = CALCULATE(SUM(EmailRPT_MonthClientLetter[payers]), ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "AXP")
+		formatString: #,0
+		lineageTag: 97cc9e4d-d38f-4f02-8400-eb420f4b1873
+
+	measure 'AXP Payment $' = CALCULATE(SUM(EmailRPT_MonthClientLetter[payments]), ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "AXP")
+		formatString: \$#,0;(\$#,0);\$#,0
+		lineageTag: d833e4c1-6102-4fc9-9472-bc08ef3a795a
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Peer Group Clicks' = CALCULATE(SUM(EmailRPT_MonthClientLetter[clicks]), ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "Peer Group")
+		formatString: #,0
+		lineageTag: 4fe8a1f7-1eab-435a-ac4c-6e5eb0dbc6cf
+
+	measure 'Peer Group Opened' = CALCULATE(SUM(EmailRPT_MonthClientLetter[unq_opens]), ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "Peer Group")
+		formatString: #,0
+		lineageTag: de8502fb-8249-472b-bcf8-21866401f135
+
+	measure 'Peer Group Payers' = CALCULATE(SUM(EmailRPT_MonthClientLetter[payers]), ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "Peer Group")
+		formatString: 0
+		lineageTag: 36522474-1c33-4f8a-80fd-2a047cce9900
+
+	measure 'Peer Group Delivered' = CALCULATE(SUM(EmailRPT_MonthClientLetter[delivered]), ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "Peer Group")
+		formatString: #,0
+		lineageTag: 763fa8c2-1ce9-4621-a2c2-7d01733ef082
+
+	measure 'Peer Group Payment $' = CALCULATE(SUM(EmailRPT_MonthClientLetter[payments]), ALL('emailRPT_Monthclientletter'[peer group]),'emailRPT_Monthclientletter'[peer group] = "Peer Group")
+		formatString: \$#,0;(\$#,0);\$#,0
+		lineageTag: 3bf3b9df-2453-49dd-8473-496483234870
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column client
+		dataType: string
+		isHidden
+		lineageTag: cf04b22a-b0b2-4c3c-99fd-08a0e661e1df
+		summarizeBy: none
+		sourceColumn: client
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column LTR
+		dataType: string
+		isHidden
+		lineageTag: 97286ead-7ddf-4101-877b-d13bc22e19cd
+		summarizeBy: none
+		sourceColumn: LTR
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column requested
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: f4357f78-3962-4959-b685-bd3b46df8f3b
+		summarizeBy: sum
+		sourceColumn: requested
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column whitelist_scrubbed
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 5582bd7e-3c7a-4928-af7b-2937a4734077
+		summarizeBy: sum
+		sourceColumn: whitelist_scrubbed
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column optout_scrubbed
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 94c56794-ff28-422f-a092-12c9aa663d6e
+		summarizeBy: sum
+		sourceColumn: optout_scrubbed
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column invalid_email_scrubbed
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: df766f8a-2e6d-4688-9e4f-c2835fbc51f9
+		summarizeBy: sum
+		sourceColumn: invalid_email_scrubbed
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column sent
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 9d8d0c52-102f-456f-9913-3d2658efe62b
+		summarizeBy: sum
+		sourceColumn: sent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column bounced
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 5fb7efe0-4432-4dcd-805f-1eefc27c130d
+		summarizeBy: sum
+		sourceColumn: bounced
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivered
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 26a5718a-8e5b-4009-a2d5-700d68c445b9
+		summarizeBy: sum
+		sourceColumn: delivered
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column unq_opens
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 5efe2947-ce6c-4bc0-a5c2-2b841a5f6235
+		summarizeBy: sum
+		sourceColumn: unq_opens
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column optouts
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 362c1f3c-8e8f-49d4-b922-9864207cab2f
+		summarizeBy: sum
+		sourceColumn: optouts
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column marked_as_spam
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 5d4fea75-7b2a-4ec5-9eba-ebe488f0a17c
+		summarizeBy: sum
+		sourceColumn: marked_as_spam
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column clicks
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: b47abd48-72ac-4a04-95eb-05356e185d62
+		summarizeBy: sum
+		sourceColumn: clicks
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column payers
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: c1e42a6a-b3a0-42bf-9a8d-e2d55b04a517
+		summarizeBy: sum
+		sourceColumn: payers
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column payments
+		dataType: double
+		isHidden
+		formatString: \$#,0;(\$#,0);\$#,0
+		lineageTag: 323aef8b-7895-47d9-ab6c-afc306aa4a45
+		summarizeBy: sum
+		sourceColumn: payments
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Month-Year = FORMAT(EmailRPT_MonthClientLetter[send_date],"MMM-YY")
+		lineageTag: 19eed0ee-d550-4a4b-91f5-c4a164e3b8dc
+		summarizeBy: none
+		sortByColumn: YYYYMM
+
+		annotation SummarizationSetBy = Automatic
+
+	column send_date
+		dataType: dateTime
+		isHidden
+		formatString: m/d/yy
+		lineageTag: 6c6690b2-889e-4033-abb0-8f17e0f1dd1d
+		summarizeBy: none
+		sourceColumn: send_date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column YYYYMM =
+			
+			VAR YYYY= YEAR(EmailRPT_MonthClientLetter[send_date])
+			VAR MM =  FORMAT(EmailRPT_MonthClientLetter[send_date],"mm")
+			RETURN
+			YYYY & MM
+		isHidden
+		lineageTag: 9fe8a32f-c7d1-4e75-a19f-47e38a1b560e
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column crm
+		dataType: string
+		isHidden
+		lineageTag: c70fa8bc-4262-4b26-ac5a-46a2902ea877
+		summarizeBy: none
+		sourceColumn: crm
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column email_domain
+		dataType: string
+		isHidden
+		lineageTag: 0a6edcc8-e7ef-4f0c-84fb-9a7d7a28c1c6
+		summarizeBy: none
+		sourceColumn: email_domain
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Date' = STARTOFMONTH(EmailRPT_MonthClientLetter[send_date])
+		isHidden
+		formatString: m/d/yyyy
+		lineageTag: 1815b0d9-774d-4957-a699-8d725ccdb47e
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column clientid
+		dataType: string
+		isHidden
+		lineageTag: 408a93c7-3bd4-45a5-86d7-0313108ca336
+		summarizeBy: none
+		sourceColumn: clientid
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientParent
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(max)
+		lineageTag: d7a9d4e0-af52-43fb-9628-872d0068b8b7
+		summarizeBy: none
+		sourceColumn: ClientParent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation __PBI_SemanticLinks = [{"LinkTarget":{"TableName":"EmailRPT_MonthClientLetter","TableItemName":"Peer Group","ObjectType":4},"LinkType":"UsedInGroup"}]
+
+	column ClientStreamId
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(max)
+		lineageTag: 3dee3645-f2a6-493c-9e08-2bf16796c455
+		summarizeBy: none
+		sourceColumn: ClientStreamId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStream
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(max)
+		lineageTag: a99d4c67-e905-4385-941a-9b7f7345cb11
+		summarizeBy: none
+		sourceColumn: ClientStream
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)'
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(max)
+		lineageTag: df1d9723-e758-4d13-90dc-989bd5dc0162
+		summarizeBy: none
+		sourceColumn: EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'EMAIL HEADER / SUBJECT LINE'
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(max)
+		lineageTag: 6f524c9a-27ed-4394-8d15-6c062a9c5d81
+		summarizeBy: none
+		sourceColumn: EMAIL HEADER / SUBJECT LINE
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Peer Group' =
+			SWITCH(
+			  TRUE,
+			  ISBLANK('EmailRPT_MonthClientLetter'[ClientParent]),
+			  "(Blank)",
+			  'EmailRPT_MonthClientLetter'[ClientParent] IN {"Legal",
+			    "Lending",
+			    "Recoveries"},
+			  "AXP",
+			  'EmailRPT_MonthClientLetter'[ClientParent] IN {"CapitalOne",
+			    "Citibank",
+			    "Goldman Sachs"},
+			  "Peer Group",
+			  'EmailRPT_MonthClientLetter'[ClientParent]
+			)
+		isHidden
+		lineageTag: f46d1e84-97d1-4b6c-8ee8-48afe15ab6ab
+		summarizeBy: none
+
+		extendedProperty GroupingMetadata =
+				{
+				  "version": 0,
+				  "groupedColumns": [
+				    {
+				      "Column": {
+				        "Expression": {
+				          "SourceRef": {
+				            "Entity": "EmailRPT_MonthClientLetter"
+				          }
+				        },
+				        "Property": "ClientParent"
+				      }
+				    }
+				  ]
+				}
+
+		annotation GroupingDesignState = {"Version":0,"Sources":[{"Name":"e","Entity":"EmailRPT_MonthClientLetter"}],"GroupedColumns":[{"Column":{"Expression":{"SourceRef":{"Source":"e"}},"Property":"ClientParent"}}],"GroupItems":[{"DisplayName":"(Blank)","BlankDefaultPlaceholder":true},{"DisplayName":"AXP","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"e"}},"Property":"ClientParent"}}],"Values":[[{"Literal":{"Value":"'Legal'"}}],[{"Literal":{"Value":"'Lending'"}}],[{"Literal":{"Value":"'Recoveries'"}}]]}}},{"DisplayName":"Peer Group","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"e"}},"Property":"ClientParent"}}],"Values":[[{"Literal":{"Value":"'CapitalOne'"}}],[{"Literal":{"Value":"'Citibank'"}}],[{"Literal":{"Value":"'Goldman Sachs'"}}]]}}}]}
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		isHidden
+		sourceProviderType: nvarchar(max)
+		lineageTag: 75a4afd7-cf7d-4b7c-8c69-b5fae9cfb016
+		summarizeBy: none
+		sourceColumn: Description
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column total_opens
+		dataType: int64
+		isHidden
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: bf474732-5efe-4217-bd33-3c749edd2160
+		summarizeBy: sum
+		sourceColumn: total_opens
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SendDomain
+		dataType: string
+		lineageTag: 005a21db-27ec-4ca2-956a-0da5711494dd
+		summarizeBy: none
+		sourceColumn: SendDomain
+
+		annotation SummarizationSetBy = Automatic
+
+	column OfficeID
+		dataType: string
+		lineageTag: 2105fefb-215f-42b8-80c1-5e7eca1c5c88
+		summarizeBy: none
+		sourceColumn: OfficeID
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerState
+		dataType: string
+		lineageTag: d911f015-907a-4dcd-b469-90f116e3f1ca
+		summarizeBy: none
+		sourceColumn: CustomerState
+
+		annotation SummarizationSetBy = Automatic
+
+	partition EmailRPT_MonthClientLetter-eed4c159-f45e-41b2-808a-13cce2aff06a = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("DFW2-BISQL-001", "CLIENT_ANALYTICS"),
+				    dbo_RPT_email_daily = Source{[Schema="dbo",Item="RPT_email_daily"]}[Data],
+				    #"Changed Type of send_date from Datetime to Date" = Table.TransformColumnTypes(dbo_RPT_email_daily,{{"send_date", type date}}),
+				    #"Merged Queries" = Table.NestedJoin(#"Changed Type of send_date from Datetime to Date", {"clientid", "crm"}, ClientMapping, {"ClientId", "SourceSystem"}, "ClientMapping", JoinKind.LeftOuter),
+				    #"Expanded ClientMapping" = Table.ExpandTableColumn(#"Merged Queries", "ClientMapping", {"ClientParent", "ClientStreamId", "ClientStream"}, {"ClientParent", "ClientStreamId", "ClientStream"}),
+				    #"Merged Queries1" = Table.NestedJoin(#"Expanded ClientMapping", {"LTR", "client"}, #"Letter Code Mapping", {"EMAIL CODE", "Client"}, "Letter Code Mapping", JoinKind.LeftOuter),
+				    #"Expanded Letter Code Mapping" = Table.ExpandTableColumn(#"Merged Queries1", "Letter Code Mapping", {"EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)", "EMAIL HEADER / SUBJECT LINE", "Description"}, {"EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)", "EMAIL HEADER / SUBJECT LINE", "Description"})
+				in
+				    #"Expanded Letter Code Mapping"
+
+	annotation PBI_QueryRelationships = {"columnCount":16,"keyColumnNames":[],"queryRelationships":[],"columnIdentities":["Section1/EmailRPT_MonthClientLetter/Source.{send_date,0}","Section1/EmailRPT_MonthClientLetter/Source.{client,1}","Section1/EmailRPT_MonthClientLetter/Source.{LTR,2}","Section1/EmailRPT_MonthClientLetter/Source.{requested,3}","Section1/EmailRPT_MonthClientLetter/Source.{whitelist_scrubbed,4}","Section1/EmailRPT_MonthClientLetter/Source.{optout_scrubbed,5}","Section1/EmailRPT_MonthClientLetter/Source.{invalid_email_scrubbed,6}","Section1/EmailRPT_MonthClientLetter/Source.{sent,7}","Section1/EmailRPT_MonthClientLetter/Source.{bounced,8}","Section1/EmailRPT_MonthClientLetter/Source.{delivered,9}","Section1/EmailRPT_MonthClientLetter/Source.{unq_opens,10}","Section1/EmailRPT_MonthClientLetter/Source.{optouts,11}","Section1/EmailRPT_MonthClientLetter/Source.{marked_as_spam,12}","Section1/EmailRPT_MonthClientLetter/Source.{clicks,13}","Section1/EmailRPT_MonthClientLetter/Source.{payers,14}","Section1/EmailRPT_MonthClientLetter/Source.{payments,15}"],"ColumnCount":16,"KeyColumnNames":[],"ColumnIdentities":["Section1/EmailRPT_MonthClientLetter/Source.{send_date,0}","Section1/EmailRPT_MonthClientLetter/Source.{client,1}","Section1/EmailRPT_MonthClientLetter/Source.{LTR,2}","Section1/EmailRPT_MonthClientLetter/Source.{requested,3}","Section1/EmailRPT_MonthClientLetter/Source.{whitelist_scrubbed,4}","Section1/EmailRPT_MonthClientLetter/Source.{optout_scrubbed,5}","Section1/EmailRPT_MonthClientLetter/Source.{invalid_email_scrubbed,6}","Section1/EmailRPT_MonthClientLetter/Source.{sent,7}","Section1/EmailRPT_MonthClientLetter/Source.{bounced,8}","Section1/EmailRPT_MonthClientLetter/Source.{delivered,9}","Section1/EmailRPT_MonthClientLetter/Source.{unq_opens,10}","Section1/EmailRPT_MonthClientLetter/Source.{optouts,11}","Section1/EmailRPT_MonthClientLetter/Source.{marked_as_spam,12}","Section1/EmailRPT_MonthClientLetter/Source.{clicks,13}","Section1/EmailRPT_MonthClientLetter/Source.{payers,14}","Section1/EmailRPT_MonthClientLetter/Source.{payments,15}"],"RelationshipInfo":[]}
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

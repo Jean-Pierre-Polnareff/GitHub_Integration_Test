@@ -1,0 +1,259 @@
+table DimClient
+	isHidden
+	lineageTag: 41f6fef2-8cab-485f-921f-843e46b485bd
+
+	column KeyClient
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6e20ee4b-358e-4973-bccb-57faf1aaa1d0
+		summarizeBy: none
+		sourceColumn: KeyClient
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column KeyETLAuditHistory
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: cf215189-7f6c-4474-a354-b5d2d90c3885
+		summarizeBy: none
+		sourceColumn: KeyETLAuditHistory
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientId
+		dataType: string
+		isHidden
+		lineageTag: 7581b9b0-17fe-4868-8b1a-4f0b76b66921
+		summarizeBy: none
+		sourceColumn: ClientId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SourceSystem
+		dataType: string
+		isHidden
+		lineageTag: 5982a78d-d480-4ad7-8c40-c7d9890c4275
+		summarizeBy: none
+		sourceColumn: SourceSystem
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientParent
+		dataType: string
+		isHidden
+		lineageTag: 3d4cafbc-5b05-4eb8-9e2a-948752ef5247
+		summarizeBy: none
+		sourceColumn: ClientParent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStreamId
+		dataType: string
+		isHidden
+		lineageTag: 6f22d534-6f41-4227-8a69-8a2a16859d40
+		summarizeBy: none
+		sourceColumn: ClientStreamId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStream
+		dataType: string
+		isHidden
+		lineageTag: c8d941f9-2e1c-4c5e-83cf-5b41947815cc
+		summarizeBy: none
+		sourceColumn: ClientStream
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Age
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: be339693-f292-451c-9be1-ba201094c892
+		summarizeBy: none
+		sourceColumn: Age
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column PaperType
+		dataType: string
+		isHidden
+		lineageTag: 676bbe73-cbb1-4c7c-be86-7e2bfd4cfab4
+		summarizeBy: none
+		sourceColumn: PaperType
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column PaperTypeGrouping
+		dataType: string
+		isHidden
+		lineageTag: 63acf53c-29a2-4304-a801-69a1e7235076
+		summarizeBy: none
+		sourceColumn: PaperTypeGrouping
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SIFPercent
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 751217e9-0fc7-43ed-839c-44e97c710204
+		summarizeBy: none
+		sourceColumn: SIFPercent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Commission
+		dataType: string
+		isHidden
+		lineageTag: 667b9968-e2ff-42e5-8e6d-e82de5a97f5c
+		summarizeBy: none
+		sourceColumn: Commission
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column RecallPeriod
+		dataType: string
+		isHidden
+		lineageTag: abdd642c-5ede-4de2-bb3c-a1b2fedb686e
+		summarizeBy: none
+		sourceColumn: RecallPeriod
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column LocationWorked
+		dataType: string
+		isHidden
+		lineageTag: 7899416f-f5b3-4def-a2f1-9318f8dd4a41
+		summarizeBy: none
+		sourceColumn: LocationWorked
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientClass
+		dataType: string
+		isHidden
+		lineageTag: 97735eaa-cb54-4042-a699-6ba8d2f8c9a8
+		summarizeBy: none
+		sourceColumn: ClientClass
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientClassDescription
+		dataType: string
+		isHidden
+		lineageTag: f0f08bfd-1604-4e21-8eaa-472bde2f4579
+		summarizeBy: none
+		sourceColumn: ClientClassDescription
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column InsertDate
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: ccbe6cbe-1073-4f0f-aeaf-daed535d3e1b
+		summarizeBy: none
+		sourceColumn: InsertDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column UpdateDate
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: a3c936c3-3c75-499c-ac0c-e81a3bdf4955
+		summarizeBy: none
+		sourceColumn: UpdateDate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Site
+		dataType: string
+		isHidden
+		lineageTag: bf5c632b-0479-43f2-a229-8b89b5565c18
+		summarizeBy: none
+		sourceColumn: Site
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientSegmentationGroup
+		dataType: string
+		lineageTag: 490ac966-f16b-4e97-9491-933d44d7f5a3
+		summarizeBy: none
+		sourceColumn: ClientSegmentationGroup
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsDebtBuyer
+		dataType: string
+		lineageTag: a41cc76c-01a2-46e7-8199-e758a13ae3d1
+		summarizeBy: none
+		sourceColumn: IsDebtBuyer
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientParentGroup
+		dataType: string
+		lineageTag: 53408b32-70cb-4844-b07f-fc3534e34245
+		summarizeBy: none
+		sourceColumn: ClientParentGroup
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimClient-14253c3e-8551-44b4-b6ea-3c73c55d92ae = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("DFW2-BISQL-001", "DW_MSTR_DM"),
+				    dbo_DimClient = Source{[Schema="dbo",Item="DimClient"]}[Data],
+				    #"Filtered Rows" = Table.SelectRows(dbo_DimClient, each ([SourceSystem] = "AMEX Latitude"))
+				in
+				    #"Filtered Rows"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

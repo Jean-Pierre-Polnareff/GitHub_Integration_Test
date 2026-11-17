@@ -1,0 +1,357 @@
+table 'EmailRPT_MonthClientLetter (2)'
+	isHidden
+	lineageTag: 50c274e7-79b9-4c8d-92df-e9f7f94154e2
+
+	measure 'Open %' = CALCULATE(DIVIDE(sum('EmailRPT_MonthClientLetter (2)'[Opened]), SUM('EmailRPT_MonthClientLetter (2)'[Delivered])))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		isHidden
+		lineageTag: 0d122049-43b4-4fc8-95de-ac36694813b8
+
+	measure 'Click %' = CALCULATE(DIVIDE(sum('EmailRPT_MonthClientLetter (2)'[clicks]), SUM('EmailRPT_MonthClientLetter (2)'[Opened])))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		isHidden
+		lineageTag: 4a9fcbf7-8105-4e12-8e1e-5b675a91298e
+
+	measure 'End of Date Range' =
+			
+			---VAR PrevEOM = EOMONTH(TODAY() ,-1)
+			VAR StartDate = MIN('EmailRPT_MonthClientLetter (2)'[Month Date])
+			---VAR stndrdth = IF(DAY(PrevEOM ) = 31 , "st", "th")
+			VAR EndDate = EOMONTH(MAX('EmailRPT_MonthClientLetter (2)'[Month Date]),0)
+			Return
+			"Date Range: " & StartDate & " to " & EndDate & ".
+			Threshold for Top Calculation: Average 100 emails sent per month."
+		isHidden
+		lineageTag: 398be380-0da3-4828-8b4a-78567cdb7fb5
+
+	measure 'Sends Per Month per LTR' =
+			
+			VAR SelectedMonths = CALCULATETABLE(VALUES('EmailRPT_MonthClientLetter (2)'[Month Date]), ALLSELECTED('EmailRPT_MonthClientLetter (2)'[Month Date]))
+			VAR No_of_Months = COUNTROWS(SelectedMonths)
+			RETURN
+			DIVIDE(
+			CALCULATE(
+			SUM('EmailRPT_MonthClientLetter (2)'[sent]),
+			ALLEXCEPT('EmailRPT_MonthClientLetter (2)', 'EmailRPT_MonthClientLetter (2)'[LTR], 'EmailRPT_MonthClientLetter (2)'[clientid]), 'EmailRPT_MonthClientLetter (2)'[Month Date] IN SelectedMonths
+			)
+			, No_of_Months
+			)
+		formatString: #,0
+		isHidden
+		lineageTag: 9ea67ee2-1046-4de7-a6e9-a2902d7b9bcd
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure 'Sends Per Month with Min 100 Sends' = ```
+			
+			VAR LTRsToSendMonths =
+			    ADDCOLUMNS(
+			        SUMMARIZE(
+			            'EmailRPT_MonthClientLetter (2)',
+			            'EmailRPT_MonthClientLetter (2)'[LTR],
+			            'EmailRPT_MonthClientLetter (2)'[Month Date]
+			        ),
+			        "SendsPerMonth",
+			        CALCULATE(
+			            SUM('EmailRPT_MonthClientLetter (2)'[sent]),
+			            ALLEXCEPT('EmailRPT_MonthClientLetter (2)', 'EmailRPT_MonthClientLetter (2)'[LTR]),
+			            'EmailRPT_MonthClientLetter (2)'[Month Date] IN VALUES('EmailRPT_MonthClientLetter (2)'[Month Date])
+			        )
+			    )
+			RETURN
+			CALCULATE(
+			    MAXX(
+			        FILTER(
+			            TOPN(3, LTRsToSendMonths, [SendsPerMonth], DESC),
+			            [SendsPerMonth] >= 100
+			        ),
+			        [SendsPerMonth]
+			    ),
+			    ALLEXCEPT('EmailRPT_MonthClientLetter (2)', 'EmailRPT_MonthClientLetter (2)'[LTR])
+			)
+			
+			```
+		isHidden
+		lineageTag: 3b6a4ba4-12b4-4bcf-a642-cb10019c7525
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Click% with Sends Per Month with Min 100 Sends' = ```
+			
+			VAR SelectedMonths = CALCULATETABLE(VALUES('EmailRPT_MonthClientLetter (2)'[Month Date]), ALLSELECTED('EmailRPT_MonthClientLetter (2)'[Month Date]))
+			VAR No_of_Months = COUNTROWS(SelectedMonths)
+			VAR LTRsToSendMonths =
+			    ADDCOLUMNS(
+			        SUMMARIZE(
+			            'EmailRPT_MonthClientLetter (2)',
+			            'EmailRPT_MonthClientLetter (2)'[LTR]
+			            --,'EmailRPT_MonthClientLetter (2)'[Month Date]
+			        ),
+			        "SendsPerMonth",
+			        DIVIDE(
+			        CALCULATE(
+			            SUM('EmailRPT_MonthClientLetter (2)'[sent]),
+			            ALLEXCEPT('EmailRPT_MonthClientLetter (2)', 'EmailRPT_MonthClientLetter (2)'[LTR], 'EmailRPT_MonthClientLetter (2)'[clientid]), 'EmailRPT_MonthClientLetter (2)'[Month Date] IN SelectedMonths
+			        )
+			        , No_of_Months
+			        )
+			        ,
+			        "ClickRate",
+			        [Click %]
+			
+			    )
+			RETURN
+			CALCULATE(
+			    MAXX(
+			        FILTER(
+			            TOPN(3, LTRsToSendMonths, [ClickRate], DESC),
+			            [SendsPerMonth] >= 100
+			        ),
+			        [ClickRate]
+			    ),
+			    ALLEXCEPT('EmailRPT_MonthClientLetter (2)', 'EmailRPT_MonthClientLetter (2)'[LTR]) 
+			)
+			```
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		isHidden
+		lineageTag: 5147b412-5b37-4e78-89f3-df12847c74d8
+
+		changedProperty = IsHidden
+
+	measure 'Open% with Sends Per Month with Min 100 Sends' = ```
+			
+			VAR SelectedMonths = CALCULATETABLE(VALUES('EmailRPT_MonthClientLetter (2)'[Month Date]), ALLSELECTED('EmailRPT_MonthClientLetter (2)'[Month Date]))
+			VAR No_of_Months = COUNTROWS(SelectedMonths)
+			VAR LTRsToSendMonths =
+			    ADDCOLUMNS(
+			        SUMMARIZE(
+			            'EmailRPT_MonthClientLetter (2)',
+			            'EmailRPT_MonthClientLetter (2)'[LTR]
+			            --,'EmailRPT_MonthClientLetter (2)'[Month Date]
+			        ),
+			        "SendsPerMonth",
+			        DIVIDE(
+			        CALCULATE(
+			            SUM('EmailRPT_MonthClientLetter (2)'[sent]),
+			            ALLEXCEPT('EmailRPT_MonthClientLetter (2)', 'EmailRPT_MonthClientLetter (2)'[LTR], 'EmailRPT_MonthClientLetter (2)'[clientid]), 'EmailRPT_MonthClientLetter (2)'[Month Date] IN SelectedMonths
+			        )
+			        , No_of_Months
+			        )
+			        ,
+			        "OpenRate",
+			        [Open %]
+			
+			    )
+			RETURN
+			CALCULATE(
+			    MAXX(
+			        FILTER(
+			            TOPN(3, LTRsToSendMonths, [OpenRate], DESC),
+			            [SendsPerMonth] >= 100
+			        )
+			        ,
+			        [OpenRate]
+			    ),
+			    ALLEXCEPT('EmailRPT_MonthClientLetter (2)', 'EmailRPT_MonthClientLetter (2)'[LTR]) 
+			)
+			```
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		isHidden
+		lineageTag: 4d2f3ca6-c22b-4e33-803b-76a57e3dc318
+
+		changedProperty = IsHidden
+
+	column LTR
+		dataType: string
+		isHidden
+		lineageTag: c40d21fe-1d3e-486e-9566-f28a2f486695
+		summarizeBy: none
+		sourceColumn: LTR
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'EMAIL HEADER / SUBJECT LINE'
+		dataType: string
+		isHidden
+		lineageTag: 6ce6b662-6f05-44ce-b22c-7c229ee8a3ea
+		summarizeBy: none
+		sourceColumn: EMAIL HEADER / SUBJECT LINE
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)'
+		dataType: string
+		isHidden
+		lineageTag: aebe9ca5-9ed0-4924-b1c6-265b608902ef
+		summarizeBy: none
+		sourceColumn: EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Sent
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: 4cf25d51-37c7-4120-a93b-1284940a68c2
+		summarizeBy: sum
+		sourceColumn: Sent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	column Opened
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: 0d465219-459f-464d-82e3-fa9d6d33d6af
+		summarizeBy: sum
+		sourceColumn: Opened
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	column Clicks
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: 316c6fd1-6d32-4a36-93d1-5a6318f5a503
+		summarizeBy: sum
+		sourceColumn: Clicks
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	column Delivered
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: 4167e4f5-6b58-4da3-bbef-f1efff19d03a
+		summarizeBy: sum
+		sourceColumn: Delivered
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	column Description
+		dataType: string
+		isHidden
+		lineageTag: 5dda41b3-fc7b-4c10-857a-241c152d02fd
+		summarizeBy: none
+		sourceColumn: Description
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column clientid
+		dataType: string
+		isHidden
+		lineageTag: 5e585e11-1927-4e93-9984-a87878388f83
+		summarizeBy: none
+		sourceColumn: clientid
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column crm
+		dataType: string
+		isHidden
+		lineageTag: d30c1db1-4c2f-47fb-b89b-ae858b2f412b
+		summarizeBy: none
+		sourceColumn: crm
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientParent
+		dataType: string
+		isHidden
+		lineageTag: 84c358fb-10ca-415b-84a7-e987685049b7
+		summarizeBy: none
+		sourceColumn: ClientParent
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStreamId
+		dataType: string
+		isHidden
+		lineageTag: 7496c4f2-8663-4da3-b7ca-c3a05144da6a
+		summarizeBy: none
+		sourceColumn: ClientStreamId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ClientStream
+		dataType: string
+		isHidden
+		lineageTag: 63006575-fa90-488f-8db4-4a0cb7beca4c
+		summarizeBy: none
+		sourceColumn: ClientStream
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Date'
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: 61acd025-af31-46df-b7db-d476e90aedf1
+		summarizeBy: none
+		sourceColumn: Month Date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'EmailRPT_MonthClientLetter (2)-413b45d0-613e-44f9-8905-cd94a1a82b3f' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("DFW2-BISQL-001", "CLIENT_ANALYTICS"),
+				    dbo_RPT_email_daily = Source{[Schema="dbo",Item="RPT_email_daily"]}[Data],
+				    #"Changed Type of send_date from Datetime to Date" = Table.TransformColumnTypes(dbo_RPT_email_daily,{{"send_date", type date}}),
+				    #"Month Date" = Table.AddColumn(#"Changed Type of send_date from Datetime to Date", "Month Date", each Date.StartOfMonth([send_date]), type date),
+				    #"Filtered CRM to AMEX Latitude" = Table.SelectRows(#"Month Date", each Text.Contains([crm], "AMEX Latitude")),
+				    #"Left Join with Letter Code Mapping" = Table.NestedJoin(#"Filtered CRM to AMEX Latitude", {"LTR", "client"}, #"Letter Code Mapping", {"EMAIL CODE", "Client"}, "Letter Code Mapping", JoinKind.LeftOuter),
+				    #"Expanded Letter Code Mapping" = Table.ExpandTableColumn(#"Left Join with Letter Code Mapping", "Letter Code Mapping", {"EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)", "EMAIL HEADER / SUBJECT LINE", "Description"}, {"EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)", "EMAIL HEADER / SUBJECT LINE", "Description"}),
+				    #"Grouped Rows" = Table.Group(#"Expanded Letter Code Mapping", {"LTR", "EMAIL HEADER / SUBJECT LINE", "EMAIL TYPE (Offer, Reminder, Service, IDL No SIF)", "Description", "clientid", "crm", "Month Date"}, {{"Sent", each List.Sum([sent]), type nullable number}, {"Delivered", each List.Sum([delivered]), type nullable number}, {"Opened", each List.Sum([unq_opens]), type nullable number}, {"Clicks", each List.Sum([clicks]), type nullable number}}),
+				    #"Left Join with ClientMapping" = Table.NestedJoin(#"Grouped Rows", {"clientid", "crm"}, ClientMapping, {"ClientId", "SourceSystem"}, "ClientMapping", JoinKind.LeftOuter),
+				    #"Expanded ClientMapping - ClientParent, ClientStream, ClientStreamId" = Table.ExpandTableColumn(#"Left Join with ClientMapping", "ClientMapping", {"ClientParent", "ClientStreamId", "ClientStream"}, {"ClientParent", "ClientStreamId", "ClientStream"})
+				in
+				    #"Expanded ClientMapping - ClientParent, ClientStream, ClientStreamId"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+
